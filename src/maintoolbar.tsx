@@ -1,6 +1,9 @@
 import * as React from 'react';
 
 export interface IMainToolbarProps {
+  onEditCode: () => void;
+  onEditImages: () => void;
+  onEditLevel: () => void;
 }
 
 export interface IMainToolbarState {
@@ -17,7 +20,9 @@ export default class MainToolbar extends React.Component<IMainToolbarProps, IMai
   public render() {
     return (
       <div className="Canvas-maintoolbar">
-
+        <button onClick={this.props.onEditCode}>Code</button>
+        <button onClick={this.props.onEditImages}>Images</button>
+        <button onClick={this.props.onEditLevel}>Level</button>
       </div>
     );
   }

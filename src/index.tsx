@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactModal from 'react-modal';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
+ReactModal.setAppElement('#root');
 
 ReactDOM.render(
   <React.StrictMode>
