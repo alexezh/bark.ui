@@ -6,12 +6,15 @@ import MainToolbar from './MainToolbar';
 import TextEditorCanvas from './TextEditorCanvas';
 
 import './App.css';
+import { CodeFileDef, project } from './Project';
+import { throws } from 'assert';
 
 export interface IBarkCanvasProps {
 }
 
 export interface IBarkCanvasState {
   showModal: boolean;
+  codeFile?: CodeFileDef;
 }
 
 export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkCanvasState> {
@@ -33,6 +36,7 @@ export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkC
   }
 
   public render() {
+
     return (
       <div className="Canvas-main">
         <MainToolbar onEditCode={this.onEditCode} onEditImages={this.onEditImages} onEditLevel={this.onEditLevel} />
@@ -41,7 +45,7 @@ export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkC
           isOpen={this.state.showModal}
           contentLabel="Minimal Modal Example"
         >
-          <TextEditorCanvas onClose={this.onCloseModal} />
+          <TextEditorCanvas onClose={this.onCloseModal} codeFile={this.state.codeFile} />
         </ReactModal>
       </div>
     );
