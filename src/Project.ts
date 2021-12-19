@@ -26,6 +26,14 @@ export class CodeFileDef {
 
     return codeFile.code[blockId];
   }
+
+  public static updateCode(codeFile: CodeFileDef | undefined, blockId: string | undefined, code: string) {
+    if (codeFile === undefined || blockId === undefined) {
+      return '';
+    }
+
+    codeFile.code[blockId] = code;
+  }
 }
 
 export class SpriteDef {

@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import { editorState } from './EditorState';
 import TextEditorToolbar from './TextEditorToolbar';
-import { CodeFileDef } from './Project';
+import { CodeFileDef, project } from './Project';
 
 export interface ITextEditorCanvasProps {
   onClose: any
@@ -25,12 +25,13 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
       'onToolbarChange'
     ]);
 
-    let blockId = props.codeFile?.getLastEditedBlockId();
+    let codeFile = props.codeFile === undefined ? project.def.codeFile : props.codeFile;
+    let blockId = codeFile?.getLastEditedBlockId();
 
     this.state = {
-      codeFile: props.codeFile,
+      codeFile: codeFile,
       codeFileBlock: blockId,
-      code: CodeFileDef.getCode(props.codeFile, blockId)
+      code: CodeFileDef.getCode(codeFile, blockId)
     }
   }
 
@@ -52,6 +53,9 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
 
   private onCodeChange(event: any) {
     this.setState({ code: event.target.value });
+    if (this.state.codeFile !== undefined) {
+      CodeFileDef.updateCode(this.state.codeFile, this.state.codeFileBlock, event.target.value);
+    }
   }
 
   private onToolbarChange(file: CodeFileDef, block?: string) {
