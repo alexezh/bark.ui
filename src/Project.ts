@@ -19,12 +19,12 @@ export class SpriteDef {
   public name: string = '';
   public width: number = 0;
   public height: number = 0;
-  public code: CodeFileDef;
+  public codeFile: CodeFileDef;
   public skins: string[] = [];
 
   public constructor(name: string) {
     this.name = name;
-    this.code = new CodeFileDef(name);
+    this.codeFile = new CodeFileDef(name);
   }
 }
 
@@ -56,19 +56,31 @@ export class Project {
     let def = new ProjectDef();
     def.codeFile.code['updateScene'] = '// put code to update scene here';
 
+    def.level = new TileLevelDef();
+    def.level.gridWidth = 48;
+    def.level.gridHeight = 8;
+
     return new Project(def);
   }
 
   public createSprite(id: string, name: string) {
     let sprite = new SpriteDef(name);
 
-    sprite.code['timer'] = '// add animation code here';
+    sprite.codeFile['timer'] = '// add animation code here';
     this.def.sprites.push(sprite);
   }
 
   // update model by applying function
   public update(func: () => void) {
     func();
+  }
+
+  public forEachCodeFile(func: (file: CodeFileDef) => void) {
+    func(this.def.codeFile);
+    if (this.def.level !== undefined) {
+      func(this.def.level?.codeFile);
+    }
+    this.def.sprites.forEach((x) => func(x.codeFile));
   }
 }
 

@@ -5,6 +5,7 @@ import { editorState } from './EditorState';
 import TextEditorToolbar from './TextEditorToolbar';
 
 export interface ITextEditorCanvasProps {
+  onClose: any
 }
 
 export interface ITextEditorCanvasState {
@@ -27,7 +28,7 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
   public render() {
     return (
       <div className="TextEditor-canvas">
-        <TextEditorToolbar codeFile={editorState.lastEditedCodeFile} onClose={this.onClose} />
+        <TextEditorToolbar codeFile={editorState.lastEditedCodeFile} onClose={this.props.onClose} />
         <textarea
           className="TextEditor-text"
           value={this.state.code}
@@ -39,9 +40,5 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
 
   private onCodeChange(event: any) {
     this.setState({ code: event.target.value });
-  }
-
-  private onClose() {
-
   }
 }

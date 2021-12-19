@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CodeFileDef } from './Project';
+import { CodeFileDef, project } from './Project';
 import _ from "lodash";
 
 export interface ITextEditorToolbarProps {
@@ -16,7 +16,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     super(props);
 
     _.bindAll(this, [
-      'onCodeChange',
+      'onSelectObject',
     ]);
 
     this.state = {
@@ -27,12 +27,21 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
   public render() {
     return (
       <div className='TextEditor-toolbar'>
-        <div>Object: </div>
+        <span>Object: </span>
+        <select onSelect={this.onSelectObject}>
+          {this.renderObjectList()}
+        </select>
+        <span>Functions: </span>
         <select>
           {this.renderFunctionList()}
         </select>
+        <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
       </div>
     );
+  }
+
+  private onSelectObject(event: any) {
+    console.log(event);
   }
 
   private renderFunctionList(): any[] {
@@ -50,7 +59,14 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     return funcs;
   }
 
-  private onCodeChange(event: any) {
-    this.setState({ code: event.target.value });
+  private renderObjectList(): any[] {
+    let files: any[] = [];
+    project.forEachCodeFile((file) => {
+      files.push((
+        <option key={file.name}>{file.name}</option>
+      ));
+    })
+
+    return files;
   }
 }

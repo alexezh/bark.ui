@@ -41,7 +41,7 @@ export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkC
           isOpen={this.state.showModal}
           contentLabel="Minimal Modal Example"
         >
-          <TextEditorCanvas />
+          <TextEditorCanvas onClose={this.onCloseModal} />
         </ReactModal>
       </div>
     );
