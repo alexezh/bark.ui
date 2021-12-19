@@ -42,6 +42,23 @@
 	flex-direction: row;
 }
 
+.TextEditor-canvas {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.TextEditor-toolbar {
+	width: 100%;
+	flex-direction: row;
+}
+
+.TextEditor-text {
+	width: 100%;
+	height: 100%;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

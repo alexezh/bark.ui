@@ -1,7 +1,9 @@
 import * as React from 'react';
-import MainToolbar from './maintoolbar';
 import ReactModal from 'react-modal';
 import _ from "lodash";
+
+import MainToolbar from './MainToolbar';
+import TextEditorCanvas from './TextEditorCanvas';
 
 import './App.css';
 
@@ -39,11 +41,13 @@ export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkC
           isOpen={this.state.showModal}
           contentLabel="Minimal Modal Example"
         >
-          <button onClick={this.onCloseModal}>Close Modal</button>
+          <TextEditorCanvas />
         </ReactModal>
       </div>
     );
   }
+
+  //           <button onClick={this.onCloseModal}>Close Modal</button>
 
   private openModal() {
     this.setState({ showModal: true });
