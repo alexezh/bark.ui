@@ -43,6 +43,11 @@
   "devDependencies": {
     "@types/lodash": "4.14.178",
     "lodash": "^4.17.21",
+    "react-intl": "^5.23.0",
+    "react-intl-redux": "^2.2.0",
+    "react-redux": "^7.2.6",
+    "scratch-l10n": "^3.14.20211219031623",
+    "scratch-render-fonts": "^1.0.0-prerelease.20210401210003",
     "typescript": "^4.5.4"
   }
 }
