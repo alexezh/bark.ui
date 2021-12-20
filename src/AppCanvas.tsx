@@ -4,21 +4,22 @@ import _ from "lodash";
 
 import MainToolbar from './MainToolbar';
 import TextEditorCanvas from './TextEditorCanvas';
+import GameCanvas from './GameCanvas';
 
 import './App.css';
 import { CodeFileDef, project } from './Project';
 import { throws } from 'assert';
 
-export interface IBarkCanvasProps {
+export interface IAppCanvasProps {
 }
 
-export interface IBarkCanvasState {
+export interface IAppCanvasState {
   showModal: boolean;
   codeFile?: CodeFileDef;
 }
 
-export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkCanvasState> {
-  constructor(props: IBarkCanvasProps) {
+export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanvasState> {
+  constructor(props: IAppCanvasProps) {
     super(props);
 
     _.bindAll(this, [
@@ -40,6 +41,7 @@ export default class BarkCanvas extends React.Component<IBarkCanvasProps, IBarkC
     return (
       <div className="Canvas-main">
         <MainToolbar onEditCode={this.onEditCode} onEditImages={this.onEditImages} onEditLevel={this.onEditLevel} />
+        <GameCanvas />
 
         <ReactModal
           isOpen={this.state.showModal}

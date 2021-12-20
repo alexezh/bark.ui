@@ -1,11 +1,11 @@
 import React from 'react';
 import logo from './logo.svg';
-import BarkCanvas from './BarkCanvas'
+import AppCanvas from './AppCanvas'
 import './App.css';
 
 function App() {
   return (
-    <BarkCanvas />
+    <AppCanvas />
   );
 }
 
