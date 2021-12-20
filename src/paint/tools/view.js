@@ -1,7 +1,7 @@
-import paper from '@scratch/paper';
-import {CROSSHAIR_SIZE, getBackgroundGuideLayer, getDragCrosshairLayer, getRaster} from './layer';
-import {getAllRootItems, getSelectedRootItems} from './selection';
-import {getHitBounds} from './bitmap';
+import paper from 'paper';
+import { CROSSHAIR_SIZE, getBackgroundGuideLayer, getDragCrosshairLayer, getRaster } from './layer';
+import { getAllRootItems, getSelectedRootItems } from './selection';
+import { getHitBounds } from './bitmap';
 import log from '../log/log';
 
 // Vectors are imported and exported at SVG_ART_BOARD size.
@@ -77,7 +77,7 @@ const setWorkspaceBounds = clipEmpty => {
 };
 
 const clampViewBounds = () => {
-    const {left, right, top, bottom} = paper.project.view.bounds;
+    const { left, right, top, bottom } = paper.project.view.bounds;
     if (left < _workspaceBounds.left) {
         paper.project.view.scrollBy(new paper.Point(_workspaceBounds.left - left, 0));
     }

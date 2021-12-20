@@ -1,31 +1,86 @@
-import bindAll from 'lodash.bindall';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {connect} from 'react-redux';
-import paper from '@scratch/paper';
-import Formats from '../lib/format';
-import log from '../log/log';
+// @1ts-nocheck disabling checks for interop
 
-import {performSnapshot} from '../helper/undo';
-import {undoSnapshot, clearUndoState} from '../reducers/undo';
-import {isGroup, ungroupItems} from '../helper/group';
-import {clearRaster, convertBackgroundGuideLayer, getRaster, setupLayers} from '../helper/layer';
-import {clearSelectedItems} from '../reducers/selected-items';
+import bindAll from 'lodash.bindall';
+import React from 'react';
+import paper from 'paper';
+import Formats from './lib/format';
+
+import { performSnapshot } from './tools/undo';
+import { isGroup, ungroupItems } from './tools/group';
+import { clearRaster, convertBackgroundGuideLayer, getRaster, setupLayers } from './tools/layer';
 import {
     ART_BOARD_WIDTH, ART_BOARD_HEIGHT, CENTER, MAX_WORKSPACE_BOUNDS,
     clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
-} from '../helper/view';
-import {ensureClockwise, scaleWithStrokes} from '../helper/math';
-import {clearHoveredItem} from '../reducers/hover';
-import {clearPasteOffset} from '../reducers/clipboard';
-import {changeFormat} from '../reducers/format';
-import {updateViewBounds} from '../reducers/view-bounds';
-import {saveZoomLevel, setZoomLevelId} from '../reducers/zoom-levels';
+} from './tools/view';
+import { ensureClockwise, scaleWithStrokes } from './tools/math';
 
-import styles from './paper-canvas.css';
+export interface IZoomController {
+    saveZoomLevel();
+    setZoomLevelId(newZoomLevelId: string);
+}
 
-class PaperCanvas extends React.Component {
-    constructor (props) {
+export interface IPaperCanvasProps {
+    format: any; // Formats;
+    imageFormat: any;
+
+    /*
+     image: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.instanceOf(HTMLImageElement)
+    ]),
+    */
+    image: any;
+    rotationCenterX: number;
+    rotationCenterY: number;
+    zoomLevelId: string;
+    imageId: string;
+    shouldZoomToFit: boolean;
+    cursor: string;
+    zoomLevels: {
+        [key: string]: paper.Matrix
+    };
+    zoomController: IZoomController;
+    //    currentZoomLevelId: PropTypes.string
+    //})
+
+    /*
+        canvasRef: PropTypes.func,
+            changeFormat: PropTypes.func.isRequired,
+            clearHoveredItem: PropTypes.func.isRequired,
+            clearPasteOffset: PropTypes.func.isRequired,
+            clearSelectedItems: PropTypes.func.isRequired,
+            clearUndo: PropTypes.func.isRequired,
+            cursor: PropTypes.string,
+            format: PropTypes.oneOf(Object.keys(Formats)),
+            imageFormat: PropTypes.string, // The incoming image's data format, used during import. The user could switch this.
+            imageId: PropTypes.string,
+            rotationCenterX: PropTypes.number,
+            rotationCenterY: PropTypes.number,
+            saveZoomLevel: PropTypes.func.isRequired,
+            setZoomLevelId: PropTypes.func.isRequired,
+            undoSnapshot: PropTypes.func.isRequired,
+            updateViewBounds: PropTypes.func.isRequired,
+            zoomLevelId: PropTypes.string,
+            zoomLevels: PropTypes.shape({
+                currentZoomLevelId: PropTypes.string
+            })
+        };
+    */
+}
+
+export interface IPaperCanvasState {
+}
+
+class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> {
+    public canvas: any;
+    private shouldZoomToFit: boolean | paper.Matrix = false;
+
+    // is set if we are loading image
+    private queuedImport: any = null;
+
+    private queuedImageToLoad: any // Image;
+
+    constructor(props) {
         super(props);
         bindAll(this, [
             'clearQueuedImport',
@@ -38,10 +93,11 @@ class PaperCanvas extends React.Component {
             'recalibrateSize'
         ]);
     }
-    componentDidMount () {
+    componentDidMount() {
         paper.setup(this.canvas);
         paper.view.on('resize', this.onViewResize);
         resetZoom();
+        /*
         if (this.props.zoomLevelId) {
             this.props.setZoomLevelId(this.props.zoomLevelId);
             if (this.props.zoomLevels[this.props.zoomLevelId]) {
@@ -54,7 +110,7 @@ class PaperCanvas extends React.Component {
         } else {
             this.props.updateViewBounds(paper.view.matrix);
         }
-
+*/
         const context = this.canvas.getContext('2d');
         context.webkitImageSmoothingEnabled = false;
         context.imageSmoothingEnabled = false;
@@ -66,7 +122,7 @@ class PaperCanvas extends React.Component {
         this.importImage(
             this.props.imageFormat, this.props.image, this.props.rotationCenterX, this.props.rotationCenterY);
     }
-    componentWillReceiveProps (newProps) {
+    componentWillReceiveProps(newProps) {
         if (this.props.imageId !== newProps.imageId) {
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
@@ -77,15 +133,16 @@ class PaperCanvas extends React.Component {
             convertBackgroundGuideLayer(newProps.format);
         }
     }
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.clearQueuedImport();
         // shouldZoomToFit means the zoom level hasn't been initialized yet
         if (!this.shouldZoomToFit) {
-            this.props.saveZoomLevel();
+            this.props.zoomController.saveZoomLevel();
         }
+        // @ts-ignore
         paper.remove();
     }
-    clearQueuedImport () {
+    clearQueuedImport() {
         if (this.queuedImport) {
             window.clearTimeout(this.queuedImport);
             this.queuedImport = null;
@@ -96,9 +153,9 @@ class PaperCanvas extends React.Component {
             this.queuedImageToLoad = null;
         }
     }
-    switchCostume (format, image, rotationCenterX, rotationCenterY, oldZoomLevelId, newZoomLevelId) {
+    switchCostume(format, image, rotationCenterX, rotationCenterY, oldZoomLevelId, newZoomLevelId) {
         if (oldZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
-            this.props.saveZoomLevel();
+            this.props.zoomController.saveZoomLevel();
         }
         if (newZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
             if (this.props.zoomLevels[newZoomLevelId]) {
@@ -106,7 +163,7 @@ class PaperCanvas extends React.Component {
             } else {
                 this.shouldZoomToFit = true;
             }
-            this.props.setZoomLevelId(newZoomLevelId);
+            this.props.zoomController.setZoomLevelId(newZoomLevelId);
         }
         for (const layer of paper.project.layers) {
             if (layer.data.isRasterLayer) {
@@ -117,30 +174,33 @@ class PaperCanvas extends React.Component {
                 layer.removeChildren();
             }
         }
-        this.props.clearUndo();
-        this.props.clearSelectedItems();
-        this.props.clearHoveredItem();
-        this.props.clearPasteOffset();
+        //this.props.clearUndo();
+        //this.props.clearSelectedItems();
+        //this.props.clearHoveredItem();
+        //this.props.clearPasteOffset();
         this.importImage(format, image, rotationCenterX, rotationCenterY);
     }
-    importImage (format, image, rotationCenterX, rotationCenterY) {
+    importImage(format, image, rotationCenterX, rotationCenterY) {
         // Stop any in-progress imports
         this.clearQueuedImport();
 
         if (!image) {
-            this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
-            performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
+            //this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
+            //performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
             this.recalibrateSize();
             return;
         }
 
         if (format === 'jpg' || format === 'png') {
             // import bitmap
-            this.props.changeFormat(Formats.BITMAP_SKIP_CONVERT);
+            // @ts-ignore
+            // this.props.changeFormat(Formats.BITMAP_SKIP_CONVERT);
 
             const mask = new paper.Shape.Rectangle(getRaster().getBounds());
+            // @ts-ignore
             mask.guide = true;
             mask.locked = true;
+            // @ts-ignore
             mask.setPosition(CENTER);
             mask.clipMask = true;
 
@@ -167,33 +227,33 @@ class PaperCanvas extends React.Component {
                     (ART_BOARD_HEIGHT / 2) - rotationCenterY);
 
                 this.maybeZoomToFit(true /* isBitmap */);
-                performSnapshot(this.props.undoSnapshot, Formats.BITMAP_SKIP_CONVERT);
+                //performSnapshot(this.props.undoSnapshot, Formats.BITMAP_SKIP_CONVERT);
                 this.recalibrateSize();
             };
             imgElement.src = image;
         } else if (format === 'svg') {
-            this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
+            //this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
             this.importSvg(image, rotationCenterX, rotationCenterY);
         } else {
-            log.error(`Didn't recognize format: ${format}. Use 'jpg', 'png' or 'svg'.`);
-            this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
-            performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
+            //this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
+            //performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
             this.recalibrateSize();
         }
     }
-    maybeZoomToFit (isBitmapMode) {
+    maybeZoomToFit(isBitmapMode: boolean = false) {
         if (this.shouldZoomToFit instanceof paper.Matrix) {
             paper.view.matrix = this.shouldZoomToFit;
-            this.props.updateViewBounds(paper.view.matrix);
+            //this.props.updateViewBounds(paper.view.matrix);
             resizeCrosshair();
         } else if (this.shouldZoomToFit === true) {
             zoomToFit(isBitmapMode);
         }
         this.shouldZoomToFit = false;
-        setWorkspaceBounds();
-        this.props.updateViewBounds(paper.view.matrix);
+        setWorkspaceBounds(false);
+        //this.props.updateViewBounds(paper.view.matrix);
     }
-    importSvg (svg, rotationCenterX, rotationCenterY) {
+
+    importSvg(svg, rotationCenterX, rotationCenterY) {
         const paperCanvas = this;
         // Pre-process SVG to prevent parsing errors (discussion from #213)
         // 1. Remove svg: namespace on elements.
@@ -212,8 +272,9 @@ class PaperCanvas extends React.Component {
         // correctly.
         const parser = new DOMParser();
         const svgDom = parser.parseFromString(svg, 'text/xml');
-        const viewBox = svgDom.documentElement.attributes.viewBox ?
-            svgDom.documentElement.attributes.viewBox.value.match(/\S+/g) : null;
+
+        // @ts-ignore
+        const viewBox = svgDom.documentElement.attributes.viewBox ? svgDom.documentElement.attributes.viewBox.value.match(/\S+/g) : null;
         if (viewBox) {
             for (let i = 0; i < viewBox.length; i++) {
                 viewBox[i] = parseFloat(viewBox[i]);
@@ -224,10 +285,8 @@ class PaperCanvas extends React.Component {
             expandShapes: true,
             onLoad: function (item) {
                 if (!item) {
-                    log.error('SVG import failed:');
-                    log.info(svg);
-                    this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
-                    performSnapshot(paperCanvas.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
+                    // this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
+                    //performSnapshot(paperCanvas.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
                     return;
                 }
                 item.remove();
@@ -235,13 +294,13 @@ class PaperCanvas extends React.Component {
                 // Without the callback, rasters' load function has not been called yet, and they are
                 // positioned incorrectly
                 paperCanvas.queuedImport = paperCanvas.recalibrateSize(() => {
-                    paperCanvas.props.updateViewBounds(paper.view.matrix);
+                    // paperCanvas.props.updateViewBounds(paper.view.matrix);
                     paperCanvas.initializeSvg(item, rotationCenterX, rotationCenterY, viewBox);
                 });
             }
         });
     }
-    initializeSvg (item, rotationCenterX, rotationCenterY, viewBox) {
+    initializeSvg(item, rotationCenterX, rotationCenterY, viewBox) {
         if (this.queuedImport) this.queuedImport = null;
         const itemWidth = item.bounds.width;
         const itemHeight = item.bounds.height;
@@ -271,16 +330,19 @@ class PaperCanvas extends React.Component {
 
         // Reduce single item nested in groups
         if (item instanceof paper.Group && item.children.length === 1) {
-            item = item.reduce();
+            item = item.reduce(undefined);
         }
 
         ensureClockwise(item);
+
+        // @ts-ignore
         scaleWithStrokes(item, 2, new paper.Point()); // Import at 2x
 
         // Apply rotation center
         if (typeof rotationCenterX !== 'undefined' && typeof rotationCenterY !== 'undefined') {
             let rotationPoint = new paper.Point(rotationCenterX, rotationCenterY);
             if (viewBox && viewBox.length >= 2 && !isNaN(viewBox[0]) && !isNaN(viewBox[1])) {
+                // @ts-ignore
                 rotationPoint = rotationPoint.subtract(viewBox[0], viewBox[1]);
             }
             item.translate(CENTER.subtract(rotationPoint.multiply(2)));
@@ -297,20 +359,21 @@ class PaperCanvas extends React.Component {
                     child.remove();
                 }
             }
+            // @ts-ignore
             ungroupItems([item]);
         }
 
-        performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
+        //performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
         this.maybeZoomToFit();
     }
-    onViewResize () {
+    onViewResize() {
         setWorkspaceBounds(true /* clipEmpty */);
         clampViewBounds();
         // Fix incorrect paper canvas scale on browser zoom reset
         this.recalibrateSize();
-        this.props.updateViewBounds(paper.view.matrix);
+        //this.props.updateViewBounds(paper.view.matrix);
     }
-    recalibrateSize (callback) {
+    recalibrateSize(callback?: any) {
         // Sets the size that Paper thinks the canvas is to the size the canvas element actually is.
         // When these are out of sync, the mouse events in the paint editor don't line up correctly.
         return window.setTimeout(() => {
@@ -320,95 +383,30 @@ class PaperCanvas extends React.Component {
             if (!paper.view) return;
             // Prevent blurriness caused if the "CSS size" of the element is a float--
             // setting canvas dimensions to floats floors them, but we need to round instead
+            // @ts-ignore
             const elemSize = paper.DomElement.getSize(paper.view.element);
             elemSize.width = Math.round(elemSize.width);
             elemSize.height = Math.round(elemSize.height);
+            // @ts-ignore
             paper.view.setViewSize(elemSize);
 
             if (callback) callback();
         }, 0);
     }
-    setCanvas (canvas) {
+    setCanvas(canvas) {
         this.canvas = canvas;
-        if (this.props.canvasRef) {
-            this.props.canvasRef(canvas);
-        }
+        //if (this.props.canvasRef) {
+        //    this.props.canvasRef(canvas);
+        //}
     }
-    render () {
+    render() {
         return (
             <canvas
-                className={styles.paperCanvas}
+                className='paper-canvas'
                 ref={this.setCanvas}
-                style={{cursor: this.props.cursor}}
-                resize="true"
+                style={{ cursor: this.props.cursor }}
             />
         );
     }
 }
 
-PaperCanvas.propTypes = {
-    canvasRef: PropTypes.func,
-    changeFormat: PropTypes.func.isRequired,
-    clearHoveredItem: PropTypes.func.isRequired,
-    clearPasteOffset: PropTypes.func.isRequired,
-    clearSelectedItems: PropTypes.func.isRequired,
-    clearUndo: PropTypes.func.isRequired,
-    cursor: PropTypes.string,
-    format: PropTypes.oneOf(Object.keys(Formats)),
-    image: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.instanceOf(HTMLImageElement)
-    ]),
-    imageFormat: PropTypes.string, // The incoming image's data format, used during import. The user could switch this.
-    imageId: PropTypes.string,
-    rotationCenterX: PropTypes.number,
-    rotationCenterY: PropTypes.number,
-    saveZoomLevel: PropTypes.func.isRequired,
-    setZoomLevelId: PropTypes.func.isRequired,
-    undoSnapshot: PropTypes.func.isRequired,
-    updateViewBounds: PropTypes.func.isRequired,
-    zoomLevelId: PropTypes.string,
-    zoomLevels: PropTypes.shape({
-        currentZoomLevelId: PropTypes.string
-    })
-};
-const mapStateToProps = state => ({
-    mode: state.scratchPaint.mode,
-    cursor: state.scratchPaint.cursor,
-    format: state.scratchPaint.format,
-    zoomLevels: state.scratchPaint.zoomLevels
-});
-const mapDispatchToProps = dispatch => ({
-    undoSnapshot: snapshot => {
-        dispatch(undoSnapshot(snapshot));
-    },
-    clearUndo: () => {
-        dispatch(clearUndoState());
-    },
-    clearSelectedItems: () => {
-        dispatch(clearSelectedItems());
-    },
-    clearHoveredItem: () => {
-        dispatch(clearHoveredItem());
-    },
-    clearPasteOffset: () => {
-        dispatch(clearPasteOffset());
-    },
-    changeFormat: format => {
-        dispatch(changeFormat(format));
-    },
-    saveZoomLevel: () => {
-        dispatch(saveZoomLevel(paper.view.matrix));
-    },
-    setZoomLevelId: zoomLevelId => {
-        dispatch(setZoomLevelId(zoomLevelId));
-    },
-    updateViewBounds: matrix => {
-        dispatch(updateViewBounds(matrix));
-    }
-});
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(PaperCanvas);

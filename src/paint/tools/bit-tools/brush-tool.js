@@ -1,6 +1,6 @@
-import paper from '@scratch/paper';
-import {getRaster, getGuideLayer} from '../layer';
-import {forEachLinePoint, getBrushMark} from '../bitmap';
+import paper from 'paper';
+import { getRaster, getGuideLayer } from '../layer';
+import { forEachLinePoint, getBrushMark } from '../bitmap';
 
 /**
  * Tool for drawing with the bitmap brush and eraser
@@ -10,7 +10,7 @@ class BrushTool extends paper.Tool {
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      * @param {boolean} isEraser True if brush should erase
      */
-    constructor (onUpdateImage, isEraser) {
+    constructor(onUpdateImage, isEraser) {
         super();
         this.onUpdateImage = onUpdateImage;
         this.isEraser = isEraser;
@@ -27,17 +27,17 @@ class BrushTool extends paper.Tool {
         this.lastPoint = null;
         this.cursorPreview = null;
     }
-    setColor (color) {
+    setColor(color) {
         this.color = color;
         this.tmpCanvas = getBrushMark(this.size, this.color, this.isEraser || !this.color);
     }
-    setBrushSize (size) {
+    setBrushSize(size) {
         // For performance, make sure this is an integer
         this.size = Math.max(1, ~~size);
         this.tmpCanvas = getBrushMark(this.size, this.color, this.isEraser || !this.color);
     }
     // Draw a brush mark at the given point
-    draw (x, y) {
+    draw(x, y) {
         const roundedUpRadius = Math.ceil(this.size / 2);
         const context = getRaster().getContext('2d');
         if (this.isEraser || !this.color) {
@@ -48,7 +48,7 @@ class BrushTool extends paper.Tool {
             context.globalCompositeOperation = 'source-over';
         }
     }
-    updateCursorIfNeeded () {
+    updateCursorIfNeeded() {
         if (!this.size) {
             return;
         }
@@ -74,11 +74,11 @@ class BrushTool extends paper.Tool {
         this.lastSize = this.size;
         this.lastColor = this.color;
     }
-    handleMouseMove (event) {
+    handleMouseMove(event) {
         this.updateCursorIfNeeded();
         this.cursorPreview.position = new paper.Point(~~event.point.x, ~~event.point.y);
     }
-    handleMouseDown (event) {
+    handleMouseDown(event) {
         if (event.event.button > 0) return; // only first mouse button
         this.active = true;
 
@@ -89,13 +89,13 @@ class BrushTool extends paper.Tool {
         this.draw(event.point.x, event.point.y);
         this.lastPoint = event.point;
     }
-    handleMouseDrag (event) {
+    handleMouseDrag(event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         forEachLinePoint(this.lastPoint, event.point, this.draw.bind(this));
         this.lastPoint = event.point;
     }
-    handleMouseUp (event) {
+    handleMouseUp(event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         forEachLinePoint(this.lastPoint, event.point, this.draw.bind(this));
@@ -107,7 +107,7 @@ class BrushTool extends paper.Tool {
         this.updateCursorIfNeeded();
         this.cursorPreview.position = new paper.Point(~~event.point.x, ~~event.point.y);
     }
-    deactivateTool () {
+    deactivateTool() {
         this.active = false;
         this.tmpCanvas = null;
         if (this.cursorPreview) {

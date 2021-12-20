@@ -1,11 +1,11 @@
-import paper from '@scratch/paper';
-import {createCanvas, getRaster, getBackgroundGuideLayer} from '../layer';
+import paper from 'paper';
+import { createCanvas, getRaster, getBackgroundGuideLayer } from '../layer';
 
 const LOUPE_RADIUS = 20;
 const ZOOM_SCALE = 3;
 
 class EyeDropperTool extends paper.Tool {
-    constructor (canvas, width, height, pixelRatio, zoom, offsetX, offsetY, isBitmap) {
+    constructor(canvas, width, height, pixelRatio, zoom, offsetX, offsetY, isBitmap) {
         super();
 
         const layer = isBitmap ? getRaster().layer : paper.project.activeLayer;
@@ -48,7 +48,7 @@ class EyeDropperTool extends paper.Tool {
         this.pickY = -1;
         this.hideLoupe = true;
     }
-    handleMouseMove (event) {
+    handleMouseMove(event) {
         // Set the pickX/Y for the color picker loop to pick up
         this.pickX = (event.point.x - this.offsetX) * this.zoom * this.pixelRatio;
         this.pickY = (event.point.y - this.offsetY) * this.zoom * this.pixelRatio;
@@ -59,13 +59,13 @@ class EyeDropperTool extends paper.Tool {
             this.pickY > this.height ||
             this.pickY < 0;
     }
-    handleMouseDown (event) {
+    handleMouseDown(event) {
         // Nothing special on mousedown, just send to move handler which will show the loupe,
         // and the mouse up handler submits the color. This allows touch to drag
         // with the loupe visible to find the correct color
         this.handleMouseMove(event);
     }
-    handleMouseUp () {
+    handleMouseUp() {
         if (!this.hideLoupe) {
             const colorInfo = this.getColorInfo(this.pickX, this.pickY, this.hideLoupe);
             if (!colorInfo) return;
@@ -87,7 +87,7 @@ class EyeDropperTool extends paper.Tool {
             this.colorString = `#${componentToString(r)}${componentToString(g)}${componentToString(b)}`;
         }
     }
-    getColorInfo (x, y, hideLoupe) {
+    getColorInfo(x, y, hideLoupe) {
         const artX = x / this.pixelRatio;
         const artY = y / this.pixelRatio;
         if (!this.bufferLoaded) return null;

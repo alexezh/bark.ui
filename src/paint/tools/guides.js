@@ -1,6 +1,6 @@
-import paper from '@scratch/paper';
-import {getGuideLayer} from './layer';
-import {getAllRootItems} from './selection';
+import paper from 'paper';
+import { getGuideLayer } from './layer';
+import { getAllRootItems } from './selection';
 
 const GUIDE_BLUE = '#009dec';
 const GUIDE_GREY = '#aaaaaa';

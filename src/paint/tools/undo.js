@@ -1,9 +1,9 @@
 // undo functionality
 // modifed from https://github.com/memononen/stylii
-import paper from '@scratch/paper';
-import {hideGuideLayers, showGuideLayers, getRaster} from '../helper/layer';
-import {getSelectedLeafItems} from '../helper/selection';
-import Formats, {isVector, isBitmap} from '../lib/format';
+import paper from 'paper';
+import { hideGuideLayers, showGuideLayers, getRaster } from '../helper/layer';
+import { getSelectedLeafItems } from '../helper/selection';
+import Formats, { isVector, isBitmap } from '../lib/format';
 import log from '../log/log';
 
 /**
@@ -17,7 +17,7 @@ const performSnapshot = function (dispatchPerformSnapshot, format) {
     }
     const guideLayers = hideGuideLayers();
     dispatchPerformSnapshot({
-        json: paper.project.exportJSON({asString: false}),
+        json: paper.project.exportJSON({ asString: false }),
         paintEditorFormat: format
     });
     showGuideLayers(guideLayers);

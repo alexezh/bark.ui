@@ -1,12 +1,12 @@
-import paper from '@scratch/paper';
-import Modes, {BitmapModes} from '../../lib/modes';
-import {isGroup} from '../group';
-import {isCompoundPathItem, getRootItem} from '../item';
-import {checkPointsClose, snapDeltaToAngle} from '../math';
-import {getActionBounds, CENTER} from '../view';
-import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection}
+import paper from 'paper';
+import Modes, { BitmapModes } from '../../lib/modes';
+import { isGroup } from '../group';
+import { isCompoundPathItem, getRootItem } from '../item';
+import { checkPointsClose, snapDeltaToAngle } from '../math';
+import { getActionBounds, CENTER } from '../view';
+import { clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection }
     from '../selection';
-import {getDragCrosshairLayer, CROSSHAIR_FULL_OPACITY} from '../layer';
+import { getDragCrosshairLayer, CROSSHAIR_FULL_OPACITY } from '../layer';
 
 /** Snap to align selection center to rotation center within this distance */
 const SNAPPING_THRESHOLD = 4;
@@ -23,7 +23,7 @@ class MoveTool {
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      * @param {?function} switchToTextTool A callback to call to switch to the text tool
      */
-    constructor (mode, setSelectedItems, clearSelectedItems, onUpdateImage, switchToTextTool) {
+    constructor(mode, setSelectedItems, clearSelectedItems, onUpdateImage, switchToTextTool) {
         this.mode = mode;
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
@@ -44,7 +44,7 @@ class MoveTool {
      * @param {?boolean} hitProperties.subselect True if we allow selection of subgroups, false if we should
      *     select the whole group.
      */
-    onMouseDown (hitProperties) {
+    onMouseDown(hitProperties) {
         let item = hitProperties.hitResult.item;
         if (!hitProperties.subselect) {
             const root = getRootItem(hitProperties.hitResult.item);
@@ -95,7 +95,7 @@ class MoveTool {
 
         this.firstDrag = true;
     }
-    setBoundsPath (boundsPath) {
+    setBoundsPath(boundsPath) {
         this.boundsPath = boundsPath;
     }
     /**
@@ -108,7 +108,7 @@ class MoveTool {
      *     control points should be selected. False if the item should be selected but not its
      *     points. Only relevant when subselect is true.
      */
-    _select (item, state, subselect, fullySelect) {
+    _select(item, state, subselect, fullySelect) {
         if (subselect) {
             item.selected = false;
             if (fullySelect) {
@@ -121,13 +121,13 @@ class MoveTool {
         }
         this.setSelectedItems();
     }
-    onMouseDrag (event) {
+    onMouseDrag(event) {
         const point = event.point;
         const actionBounds = getActionBounds(this.mode in BitmapModes);
 
         point.x = Math.max(actionBounds.left, Math.min(point.x, actionBounds.right));
         point.y = Math.max(actionBounds.top, Math.min(point.y, actionBounds.bottom));
-        
+
         const dragVector = point.subtract(event.downPoint);
         let snapVector;
 
@@ -167,7 +167,7 @@ class MoveTool {
                 bounds = item.bounds;
             }
         }
-        
+
         if (this.firstDrag) {
             // Show the center crosshair above the selected item while dragging.
             getDragCrosshairLayer().visible = true;
@@ -200,7 +200,7 @@ class MoveTool {
         } // else the rotation center is within selection bounds, always show drag crosshair at full opacity
         getDragCrosshairLayer().opacity = CROSSHAIR_FULL_OPACITY * opacityMultiplier;
     }
-    onMouseUp () {
+    onMouseUp() {
         this.firstDrag = false;
         let moved = false;
         // resetting the items origin point for the next usage

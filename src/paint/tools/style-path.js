@@ -1,10 +1,10 @@
-import paper from '@scratch/paper';
-import {getSelectedLeafItems, getItems} from './selection';
-import {isPointTextItem} from './item';
-import {isGroup} from './group';
+import paper from 'paper';
+import { getSelectedLeafItems, getItems } from './selection';
+import { isPointTextItem } from './item';
+import { isGroup } from './group';
 import GradientTypes from '../lib/gradient-types';
-import {DEFAULT_COLOR} from '../reducers/fill-style';
-import {isCompoundPathChild} from '../helper/compound-path';
+import { DEFAULT_COLOR } from '../reducers/fill-style';
+import { isCompoundPathChild } from '../helper/compound-path';
 import log from '../log/log';
 
 const MIXED = 'scratch-paint/style-path/mixed';
@@ -15,7 +15,7 @@ const _colorMatch = function (itemColor, incomingColor) {
     if (itemColor && itemColor.type === 'gradient') return false;
     // Either both are null or both are the same color when converted to CSS.
     return (!itemColor && !incomingColor) ||
-            (itemColor && incomingColor && itemColor.toCSS() === new paper.Color(incomingColor).toCSS());
+        (itemColor && incomingColor && itemColor.toCSS() === new paper.Color(incomingColor).toCSS());
 };
 
 // Selected items and currently active text edit items respond to color changes.
@@ -101,41 +101,41 @@ const createGradientObject = function (color1, color2, gradientType, bounds, rad
     let start;
     let end;
     switch (gradientType) {
-    case GradientTypes.HORIZONTAL: {
-        // clone these points so that adding/subtracting doesn't affect actual bounds
-        start = bounds.leftCenter.clone();
-        end = bounds.rightCenter.clone();
+        case GradientTypes.HORIZONTAL: {
+            // clone these points so that adding/subtracting doesn't affect actual bounds
+            start = bounds.leftCenter.clone();
+            end = bounds.rightCenter.clone();
 
-        const gradientSize = Math.abs(end.x - start.x);
-        if (gradientSize < minSize) {
-            const sizeDiff = (minSize - gradientSize) / 2;
-            end.x += sizeDiff;
-            start.x -= sizeDiff;
+            const gradientSize = Math.abs(end.x - start.x);
+            if (gradientSize < minSize) {
+                const sizeDiff = (minSize - gradientSize) / 2;
+                end.x += sizeDiff;
+                start.x -= sizeDiff;
+            }
+            break;
         }
-        break;
-    }
-    case GradientTypes.VERTICAL: {
-        // clone these points so that adding/subtracting doesn't affect actual bounds
-        start = bounds.topCenter.clone();
-        end = bounds.bottomCenter.clone();
+        case GradientTypes.VERTICAL: {
+            // clone these points so that adding/subtracting doesn't affect actual bounds
+            start = bounds.topCenter.clone();
+            end = bounds.bottomCenter.clone();
 
-        const gradientSize = Math.abs(end.y - start.y);
-        if (gradientSize < minSize) {
-            const sizeDiff = (minSize - gradientSize) / 2;
-            end.y += sizeDiff;
-            start.y -= sizeDiff;
+            const gradientSize = Math.abs(end.y - start.y);
+            if (gradientSize < minSize) {
+                const sizeDiff = (minSize - gradientSize) / 2;
+                end.y += sizeDiff;
+                start.y -= sizeDiff;
+            }
+            break;
         }
-        break;
-    }
 
-    case GradientTypes.RADIAL: {
-        const halfLongestDimension = Math.max(bounds.width, bounds.height) / 2;
-        start = radialCenter || bounds.center;
-        end = start.add(new paper.Point(
-            Math.max(halfLongestDimension, minSize / 2),
-            0));
-        break;
-    }
+        case GradientTypes.RADIAL: {
+            const halfLongestDimension = Math.max(bounds.width, bounds.height) / 2;
+            start = radialCenter || bounds.center;
+            end = start.add(new paper.Point(
+                Math.max(halfLongestDimension, minSize / 2),
+                0));
+            break;
+        }
     }
     return {
         gradient: {
@@ -176,7 +176,7 @@ const applyColorToSelection = function (
         const itemColor = item[itemColorProp];
 
         if (isSolidGradient || !itemColor || !itemColor.gradient ||
-                !itemColor.gradient.stops.length === 2) {
+            !itemColor.gradient.stops.length === 2) {
             // Applying a solid color
             if (!_colorMatch(itemColor, colorString)) {
                 changed = true;
@@ -203,7 +203,7 @@ const applyColorToSelection = function (
                 colors[otherIndex] = itemColor.gradient.stops[otherIndex].color.toCSS();
             }
             // There seems to be a bug where setting colors on stops doesn't always update the view, so set gradient.
-            itemColor.gradient = {stops: colors, radial: itemColor.gradient.radial};
+            itemColor.gradient = { stops: colors, radial: itemColor.gradient.radial };
         }
     }
     return changed;
@@ -236,7 +236,7 @@ const swapColorsInSelection = function (applyToStroke, textEditTargetId) {
                 itemColor.gradient.stops[0].color.toCSS()
             ];
             // There seems to be a bug where setting colors on stops doesn't always update the view, so set gradient.
-            itemColor.gradient = {stops: colors, radial: itemColor.gradient.radial};
+            itemColor.gradient = { stops: colors, radial: itemColor.gradient.radial };
         }
     }
     return changed;
@@ -304,8 +304,8 @@ const applyGradientTypeToSelection = function (gradientType, applyToStroke, text
         if (!hasDisplayGradient) {
             const noColorOriginally = !itemColor ||
                 (itemColor.gradient &&
-                itemColor.gradient.stops &&
-                itemColor.gradient.stops[0].color.alpha === 0);
+                    itemColor.gradient.stops &&
+                    itemColor.gradient.stops[0].color.alpha === 0);
             const addingStroke = applyToStroke && item.strokeWidth === 0;
             const hasGradientNow = itemColor1 || itemColor2;
             if ((noColorOriginally || addingStroke) && hasGradientNow) {
@@ -329,23 +329,23 @@ const applyGradientTypeToSelection = function (gradientType, applyToStroke, text
         let gradientTypeDiffers = false;
         // If the item's gradient type differs from the gradient type we want to apply, then we change it
         switch (gradientType) {
-        case GradientTypes.RADIAL: {
-            const hasRadialGradient = hasDisplayGradient && itemColor.gradient.radial;
-            gradientTypeDiffers = !hasRadialGradient;
-            break;
-        }
-        case GradientTypes.HORIZONTAL: {
-            const hasHorizontalGradient = hasDisplayGradient && !itemColor.gradient.radial &&
-                Math.abs(itemColor.origin.y - itemColor.destination.y) < 1e-8;
-            gradientTypeDiffers = !hasHorizontalGradient;
-            break;
-        }
-        case GradientTypes.VERTICAL: {
-            const hasVerticalGradient = hasDisplayGradient && !itemColor.gradient.radial &&
-                Math.abs(itemColor.origin.x - itemColor.destination.x) < 1e-8;
-            gradientTypeDiffers = !hasVerticalGradient;
-            break;
-        }
+            case GradientTypes.RADIAL: {
+                const hasRadialGradient = hasDisplayGradient && itemColor.gradient.radial;
+                gradientTypeDiffers = !hasRadialGradient;
+                break;
+            }
+            case GradientTypes.HORIZONTAL: {
+                const hasHorizontalGradient = hasDisplayGradient && !itemColor.gradient.radial &&
+                    Math.abs(itemColor.origin.y - itemColor.destination.y) < 1e-8;
+                gradientTypeDiffers = !hasHorizontalGradient;
+                break;
+            }
+            case GradientTypes.VERTICAL: {
+                const hasVerticalGradient = hasDisplayGradient && !itemColor.gradient.radial &&
+                    Math.abs(itemColor.origin.x - itemColor.destination.x) < 1e-8;
+                gradientTypeDiffers = !hasVerticalGradient;
+                break;
+            }
         }
 
         if (gradientTypeDiffers) {
@@ -452,7 +452,7 @@ const getColorsFromSelection = function (selectedItems, bitmapMode) {
                 if (isPointTextItem(item) && item.fillColor.alpha === 0) {
                     itemFillColorString = null;
                 } else if (item.fillColor.type === 'gradient') {
-                    const {primary, secondary, gradientType} = _colorStateFromGradient(item.fillColor.gradient);
+                    const { primary, secondary, gradientType } = _colorStateFromGradient(item.fillColor.gradient);
                     itemFillColorString = primary;
                     itemFillColor2String = secondary;
                     itemFillGradientType = gradientType;
@@ -465,7 +465,7 @@ const getColorsFromSelection = function (selectedItems, bitmapMode) {
             }
             if (item.strokeColor) {
                 if (item.strokeColor.type === 'gradient') {
-                    const {primary, secondary, gradientType} = _colorStateFromGradient(item.strokeColor.gradient);
+                    const { primary, secondary, gradientType } = _colorStateFromGradient(item.strokeColor.gradient);
 
                     let strokeColorString = primary;
                     const strokeColor2String = secondary;
@@ -622,7 +622,7 @@ const styleShape = function (path, options) {
         } else if (options[colorKey].gradientType === GradientTypes.SOLID) {
             path[colorKey] = options[colorKey].primary;
         } else {
-            const {primary, secondary, gradientType} = options[colorKey];
+            const { primary, secondary, gradientType } = options[colorKey];
             path[colorKey] = createGradientObject(
                 primary,
                 secondary,

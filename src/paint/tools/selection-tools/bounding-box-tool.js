@@ -1,9 +1,9 @@
-import paper from '@scratch/paper';
+import paper from 'paper';
 import keyMirror from 'keymirror';
 
-import {getSelectedRootItems} from '../selection';
-import {getGuideColor, removeBoundsPath, removeBoundsHandles} from '../guides';
-import {getGuideLayer, setGuideItem} from '../layer';
+import { getSelectedRootItems } from '../selection';
+import { getGuideColor, removeBoundsPath, removeBoundsHandles } from '../guides';
+import { getGuideLayer, setGuideItem } from '../layer';
 
 import Cursors from '../../lib/cursors';
 import ScaleTool from './scale-tool';
@@ -41,7 +41,7 @@ class BoundingBoxTool {
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      * @param {?function} switchToTextTool A callback to call to switch to the text tool
      */
-    constructor (mode, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage, switchToTextTool) {
+    constructor(mode, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage, switchToTextTool) {
         this.dispatchSetCursor = setCursor;
         this.onUpdateImage = onUpdateImage;
         this.mode = null;
@@ -60,7 +60,7 @@ class BoundingBoxTool {
      * Should be called if the selection changes to update the bounds of the bounding box.
      * @param {?Array<paper.Item>} selectedItems Array of selected items.
      */
-    onSelectionChanged (selectedItems) {
+    onSelectionChanged(selectedItems) {
         if (selectedItems && selectedItems.length) {
             this.setSelectionBounds();
         } else {
@@ -77,9 +77,9 @@ class BoundingBoxTool {
      *     anything editable
      * @return {boolean} True if there was a hit, false otherwise
      */
-    onMouseDown (event, clone, multiselect, doubleClicked, hitOptions) {
+    onMouseDown(event, clone, multiselect, doubleClicked, hitOptions) {
         if (event.event.button > 0) return; // only first mouse button
-        const {hitResult, mode} = this._determineMode(event, multiselect, hitOptions);
+        const { hitResult, mode } = this._determineMode(event, multiselect, hitOptions);
         if (!hitResult) {
             if (!multiselect) {
                 this.removeBoundsPath();
@@ -109,11 +109,11 @@ class BoundingBoxTool {
 
         return true;
     }
-    onMouseMove (event, hitOptions) {
+    onMouseMove(event, hitOptions) {
         this._updateCursor(event, hitOptions);
     }
-    _updateCursor (event, hitOptions) {
-        const {mode, hitResult} = this._determineMode(event, false, hitOptions);
+    _updateCursor(event, hitOptions) {
+        const { mode, hitResult } = this._determineMode(event, false, hitOptions);
         if (hitResult) {
             if (mode === BoundingBoxModes.MOVE) {
                 this.setCursor(Cursors.DEFAULT);
@@ -138,11 +138,11 @@ class BoundingBoxTool {
             this.setCursor(Cursors.DEFAULT);
         }
     }
-    _impreciseEqual (a, b) {
+    _impreciseEqual(a, b) {
         // This is the same math paper.js uses to check if two numbers are "equal".
         return Math.abs(a - b) < 1e-8;
     }
-    _determineMode (event, multiselect, hitOptions) {
+    _determineMode(event, multiselect, hitOptions) {
         const hitResults = paper.project.hitTestAll(event.point, hitOptions);
 
         let mode;
@@ -163,9 +163,9 @@ class BoundingBoxTool {
             mode = BoundingBoxModes.MOVE;
         }
 
-        return {mode, hitResult};
+        return { mode, hitResult };
     }
-    onMouseDrag (event) {
+    onMouseDrag(event) {
         if (event.event.button > 0 || !this.mode) return; // only first mouse button
         this._modeMap[this.mode].onMouseDrag(event);
 
@@ -175,7 +175,7 @@ class BoundingBoxTool {
             this.setCursor(Cursors.GRABBING);
         }
     }
-    onMouseUp (event, hitOptions) {
+    onMouseUp(event, hitOptions) {
         if (event.event.button > 0 || !this.mode) return; // only first mouse button
         this._modeMap[this.mode].onMouseUp(event);
 
@@ -184,7 +184,7 @@ class BoundingBoxTool {
         this.mode = null;
         this._updateCursor(event, hitOptions);
     }
-    setSelectionBounds () {
+    setSelectionBounds() {
         this.removeBoundsPath();
 
         const items = getSelectedRootItems();
@@ -315,24 +315,24 @@ class BoundingBoxTool {
         // Remove the template
         boundsScaleHandle.remove();
     }
-    removeBoundsPath () {
+    removeBoundsPath() {
         removeBoundsPath();
         this.boundsPath = null;
         this.boundsRect = null;
         this.boundsScaleHandles.length = 0;
         this.boundsRotHandles.length = 0;
     }
-    removeBoundsHandles () {
+    removeBoundsHandles() {
         removeBoundsHandles();
         this.boundsScaleHandles.length = 0;
         this.boundsRotHandles.length = 0;
     }
-    deactivateTool () {
+    deactivateTool() {
         this.removeBoundsPath();
         this.setCursor(Cursors.DEFAULT);
     }
 
-    setCursor (cursorString) {
+    setCursor(cursorString) {
         if (this._currentCursor !== cursorString) {
             this.dispatchSetCursor(cursorString);
             this._currentCursor = cursorString;

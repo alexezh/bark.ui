@@ -1,10 +1,10 @@
-import paper from '@scratch/paper';
+import paper from 'paper';
 import Modes from '../lib/modes';
 
-import {getItemsGroup, isGroup} from './group';
-import {getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem} from './item';
-import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compound-path';
-import {sortItemsByZIndex} from './math';
+import { getItemsGroup, isGroup } from './group';
+import { getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem } from './item';
+import { getItemsCompoundPath, isCompoundPath, isCompoundPathChild } from './compound-path';
+import { sortItemsByZIndex } from './math';
 
 /**
  * Wrapper for paper.project.getItems that excludes our helper items
@@ -20,7 +20,7 @@ const getItems = function (options) {
             !(item.data && item.data.isHelperItem) &&
             (!options.match || options.match(item));
     };
-    const newOptions = {...options, match: newMatcher};
+    const newOptions = { ...options, match: newMatcher };
     return paper.project.getItems(newOptions);
 };
 
@@ -98,7 +98,7 @@ const _setGroupSelection = function (root, selected, fullySelected) {
 const setItemSelection = function (item, state, fullySelected) {
     const parentGroup = getItemsGroup(item);
     const itemsCompoundPath = getItemsCompoundPath(item);
-    
+
     // if selection is in a group, select group
     if (parentGroup) {
         // do it recursive
@@ -111,14 +111,14 @@ const setItemSelection = function (item, state, fullySelected) {
         }
         _setGroupSelection(item, state, fullySelected);
     }
-    
+
 };
 
 /** @return {boolean} true if anything was selected */
 const selectAllItems = function () {
     const items = getAllSelectableRootItems();
     if (items.length === 0) return false;
-    
+
     for (let i = 0; i < items.length; i++) {
         setItemSelection(items[i], true);
     }
@@ -129,7 +129,7 @@ const selectAllItems = function () {
 const selectAllSegments = function () {
     const items = getAllSelectableRootItems();
     if (items.length === 0) return false;
-    
+
     for (let i = 0; i < items.length; i++) {
         selectItemSegments(items[i], true);
     }
@@ -225,7 +225,7 @@ const _deleteItemSelection = function (items, onUpdateImage) {
 // Return true if anything was removed
 const _removeSelectedSegments = function (items, onUpdateImage) {
     const segmentsToRemove = [];
-    
+
     for (let i = 0; i < items.length; i++) {
         if (!items[i].segments) continue;
         const segments = items[i].segments;
@@ -236,7 +236,7 @@ const _removeSelectedSegments = function (items, onUpdateImage) {
             }
         }
     }
-    
+
     let removedSegments = false;
     for (let i = 0; i < segmentsToRemove.length; i++) {
         const seg = segmentsToRemove[i];
@@ -295,7 +295,7 @@ const _checkBoundsItem = function (selectionRect, item, event) {
             }
             itemBounds.remove();
             return true;
-            
+
         }
     }
 
@@ -305,7 +305,7 @@ const _checkBoundsItem = function (selectionRect, item, event) {
 const _handleRectangularSelectionItems = function (item, event, rect, mode, root) {
     if (isPathItem(item)) {
         let segmentMode = false;
-        
+
         // first round checks for segments inside the selectionRect
         for (let j = 0; j < item.segments.length; j++) {
             const seg = item.segments[j];
@@ -373,7 +373,7 @@ const _handleRectangularSelectionItems = function (item, event, rect, mode, root
 const _rectangularSelectionGroupLoop = function (group, rect, root, event, mode) {
     for (let i = 0; i < group.children.length; i++) {
         const child = group.children[i];
-        
+
         if (isGroup(child) || isCompoundPathItem(child)) {
             _rectangularSelectionGroupLoop(child, rect, root, event, mode);
         } else {
@@ -393,7 +393,7 @@ const _rectangularSelectionGroupLoop = function (group, rect, root, event, mode)
  */
 const processRectangularSelection = function (event, rect, mode) {
     const allItems = getAllSelectableRootItems();
-    
+
     for (let i = 0; i < allItems.length; i++) {
         const item = allItems[i];
         if (mode === Modes.RESHAPE && isPGTextItem(getRootItem(item))) {

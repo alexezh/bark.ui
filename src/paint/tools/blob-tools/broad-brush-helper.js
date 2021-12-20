@@ -1,6 +1,6 @@
 // Broadbrush based on http://paperjs.org/tutorials/interaction/working-with-mouse-vectors/
-import paper from '@scratch/paper';
-import {styleBlob} from '../../helper/style-path';
+import paper from 'paper';
+import { styleBlob } from '../../helper/style-path';
 import log from '../../log/log';
 
 /**
@@ -14,7 +14,7 @@ import log from '../../log/log';
  * @param {!Tool} tool paper.js mouse object
  */
 class BroadBrushHelper {
-    constructor () {
+    constructor() {
         // Direction vector of the last mouse move
         this.lastVec = null;
         // End point of the last mouse move
@@ -31,7 +31,7 @@ class BroadBrushHelper {
         this.endCaps = [];
     }
 
-    onBroadMouseDown (event, tool, options) {
+    onBroadMouseDown(event, tool, options) {
         this.steps = 0;
         this.smoothed = 0;
         this.lastVec = null;
@@ -47,7 +47,7 @@ class BroadBrushHelper {
         this.lastPoint = event.point;
     }
 
-    onBroadMouseDrag (event, tool, options) {
+    onBroadMouseDrag(event, tool, options) {
         this.steps++;
         const step = (event.delta).normalize(options.brushSize / 2);
 
@@ -131,7 +131,7 @@ class BroadBrushHelper {
      *     Note that 1 is about the lowest this algorithm can do (the result is about the same when 1 is
      *     passed in as when 0 is passed in)
      */
-    simplify (threshold) {
+    simplify(threshold) {
         // Length of the current path
         const length = this.finalPath.segments.length;
         // Number of new points added to front and end of path since last simplify
@@ -182,14 +182,14 @@ class BroadBrushHelper {
      * @param {paper.Path} path2 to merge
      * @return {paper.Path} merged path. Original paths 1 and 2 will be removed from the view.
      */
-    union (path1, path2) {
+    union(path1, path2) {
         const temp = path1.unite(path2);
         path1.remove();
         path2.remove();
         return temp;
     }
 
-    onBroadMouseUp (event, tool, options) {
+    onBroadMouseUp(event, tool, options) {
         // If there was only a single click, draw a circle.
         if (this.steps === 0) {
             this.endCaps.length = 0;
@@ -228,7 +228,7 @@ class BroadBrushHelper {
             this.finalPath
                 .resolveCrossings()
                 .reorient(true /* nonZero */, true /* clockwise */)
-                .reduce({simplify: true});
+                .reduce({ simplify: true });
         if (newPath !== this.finalPath) {
             newPath.copyAttributes(this.finalPath);
             newPath.fillColor = this.finalPath.fillColor;

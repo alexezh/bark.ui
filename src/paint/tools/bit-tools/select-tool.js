@@ -1,8 +1,8 @@
-import paper from '@scratch/paper';
+import paper from 'paper';
 import Modes from '../../lib/modes';
 
-import {getRaster} from '../layer';
-import {commitSelectionToBitmap} from '../bitmap';
+import { getRaster } from '../layer';
+import { commitSelectionToBitmap } from '../bitmap';
 
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
 import NudgeTool from '../selection-tools/nudge-tool';
@@ -17,7 +17,7 @@ import SelectionBoxTool from '../selection-tools/selection-box-tool';
  */
 class SelectTool extends paper.Tool {
     /** The distance within which mouse events count as a hit against an item */
-    static get TOLERANCE () {
+    static get TOLERANCE() {
         return 2;
     }
     /**
@@ -26,7 +26,7 @@ class SelectTool extends paper.Tool {
      * @param {function} setCursor Callback to set the visible mouse cursor
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      */
-    constructor (setSelectedItems, clearSelectedItems, setCursor, onUpdateImage) {
+    constructor(setSelectedItems, clearSelectedItems, setCursor, onUpdateImage) {
         super();
         this.onUpdateImage = onUpdateImage;
         this.boundingBoxTool = new BoundingBoxTool(
@@ -57,14 +57,14 @@ class SelectTool extends paper.Tool {
      * Should be called if the selection changes to update the bounds of the bounding box.
      * @param {Array<paper.Item>} selectedItems Array of selected items.
      */
-    onSelectionChanged (selectedItems) {
+    onSelectionChanged(selectedItems) {
         this.boundingBoxTool.onSelectionChanged(selectedItems);
         if (this.selection && this.selection.parent && !this.selection.selected) {
             // Selection got deselected
             this.commitSelection();
         }
         if ((!this.selection || !this.selection.parent) &&
-                selectedItems && selectedItems.length === 1 && selectedItems[0] instanceof paper.Raster) {
+            selectedItems && selectedItems.length === 1 && selectedItems[0] instanceof paper.Raster) {
             // Track the new active selection. This may happen via undo, paste, or drag to select.
             this.selection = selectedItems[0];
         }
@@ -73,7 +73,7 @@ class SelectTool extends paper.Tool {
      * Returns the hit options to use when conducting hit tests.
      * @return {object} See paper.Item.hitTest for definition of options
      */
-    getHitOptions () {
+    getHitOptions() {
         // Tolerance needs to be scaled when the view is zoomed in in order to represent the same
         // distance for the user to move the mouse.
         return {
@@ -90,7 +90,7 @@ class SelectTool extends paper.Tool {
             }
         };
     }
-    handleMouseDown (event) {
+    handleMouseDown(event) {
         if (event.event.button > 0) return; // only first mouse button
         this.active = true;
 
@@ -108,7 +108,7 @@ class SelectTool extends paper.Tool {
             this.selectionBoxTool.onMouseDown(event.modifiers.shift);
         }
     }
-    handleMouseDrag (event) {
+    handleMouseDrag(event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.selectionBoxMode) {
@@ -117,10 +117,10 @@ class SelectTool extends paper.Tool {
             this.boundingBoxTool.onMouseDrag(event);
         }
     }
-    handleMouseMove (event) {
+    handleMouseMove(event) {
         this.boundingBoxTool.onMouseMove(event, this.getHitOptions());
     }
-    handleMouseUp (event) {
+    handleMouseUp(event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.selectionBoxMode) {
@@ -131,7 +131,7 @@ class SelectTool extends paper.Tool {
         this.selectionBoxMode = false;
         this.active = false;
     }
-    commitSelection () {
+    commitSelection() {
         if (!this.selection || !this.selection.parent) return;
 
         commitSelectionToBitmap(this.selection, getRaster());
@@ -139,7 +139,7 @@ class SelectTool extends paper.Tool {
         this.selection = null;
         this.onUpdateImage();
     }
-    deactivateTool () {
+    deactivateTool() {
         this.commitSelection();
         this.boundingBoxTool.deactivateTool();
         this.boundingBoxTool = null;

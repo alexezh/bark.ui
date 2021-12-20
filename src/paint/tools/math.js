@@ -1,4 +1,4 @@
-import paper from '@scratch/paper';
+import paper from 'paper';
 
 /** The ratio of the curve length to use for the handle length to convert squares into approximately circles. */
 const HANDLE_RATIO = 0.3902628565;
@@ -161,7 +161,7 @@ const getSquareDimensions = function (startPos, eventPoint) {
 
     const position = startPos.add(size.multiply(0.5));
 
-    return {size, position};
+    return { size, position };
 };
 
 export {
