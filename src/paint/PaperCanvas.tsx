@@ -71,7 +71,7 @@ export interface IPaperCanvasProps {
 export interface IPaperCanvasState {
 }
 
-class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> {
+export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> {
     public canvas: any;
     private shouldZoomToFit: boolean | paper.Matrix = false;
 
@@ -217,10 +217,12 @@ class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> 
                     rotationCenterY = imgElement.height / 2;
                 }
 
+                // @ts-ignore
                 getRaster().drawImage(
                     imgElement,
                     (ART_BOARD_WIDTH / 2) - rotationCenterX,
                     (ART_BOARD_HEIGHT / 2) - rotationCenterY);
+                // @ts-ignore
                 getRaster().drawImage(
                     imgElement,
                     (ART_BOARD_WIDTH / 2) - rotationCenterX,
@@ -348,6 +350,7 @@ class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> 
             item.translate(CENTER.subtract(rotationPoint.multiply(2)));
         } else {
             // Center
+            // @ts-ignore
             item.translate(CENTER.subtract(itemWidth, itemHeight));
         }
 
