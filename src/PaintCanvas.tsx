@@ -1,9 +1,13 @@
+// @ts-nocheck disabling checks for interop
+
 import * as React from 'react';
 import _ from "lodash";
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import { FONTS } from 'scratch-render-fonts';
+//import PaintEditor from './containers/paint-editor';
+//import ScratchPaintReducer from './reducers/scratch-paint-reducer';
+//import PaperCanvas from './containers/paper-canvas';
 
 import { editorState } from './EditorState';
 import { CodeFileDef, project } from './Project';
@@ -18,7 +22,8 @@ import { IntlProvider, intlReducer } from 'react-intl-redux';
 // scratch-render-fonts is a playground-only dep. Fonts are expected to be imported
 // as a peer dependency, otherwise there will be two copies of them.
 
-import { ScratchPaintReducer } from '../public/scratch-paint';
+//const PaintEditor = window['scratch-paint'].PaintEditor;
+//const ScratchPaintReducer = window['scratch-paint'].ScratchPaintReducer;
 
 const reducer = combineReducers({
   intl: intlReducer,
@@ -75,7 +80,6 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
     super(props);
 
     _.bindAll(this, [
-      'onCodeChange',
     ]);
 
     let codeFile = props.codeFile === undefined ? project.def.codeFile : props.codeFile;
@@ -90,6 +94,26 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
       <div className="Paint-canvas">
       </div>
     );
+  }
+
+  /*
+  
+        <Provider store={store}>
+          <IntlProvider>
+            <PaintEditor
+              {...this.state}
+              onUpdateName={this.handleUpdateName as any}
+              onUpdateImage={this.handleUpdateImage as any}
+            />
+          </IntlProvider>
+        </Provider>
+
+  */
+  private handleUpdateName(name) {
+    // this.setState({ name });
+  }
+
+  private handleUpdateImage(isVector, image, rotationCenterX, rotationCenterY) {
   }
 }
 
