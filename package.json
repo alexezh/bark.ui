@@ -10,6 +10,9 @@
     "@types/node": "^16.11.14",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "babel-loader": "^8.2.3",
+    "classnames": "^2.3.1",
+    "keymirror": "^0.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-modal": "^3.14.4",
@@ -28,6 +31,25 @@
       "react-app/jest"
     ]
   },
+  "devDependencies": {
+    "@scratch/paper": "^0.11.20200728195508",
+    "@types/lodash": "4.14.178",
+    "customize-cra": "^1.0.0",
+    "lodash": "^4.17.21",
+    "lodash.bindall": "^4.4.0",
+    "lodash.omit": "^4.5.0",
+    "minilog": "^3.1.0",
+    "parse-color": "^1.0.0",
+    "react-intl": "^2",
+    "react-intl-redux": "^0.7",
+    "react-popover": "^0.5.10",
+    "react-redux": "^7.2.6",
+    "react-responsive": "^9.0.0-beta.5",
+    "react-style-proptype": "^3.2.2",
+    "scratch-l10n": "^3.14.20211219031623",
+    "scratch-render-fonts": "^1.0.0-prerelease.20210401210003",
+    "typescript": "^4.5.4"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -39,15 +61,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/lodash": "4.14.178",
-    "lodash": "^4.17.21",
-    "react-intl": "^5.23.0",
-    "react-intl-redux": "^2.2.0",
-    "react-redux": "^7.2.6",
-    "scratch-l10n": "^3.14.20211219031623",
-    "scratch-render-fonts": "^1.0.0-prerelease.20210401210003",
-    "typescript": "^4.5.4"
   }
 }
