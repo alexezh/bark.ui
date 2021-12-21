@@ -2,7 +2,7 @@ import React from 'react';
 import { MIXED } from '../tools/style-path';
 import { clearSelection } from '../tools/selection';
 import BitBrushTool from '../tools/bit-tools/brush-tool';
-import { IToolSelectController } from './tool-select-base';
+import { IToolSelectCommand } from './ToolSelectButton';
 import { DEFAULT_COLOR } from '../tools/colors';
 import brushIcon from './brush.svg';
 
@@ -22,7 +22,7 @@ BitLineComponent.propTypes = {
 };
  */
 
-export default class BitBrushModeController implements IToolSelectController {
+export default class BitBrushModeCommand implements IToolSelectCommand {
     private tool: BitBrushTool | null = null;
 
     get imgSrc(): string {

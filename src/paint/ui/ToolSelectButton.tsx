@@ -2,19 +2,19 @@ import React from 'react';
 import classNames from 'classnames';
 
 import Button from './button';
-import './tool-select-base.css';
+import './ToolSelectButton.css';
 
-export interface IToolSelectComponentProps {
+export interface IToolSelectButtonProps {
     disabled: boolean;
     isSelected: boolean;
-    controller: IToolSelectController;
+    controller: IToolSelectCommand;
 }
 
-export interface IToolSelectComponentState {
+export interface IToolSelectButtonState {
 
 }
 
-export interface IToolSelectController {
+export interface IToolSelectCommand {
     componentDidMount(props: any);
     componentWillReceiveProps(props: any, nextProps: any);
     shouldComponentUpdate(props: any, nextProps: any);
@@ -24,7 +24,7 @@ export interface IToolSelectController {
     get text(): string;
 }
 
-export default class ToolSelectComponent extends React.Component<IToolSelectComponentProps, IToolSelectComponentState> {
+export default class ToolSelectButton extends React.Component<IToolSelectButtonProps, IToolSelectButtonState> {
     public constructor(props) {
         super(props);
         this.onClick.bind(this);

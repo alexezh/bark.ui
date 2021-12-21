@@ -5,7 +5,7 @@ import messages from '../../lib/messages.js';
 import lineIcon from './line.svg';
 
 const BitLineComponent = props => (
-    <ToolSelectComponent
+    <ToolSelectButton
         imgDescriptor={messages.line}
         imgSrc={lineIcon}
         isSelected={props.isSelected}
