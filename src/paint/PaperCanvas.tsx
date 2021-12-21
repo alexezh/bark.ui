@@ -14,6 +14,8 @@ import {
 } from './tools/view';
 import { ensureClockwise, scaleWithStrokes } from './tools/math';
 
+var paperScope: any = null;
+
 export interface IZoomController {
     saveZoomLevel();
     setZoomLevelId(newZoomLevelId: string);
@@ -30,8 +32,8 @@ export interface IPaperCanvasProps {
     ]),
     */
     image: any;
-    rotationCenterX: number;
-    rotationCenterY: number;
+    rotationCenterX?: number;
+    rotationCenterY?: number;
     zoomLevelId: string;
     imageId: string;
     shouldZoomToFit: boolean;
@@ -96,7 +98,8 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
     componentDidMount() {
         paper.setup(this.canvas);
         paper.view.on('resize', this.onViewResize);
-        resetZoom();
+        //new paper.Project()
+        // resetZoom();
         /*
         if (this.props.zoomLevelId) {
             this.props.setZoomLevelId(this.props.zoomLevelId);
@@ -405,7 +408,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
     render() {
         return (
             <canvas
-                className='paper-canvas'
+                className='Paper-canvas'
                 ref={this.setCanvas}
                 style={{ cursor: this.props.cursor }}
             />
