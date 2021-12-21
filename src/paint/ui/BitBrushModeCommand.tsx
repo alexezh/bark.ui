@@ -1,13 +1,10 @@
-import React from 'react';
 import { MIXED } from '../tools/style-path';
 import { clearSelection, getSelectedLeafItems } from '../tools/selection';
 import BitBrushTool from '../tools/bit-tools/brush-tool';
 import { IToolSelectCommand } from './ToolSelectButton';
 import { DEFAULT_COLOR } from '../tools/colors';
-import { getRaster, hideGuideLayers, showGuideLayers } from '../tools/layer';
 import brushIcon from './brush.svg';
 import Modes, { BitmapModes } from '../lib/modes';
-import log from '../log/log';
 import { IPaintEditor } from './PaintEditor';
 
 /*

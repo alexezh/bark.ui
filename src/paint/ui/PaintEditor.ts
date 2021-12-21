@@ -30,6 +30,21 @@ export interface IPaintEditor {
   getCommand(key: string): any;
 }
 
+/*
+    clearSelectedItems: () => {
+        dispatch(clearSelectedItems());
+    },
+    clearGradient: () => {
+        dispatch(clearFillGradient());
+    },
+    handleMouseDown: () => {
+        dispatch(changeMode(Modes.BIT_LINE));
+    },
+    onChangeFillColor: fillColor => {
+        dispatch(changeFillColor(fillColor));
+    }
+
+*/
 export class PaintEditor implements IPaintEditor {
 
   private state: {} = {
