@@ -47,14 +47,53 @@ export interface IPaintEditor {
     }
 
 */
+
+class CallbackElem {
+  public weakObj: WeakRef<any>;
+  public keys: {};
+
+  public constructor(obj: any, keys: {}) {
+    this.weakObj = new WeakRef<any>(obj);
+    this.keys = keys;
+  }
+
+  public deref(): any {
+    return this.weakObj.deref();
+  }
+}
+
+//WeakRef();
+export class StateStore {
+  private _state: {} = {};
+
+  private _callbacks: { [key: string]: CallbackElem } = {};
+
+  public constructor(state: {}) {
+    this._state = state;
+  }
+
+  public setState(state: {}) {
+    for (let key in state) {
+      this._state[key] = state[key];
+    }
+
+    setTimeout(() => {
+      for (let key in this._callbacks) {
+        let elem = this._callbacks[key];
+        let obj = elem.deref();
+        if (obj) {
+
+        } else {
+          delete this._callbacks[key];
+        }
+      }
+    }, 0);
+  }
+}
+
 export class PaintEditor implements IPaintEditor {
 
-  private state: {} = {
-    imageFormat: 'svg',
-    mode: Modes.SELECT,
-    rotationCenterX: undefined,
-    rotationCenterY: undefined
-  };
+  private state: StateStore;
 
   private commands: { [key: string]: any };
 
@@ -63,6 +102,13 @@ export class PaintEditor implements IPaintEditor {
       'bit-brush-mode': new BitBrushModeCommand(this),
       'bit-line-mode': new BitLineModeCommand(this)
     }
+
+    this.state = new StateStore({
+      imageFormat: 'svg',
+      mode: Modes.SELECT,
+      rotationCenterX: undefined,
+      rotationCenterY: undefined
+    });
 
     this.handleUpdateImage.bind(this);
   }
@@ -77,9 +123,7 @@ export class PaintEditor implements IPaintEditor {
   public get imageFormat() { return this.state.imageFormat };
 
   public setState(state: {}) {
-    for (let key in state) {
-      this.state[key] = state[key];
-    }
+    this.state.setState(state);
   }
 
   private updateImageState(isVector, image, rotationCenterX, rotationCenterY) {
