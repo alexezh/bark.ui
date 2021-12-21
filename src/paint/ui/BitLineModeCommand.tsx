@@ -8,9 +8,13 @@ import Modes, { BitmapModes } from '../lib/modes';
 import { IPaintEditor } from './PaintEditor';
 
 
+export const BitLineModeCommand_commandId: string = 'bit-line-mode';
+
 export default class BitLineModeCommand implements IToolSelectCommand {
     private tool: BitLineTool | null = null;
     private editor: IPaintEditor;
+    private target: WeakRef<any> | null = null;
+    private version: number = 1;
 
     get imgSrc(): string {
         return lineIcon;
@@ -23,38 +27,51 @@ export default class BitLineModeCommand implements IToolSelectCommand {
         this.editor = editor;
     }
 
-    componentDidMount(props: any) {
-        if (props.isBitLineModeActive) {
-            this.activateTool(props);
+    onCommand() {
+        this.editor.setState({ mode: Modes.BIT_LINE });
+    }
+
+    componentDidMount(target: any) {
+        this.target = new WeakRef<any>(target);
+        if (this.editor.mode === Modes.BIT_LINE) {
+            this.activateTool();
         }
     }
-    componentWillReceiveProps(props, nextProps) {
-        if (this.tool && nextProps.color !== props.color) {
-            this.tool.setColor(nextProps.color);
+    onStateChanged() {
+        let isDirty: boolean = false;
+        if (this.tool && this.tool.color !== this.editor.color) {
+            this.tool.setColor(this.editor.color);
+            isDirty = true;
         }
-        if (this.tool && nextProps.bitBrushSize !== props.bitBrushSize) {
-            this.tool.setLineSize(nextProps.bitBrushSize);
+        if (this.tool && this.tool.size !== this.editor.bitBrushSize) {
+            this.tool.setLineSize(this.editor.bitBrushSize);
+            isDirty = true;
         }
 
-        if (nextProps.isBitLineModeActive && !props.isBitLineModeActive) {
-            this.activateTool(props);
-        } else if (!nextProps.isBitLineModeActive && props.isBitLineModeActive) {
+        if (!this.tool && this.editor.mode === Modes.BIT_LINE) {
+            this.activateTool();
+            isDirty = true;
+        } else if (this.tool && this.editor.mode !== Modes.BIT_LINE) {
             this.deactivateTool();
+            isDirty = true;
         }
-    }
-    shouldComponentUpdate(props, nextProps) {
-        return nextProps.isBitLineModeActive !== props.isBitLineModeActive;
+
+        this.version++;
+        if (isDirty && this.target !== null) {
+            let target = this.target.deref();
+            if (target) {
+                target.setState({ version: this.version })
+            }
+        }
     }
     componentWillUnmount() {
-        if (this.tool) {
-            this.deactivateTool();
-        }
+        this.deactivateTool();
     }
-    activateTool(props) {
-        clearSelection(props.clearSelectedItems);
+    activateTool() {
+        // clearSelection(props.clearSelectedItems);
         //props.clearGradient();
         // Force the default line color if fill is MIXED or transparent
-        let color = props.color;
+        let color = this.editor.color;
         if (!color || color === MIXED) {
             //props.onChangeFillColor(DEFAULT_COLOR);
             color = DEFAULT_COLOR;
@@ -63,7 +80,7 @@ export default class BitLineModeCommand implements IToolSelectCommand {
             this.editor.handleUpdateImage
         );
         this.tool.setColor(color);
-        this.tool.setLineSize(props.bitBrushSize);
+        this.tool.setLineSize(this.editor.bitBrushSize);
 
         this.tool.activate();
     }
@@ -73,9 +90,6 @@ export default class BitLineModeCommand implements IToolSelectCommand {
             this.tool.remove();
             this.tool = null;
         }
-    }
-    onCommand() {
-        this.editor.setState({ mode: Modes.BIT_LINE });
     }
 }
 

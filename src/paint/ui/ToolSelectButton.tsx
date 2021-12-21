@@ -12,14 +12,12 @@ export interface IToolSelectButtonProps {
 }
 
 export interface IToolSelectButtonState {
-
+    version: number;
 }
 
 export interface IToolSelectCommand {
-    componentDidMount(props: any);
-    componentWillReceiveProps(props: any, nextProps: any);
-    shouldComponentUpdate(props: any, nextProps: any);
-    componentWillUnmount(props: any);
+    componentDidMount(target: any);
+    componentWillUnmount();
 
     onCommand();
 
@@ -35,16 +33,13 @@ export default class ToolSelectButton extends React.Component<IToolSelectButtonP
         ]);
     }
     componentDidMount() {
-        this.props.command.componentDidMount(this.props);
+        this.props.command.componentDidMount(this);
     }
-    componentWillReceiveProps(nextProps: any) {
-        this.props.command.componentWillReceiveProps(this.props, nextProps);
-    }
-    shouldComponentUpdate(nextProps) {
-        return this.props.command.shouldComponentUpdate(this.props, nextProps);
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.state.version !== nextState.version;
     }
     componentWillUnmount() {
-        return this.props.command.componentWillUnmount(this.props);
+        return this.props.command.componentWillUnmount();
     }
 
     private onClick() {

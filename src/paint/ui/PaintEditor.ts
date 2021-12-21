@@ -6,8 +6,8 @@ import Formats, { isBitmap, isVector } from '../lib/format';
 import { commitOvalToBitmap, commitRectToBitmap, commitSelectionToBitmap, getHitBounds } from '../tools/bitmap';
 import { scaleWithStrokes } from '../tools/math';
 import { ART_BOARD_HEIGHT, ART_BOARD_WIDTH, setWorkspaceBounds, SVG_ART_BOARD_HEIGHT, SVG_ART_BOARD_WIDTH } from '../tools/view';
-import BitBrushModeCommand from './BitBrushModeCommand';
-import BitLineModeCommand from './BitLineModeCommand';
+import BitBrushModeCommand, { BitBrushModeCommand_commandId } from './BitBrushModeCommand';
+import BitLineModeCommand, { BitLineModeCommand_commandId } from './BitLineModeCommand';
 
 /*
 onst BitLineComponent = props => (
@@ -27,6 +27,10 @@ BitLineComponent.propTypes = {
 export interface IPaintEditor {
   get mode(): any; // Modes
   get imageFormat(): string;
+  get color(): any;
+  get bitBrushSize(): any;
+
+  registerStateChange(name: string, onChange: any);
   setState(props: {});
   getCommand(key: string): any;
   handleUpdateImage(skipSnapshot, formatOverride);
@@ -49,40 +53,45 @@ export interface IPaintEditor {
 */
 
 class CallbackElem {
-  public weakObj: WeakRef<any>;
+  public weakOnChange: WeakRef<any>;
   public keys: {};
 
   public constructor(obj: any, keys: {}) {
-    this.weakObj = new WeakRef<any>(obj);
+    this.weakOnChange = new WeakRef<any>(obj);
     this.keys = keys;
   }
 
   public deref(): any {
-    return this.weakObj.deref();
+    return this.weakOnChange.deref();
   }
 }
 
 //WeakRef();
 export class StateStore {
-  private _state: {} = {};
+  public readonly state: {} = {};
 
   private _callbacks: { [key: string]: CallbackElem } = {};
 
   public constructor(state: {}) {
-    this._state = state;
+    this.state = state;
+  }
+
+  public registerStateChange(name: string, onChange: any) {
+    this._callbacks[name] = new CallbackElem(onChange, {});
   }
 
   public setState(state: {}) {
     for (let key in state) {
-      this._state[key] = state[key];
+      this.state[key] = state[key];
     }
 
+    // run outside current callstack
     setTimeout(() => {
       for (let key in this._callbacks) {
         let elem = this._callbacks[key];
-        let obj = elem.deref();
-        if (obj) {
-
+        let onChange = elem.deref();
+        if (onChange) {
+          onChange();
         } else {
           delete this._callbacks[key];
         }
@@ -93,17 +102,15 @@ export class StateStore {
 
 export class PaintEditor implements IPaintEditor {
 
-  private state: StateStore;
+  private stateStore: StateStore;
 
-  private commands: { [key: string]: any };
+  private commands: { [key: string]: any } = {};
 
   public constructor() {
-    this.commands = {
-      'bit-brush-mode': new BitBrushModeCommand(this),
-      'bit-line-mode': new BitLineModeCommand(this)
-    }
+    this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
+    this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
 
-    this.state = new StateStore({
+    this.stateStore = new StateStore({
       imageFormat: 'svg',
       mode: Modes.SELECT,
       rotationCenterX: undefined,
@@ -112,18 +119,28 @@ export class PaintEditor implements IPaintEditor {
 
     this.handleUpdateImage.bind(this);
   }
+
   public getCommand(key: string): any {
     return this.commands[key];
   }
 
   // @ts-ignore
-  public get mode() { return this.state.mode };
+  public get mode() { return this.stateStore.state.mode };
 
   // @ts-ignore
-  public get imageFormat() { return this.state.imageFormat };
+  public get imageFormat() { return this.stateStore.state.imageFormat };
+
+  // @ts-ignore
+  public get color() { return this.stateStore.state.color };
+
+  // @ts-ignore
+  public get bitBrushSize() { return this.stateStore.state.bitBrushSize };
 
   public setState(state: {}) {
-    this.state.setState(state);
+    this.stateStore.setState(state);
+  }
+  public registerStateChange(name: string, onChange: any) {
+    this.stateStore.registerStateChange(name, onChange);
   }
 
   private updateImageState(isVector, image, rotationCenterX, rotationCenterY) {

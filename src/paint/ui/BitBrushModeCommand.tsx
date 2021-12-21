@@ -23,9 +23,13 @@ BitLineComponent.propTypes = {
 };
  */
 
+export const BitBrushModeCommand_commandId: string = 'bit-brush-mode';
+
 export default class BitBrushModeCommand implements IToolSelectCommand {
     private tool: BitBrushTool | null = null;
     private editor: IPaintEditor;
+    private target: WeakRef<any> | null = null;
+    private version: number = 1;
 
     get imgSrc(): string {
         return brushIcon;
@@ -38,38 +42,49 @@ export default class BitBrushModeCommand implements IToolSelectCommand {
         this.editor = editor;
     }
 
-    componentDidMount(props: any) {
-        if (props.isBitBrushModeActive) {
-            this.activateTool(props);
-        }
+    private isActive() {
+        return this.editor.mode === Modes.BIT_BRUSH;
     }
-    componentWillReceiveProps(props: any, nextProps: any) {
-        if (this.tool && nextProps.color !== props.color) {
-            this.tool.setColor(nextProps.color);
+
+    componentDidMount(target: any) {
+        this.target = new WeakRef<any>(target);
+        if (this.isActive()) {
+            this.activateTool();
         }
-        if (this.tool && nextProps.bitBrushSize !== props.bitBrushSize) {
-            this.tool.setBrushSize(nextProps.bitBrushSize);
+        this.editor.registerStateChange(BitBrushModeCommand_commandId, this.onStateChange.bind(this));
+    }
+
+    onStateChange() {
+        let isDirty = false;
+        if (this.tool && this.tool.color !== this.editor.color) {
+            this.tool.setColor(this.editor.color);
+        }
+        if (this.tool && this.tool.size !== this.editor.bitBrushSize) {
+            this.tool.setBrushSize(this.editor.bitBrushSize);
         }
 
-        if (nextProps.isBitBrushModeActive && !props.isBitBrushModeActive) {
-            this.activateTool(props);
-        } else if (!nextProps.isBitBrushModeActive && props.isBitBrushModeActive) {
+        if (!this.tool && this.isActive()) {
+            this.activateTool();
+        } else if (this.tool && !this.isActive()) {
             this.deactivateTool();
         }
-    }
-    shouldComponentUpdate(props, nextProps) {
-        return nextProps.isBitBrushModeActive !== props.isBitBrushModeActive;
-    }
-    componentWillUnmount(props) {
-        if (this.tool) {
-            this.deactivateTool();
+
+        this.version++;
+        if (isDirty && this.target !== null) {
+            let target = this.target.deref();
+            if (target) {
+                target.setState({ version: this.version })
+            }
         }
     }
-    activateTool(props: any) {
-        clearSelection(props.clearSelectedItems);
+    componentWillUnmount() {
+        this.deactivateTool();
+    }
+    activateTool() {
+        //clearSelection(props.clearSelectedItems);
         // this.clearGradient();
         // Force the default brush color if fill is MIXED or transparent
-        let color = props.color;
+        let color = this.editor.color;
         if (!color || color === MIXED) {
             // this.props.onChangeFillColor(DEFAULT_COLOR);
             color = DEFAULT_COLOR;
@@ -80,7 +95,7 @@ export default class BitBrushModeCommand implements IToolSelectCommand {
             this.editor.handleUpdateImage
         );
         this.tool.setColor(color);
-        this.tool.setBrushSize(props.bitBrushSize);
+        this.tool.setBrushSize(this.editor.bitBrushSize);
 
         this.tool.activate();
     }
