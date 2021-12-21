@@ -1,22 +1,18 @@
-// @ts-nocheck disabling checks for interop
-
 import * as React from 'react';
-import _ from "lodash";
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
+import _ from "lodash";
+//import { Provider } from 'react-redux';
+//import { createStore, combineReducers } from 'redux';
 //import PaintEditor from './containers/paint-editor';
 //import ScratchPaintReducer from './reducers/scratch-paint-reducer';
 //import PaperCanvas from './containers/paper-canvas';
 
+import PaperCanvas, { IZoomController } from './paint/PaperCanvas'
+import PaintEditorToolbar from './PaintEditorToolbar'
 import { editorState } from './EditorState';
 import { CodeFileDef, project } from './Project';
 
-import localeData from 'scratch-l10n';
-import paintMessages from 'scratch-l10n/locales/paint-editor-msgs';
 //import { addLocaleData } from 'react-intl';
-import { updateIntl as superUpdateIntl } from 'react-intl-redux';
-import { IntlProvider, intlReducer } from 'react-intl-redux';
 
 // import PaintEditor from '..';
 // scratch-render-fonts is a playground-only dep. Fonts are expected to be imported
@@ -24,37 +20,6 @@ import { IntlProvider, intlReducer } from 'react-intl-redux';
 
 //const PaintEditor = window['scratch-paint'].PaintEditor;
 //const ScratchPaintReducer = window['scratch-paint'].ScratchPaintReducer;
-
-const reducer = combineReducers({
-  intl: intlReducer,
-  scratchPaint: ScratchPaintReducer as any
-});
-
-
-
-//Object.keys(localeData).forEach(locale => {
-// TODO: will need to handle locales not in the default intl - see www/custom-locales
-//  addLocaleData(localeData[locale].localeData);
-//});
-
-const intlInitialState = {
-  intl: {
-    defaultLocale: 'en',
-    locale: 'en',
-    messages: paintMessages.en.messages
-  }
-};
-
-const updateIntl = locale => superUpdateIntl({
-  locale: locale,
-  messages: paintMessages[locale].messages || paintMessages.en.messages
-});
-
-const store = createStore(
-  reducer,
-  intlInitialState,
-  window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
-);
 
 const svgString =
   '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"' +
@@ -75,6 +40,13 @@ export interface IPaintCanvasState {
   codeFile: CodeFileDef | undefined
 }
 
+class ZoomController implements IZoomController {
+  saveZoomLevel() {
+  }
+  setZoomLevelId(newZoomLevelId: string) {
+  }
+}
+
 export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
   constructor(props: IPaintCanvasProps) {
     super(props);
@@ -92,6 +64,20 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
   public render() {
     return (
       <div className="Paint-canvas">
+        <PaintEditorToolbar
+          codeFile={editorState.lastEditedCodeFile}
+          onClose={this.props.onClose} />
+        <PaperCanvas
+          image={svgString}
+          imageId='1'
+          imageFormat='svg'
+          zoomLevelId='id'
+          zoomLevels={{}}
+          shouldZoomToFit={false}
+          format='svg'
+          cursor='id'
+          zoomController={new ZoomController()}
+        />
       </div>
     );
   }

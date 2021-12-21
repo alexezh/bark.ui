@@ -5,7 +5,7 @@ import _ from "lodash";
 import MainToolbar from './MainToolbar';
 import TextEditorCanvas from './TextEditorCanvas';
 import GameCanvas from './GameCanvas';
-import PaintCanvas from './PaintCanvas';
+import PaintCanvas from './PaintEditorCanvas';
 
 import './App.css';
 import { CodeFileDef, project } from './Project';
