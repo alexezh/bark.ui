@@ -3,8 +3,8 @@ import { getSelectedLeafItems, getItems } from './selection';
 import { isPointTextItem } from './item';
 import { isGroup } from './group';
 import GradientTypes from '../lib/gradient-types';
-import { DEFAULT_COLOR } from '../reducers/fill-style';
-import { isCompoundPathChild } from '../helper/compound-path';
+import { isCompoundPathChild } from './compound-path';
+import { DEFAULT_COLOR } from './colors'
 import log from '../log/log';
 
 const MIXED = 'scratch-paint/style-path/mixed';

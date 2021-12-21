@@ -1,25 +1,12 @@
-import classNames from 'classnames';
 import React from 'react';
-import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from 'react-intl';
+import classNames from 'classnames';
 
-import Button from '../button/button.jsx';
-
+import Button from './button';
 import './tool-select-base.css';
 
-export class ImgDescriptor {
-    public defaultMessage: string;
-    public description: string;
-    public id: string;
-}
-
 export interface IToolSelectComponentProps {
-    className: string;
     disabled: boolean;
-    imgDescriptor: ImgDescriptor;
-    imgSrc: string;
     isSelected: boolean;
-    onMouseDown: any;
     controller: IToolSelectController;
 }
 
@@ -28,43 +15,55 @@ export interface IToolSelectComponentState {
 }
 
 export interface IToolSelectController {
-    componentDidMount();
-    componentWillReceiveProps(nextProps: any);
-    shouldComponentUpdate(nextProps: any);
-    componentWillUnmount();
+    componentDidMount(props: any);
+    componentWillReceiveProps(props: any, nextProps: any);
+    shouldComponentUpdate(props: any, nextProps: any);
+    componentWillUnmount(props: any);
+
+    get imgSrc(): string;
+    get text(): string;
 }
 
-export class ToolSelectComponent extends React.Component<IToolSelectComponentProps, IToolSelectComponentState> {
-    componentDidMount() {
-        this.props.controller.componentDidMount();
+export default class ToolSelectComponent extends React.Component<IToolSelectComponentProps, IToolSelectComponentState> {
+    public constructor(props) {
+        super(props);
+        this.onClick.bind(this);
     }
-    componentWillReceiveProps(nextProps) {
-        this.props.controller.componentWillReceiveProps(nextProps);
+    componentDidMount() {
+        this.props.controller.componentDidMount(this.props);
+    }
+    componentWillReceiveProps(nextProps: any) {
+        this.props.controller.componentWillReceiveProps(this.props, nextProps);
     }
     shouldComponentUpdate(nextProps) {
-        return this.props.controller.shouldComponentUpdate(nextProps);
+        return this.props.controller.shouldComponentUpdate(this.props, nextProps);
     }
     componentWillUnmount() {
-        return this.props.controller.componentWillUnmount();
+        return this.props.controller.componentWillUnmount(this.props);
+    }
+
+    private onClick() {
+
     }
 
     render() {
         return (
             <Button
                 className={
-                    classNames(props.className, styles.modToolSelect, {
-                        [styles.isSelected]: props.isSelected
-                    })
+                    'mod-tool-select'
+                    //                    classNames(this.props.className, styles.modToolSelect, {
+                    //                        [styles.isSelected]: props.isSelected
+                    //                    })
                 }
-                disabled={props.disabled}
-                title={props.intl.formatMessage(props.imgDescriptor)}
-                onClick={props.onMouseDown}
+                disabled={this.props.disabled}
+                title={this.props.controller.text}
+                highlighted={false}
+                onClick={this.onClick}
             >
                 <img
-                    alt={props.intl.formatMessage(props.imgDescriptor)}
-                    className={styles.toolSelectIcon}
+                    className={'img.tool-select-icon'}
                     draggable={false}
-                    src={props.imgSrc}
+                    src={this.props.controller.imgSrc}
                 />
             </Button>
         );
