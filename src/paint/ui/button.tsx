@@ -30,7 +30,8 @@ const ButtonComponent: FC<IButtonProps> = ({
     if (disabled === false) {
         // if not disabled, add `onClick()` to be applied
         // in props. If disabled, don't add `onClick()`
-        // props.onClick = onClick;
+        // @ts-ignore
+        props.onClick = onClick;
     }
     return (
         <span

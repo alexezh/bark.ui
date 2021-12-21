@@ -34,6 +34,11 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
           isSelected={false}
           command={this.props.paintEditor.getCommand('bit-brush-mode')}
         />
+        <ToolSelectComponent
+          disabled={false}
+          isSelected={false}
+          command={this.props.paintEditor.getCommand('bit-line-mode')}
+        />
         <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
       </div >
     );

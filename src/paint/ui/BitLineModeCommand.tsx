@@ -1,19 +1,19 @@
 import { MIXED } from '../tools/style-path';
 import { clearSelection, getSelectedLeafItems } from '../tools/selection';
-import BitBrushTool from '../tools/bit-tools/brush-tool';
+import BitLineTool from '../tools/bit-tools/line-tool';
 import { IToolSelectCommand } from './ToolSelectButton';
 import { DEFAULT_COLOR } from '../tools/colors';
-import brushIcon from './brush.svg';
+import lineIcon from './line.svg';
 import Modes, { BitmapModes } from '../lib/modes';
 import { IPaintEditor } from './PaintEditor';
 
 
-export class BitLineModeCommand implements IToolSelectCommand {
-    private tool: BitBrushTool | null = null;
+export default class BitLineModeCommand implements IToolSelectCommand {
+    private tool: BitLineTool | null = null;
     private editor: IPaintEditor;
 
     get imgSrc(): string {
-        return brushIcon;
+        return lineIcon;
     }
     get text(): string {
         return 'hello';
@@ -23,62 +23,59 @@ export class BitLineModeCommand implements IToolSelectCommand {
         this.editor = editor;
     }
 
-    componentDidMount() {
-        if (this.props.isBitLineModeActive) {
-            this.activateTool(this.props);
+    componentDidMount(props: any) {
+        if (props.isBitLineModeActive) {
+            this.activateTool(props);
         }
     }
-    componentWillReceiveProps(nextProps) {
-        if (this.tool && nextProps.color !== this.props.color) {
+    componentWillReceiveProps(props, nextProps) {
+        if (this.tool && nextProps.color !== props.color) {
             this.tool.setColor(nextProps.color);
         }
-        if (this.tool && nextProps.bitBrushSize !== this.props.bitBrushSize) {
+        if (this.tool && nextProps.bitBrushSize !== props.bitBrushSize) {
             this.tool.setLineSize(nextProps.bitBrushSize);
         }
 
-        if (nextProps.isBitLineModeActive && !this.props.isBitLineModeActive) {
-            this.activateTool();
-        } else if (!nextProps.isBitLineModeActive && this.props.isBitLineModeActive) {
+        if (nextProps.isBitLineModeActive && !props.isBitLineModeActive) {
+            this.activateTool(props);
+        } else if (!nextProps.isBitLineModeActive && props.isBitLineModeActive) {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate(nextProps) {
-        return nextProps.isBitLineModeActive !== this.props.isBitLineModeActive;
+    shouldComponentUpdate(props, nextProps) {
+        return nextProps.isBitLineModeActive !== props.isBitLineModeActive;
     }
     componentWillUnmount() {
         if (this.tool) {
             this.deactivateTool();
         }
     }
-    activateTool() {
-        clearSelection(this.props.clearSelectedItems);
-        this.props.clearGradient();
+    activateTool(props) {
+        clearSelection(props.clearSelectedItems);
+        //props.clearGradient();
         // Force the default line color if fill is MIXED or transparent
-        let color = this.props.color;
+        let color = props.color;
         if (!color || color === MIXED) {
-            this.props.onChangeFillColor(DEFAULT_COLOR);
+            //props.onChangeFillColor(DEFAULT_COLOR);
             color = DEFAULT_COLOR;
         }
         this.tool = new BitLineTool(
-            this.props.onUpdateImage
+            this.editor.handleUpdateImage
         );
         this.tool.setColor(color);
-        this.tool.setLineSize(this.props.bitBrushSize);
+        this.tool.setLineSize(props.bitBrushSize);
 
         this.tool.activate();
     }
     deactivateTool() {
-        this.tool.deactivateTool();
-        this.tool.remove();
-        this.tool = null;
+        if (this.tool !== null) {
+            this.tool.deactivateTool();
+            this.tool.remove();
+            this.tool = null;
+        }
     }
-    render() {
-        return (
-            <BitLineModeComponent
-                isSelected={this.props.isBitLineModeActive}
-                onMouseDown={this.props.handleMouseDown}
-            />
-        );
+    onCommand() {
+        this.editor.setState({ mode: Modes.BIT_LINE });
     }
 }
 

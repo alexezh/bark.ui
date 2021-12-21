@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import Button from './button';
 import './ToolSelectButton.css';
+import _ from 'lodash';
 
 export interface IToolSelectButtonProps {
     disabled: boolean;
@@ -29,7 +30,9 @@ export interface IToolSelectCommand {
 export default class ToolSelectButton extends React.Component<IToolSelectButtonProps, IToolSelectButtonState> {
     public constructor(props) {
         super(props);
-        this.onClick.bind(this);
+        _.bindAll(this, [
+            'onClick'
+        ]);
     }
     componentDidMount() {
         this.props.command.componentDidMount(this.props);

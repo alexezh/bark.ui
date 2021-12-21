@@ -77,7 +77,7 @@ export default class BitBrushModeCommand implements IToolSelectCommand {
 
         // @ts-ignore
         this.tool = new BitBrushTool(
-            props.onUpdateImage
+            this.editor.handleUpdateImage
         );
         this.tool.setColor(color);
         this.tool.setBrushSize(props.bitBrushSize);

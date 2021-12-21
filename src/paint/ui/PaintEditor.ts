@@ -7,6 +7,7 @@ import { commitOvalToBitmap, commitRectToBitmap, commitSelectionToBitmap, getHit
 import { scaleWithStrokes } from '../tools/math';
 import { ART_BOARD_HEIGHT, ART_BOARD_WIDTH, setWorkspaceBounds, SVG_ART_BOARD_HEIGHT, SVG_ART_BOARD_WIDTH } from '../tools/view';
 import BitBrushModeCommand from './BitBrushModeCommand';
+import BitLineModeCommand from './BitLineModeCommand';
 
 /*
 onst BitLineComponent = props => (
@@ -28,6 +29,7 @@ export interface IPaintEditor {
   get imageFormat(): string;
   setState(props: {});
   getCommand(key: string): any;
+  handleUpdateImage(skipSnapshot, formatOverride);
 }
 
 /*
@@ -58,8 +60,11 @@ export class PaintEditor implements IPaintEditor {
 
   public constructor() {
     this.commands = {
-      'bit-brush-mode': new BitBrushModeCommand(this)
+      'bit-brush-mode': new BitBrushModeCommand(this),
+      'bit-line-mode': new BitLineModeCommand(this)
     }
+
+    this.handleUpdateImage.bind(this);
   }
   public getCommand(key: string): any {
     return this.commands[key];
