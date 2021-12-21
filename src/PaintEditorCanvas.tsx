@@ -11,6 +11,7 @@ import PaperCanvas, { IZoomController } from './paint/PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import { editorState } from './EditorState';
 import { CodeFileDef, project } from './Project';
+import { PaintEditor } from './paint/ui/PaintEditor';
 
 //import { addLocaleData } from 'react-intl';
 
@@ -48,8 +49,11 @@ class ZoomController implements IZoomController {
 }
 
 export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
+  private paintEditor: PaintEditor;
   constructor(props: IPaintCanvasProps) {
     super(props);
+
+    this.paintEditor = new PaintEditor();
 
     _.bindAll(this, [
     ]);
@@ -66,7 +70,8 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
       <div className="Paint-canvas">
         <PaintEditorToolbar
           codeFile={editorState.lastEditedCodeFile}
-          onClose={this.props.onClose} />
+          onClose={this.props.onClose}
+          paintEditor={this.paintEditor} />
         <PaperCanvas
           image={svgString}
           imageId='1'

@@ -2,9 +2,10 @@ import * as React from 'react';
 import _ from "lodash";
 import { CodeFileDef, project } from './Project';
 import ToolSelectComponent from './paint/ui/ToolSelectButton';
-import BitBrushModeCommand from './paint/ui/bit-brush-mode';
+import { IPaintEditor } from './paint/ui/PaintEditor';
 
 export interface IPaintEditorToolbarProps {
+  paintEditor: IPaintEditor;
   codeFile: CodeFileDef;
   onClose: any;
 }
@@ -31,7 +32,7 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
         <ToolSelectComponent
           disabled={false}
           isSelected={false}
-          controller={new BitBrushModeCommand()}
+          command={this.props.paintEditor.getCommand('bit-brush-mode')}
         />
         <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
       </div >

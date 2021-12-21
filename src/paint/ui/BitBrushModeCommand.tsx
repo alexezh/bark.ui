@@ -1,10 +1,14 @@
 import React from 'react';
 import { MIXED } from '../tools/style-path';
-import { clearSelection } from '../tools/selection';
+import { clearSelection, getSelectedLeafItems } from '../tools/selection';
 import BitBrushTool from '../tools/bit-tools/brush-tool';
 import { IToolSelectCommand } from './ToolSelectButton';
 import { DEFAULT_COLOR } from '../tools/colors';
+import { getRaster, hideGuideLayers, showGuideLayers } from '../tools/layer';
 import brushIcon from './brush.svg';
+import Modes, { BitmapModes } from '../lib/modes';
+import log from '../log/log';
+import { IPaintEditor } from './PaintEditor';
 
 /*
 onst BitLineComponent = props => (
@@ -24,12 +28,17 @@ BitLineComponent.propTypes = {
 
 export default class BitBrushModeCommand implements IToolSelectCommand {
     private tool: BitBrushTool | null = null;
+    private editor: IPaintEditor;
 
     get imgSrc(): string {
         return brushIcon;
     }
     get text(): string {
         return 'hello';
+    }
+
+    public constructor(editor: IPaintEditor) {
+        this.editor = editor;
     }
 
     componentDidMount(props: any) {
@@ -84,6 +93,9 @@ export default class BitBrushModeCommand implements IToolSelectCommand {
             this.tool.remove();
             this.tool = null;
         }
+    }
+    onCommand() {
+        this.editor.setState({ mode: Modes.BIT_BRUSH });
     }
 }
 
