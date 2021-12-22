@@ -15,8 +15,12 @@ import BitLineModeCommand, { BitLineModeCommand_commandId } from './bit-line-mod
 import BitOvalModeCommand, { BitOvalModeCommand_commandId } from './bit-oval-mode/bit-oval-mode';
 import BitSelectModeCommand, { BitSelectModeCommand_commandId } from './bit-select-mode/bit-select-mode';
 import BitTextModeCommand, { BitTextModeCommand_commandId } from './bit-text-mode/bit-text-mode';
+import OvalModeCommand, { OvalModeCommand_commandId } from './oval-mode/oval-mode';
 import { DEFAULT_COLOR } from '../tools/colors';
 
+export class BrushMode {
+  public brushSize: any = 1;
+}
 
 export class Color {
   public primary: string | null = null;
@@ -30,6 +34,64 @@ export class Color {
   }
 };
 
+export class ColorState {
+  public fillColor1: Color | null = null;
+  public fillColor2: Color | null = null;
+  public fillGradient: Color | null = null;
+  public strokeColor1: Color | null = null;
+  public strokeColor2: Color | null = null;
+  public strokeGradient: Color | null = null;
+
+  public validate() {
+    /*
+        validateColorState() {
+            // Make sure that at least one of fill/stroke is set, and that MIXED is not one of the colors.
+            // If fill and stroke color are both missing, set fill to default and stroke to transparent.
+            // If exactly one of fill or stroke color is set, set the other one to transparent.
+            const { strokeWidth } = this.props.colorState;
+            const fillColor1 = this.props.colorState.fillColor.primary;
+            let fillColor2 = this.props.colorState.fillColor.secondary;
+            let fillGradient = this.props.colorState.fillColor.gradientType;
+            const strokeColor1 = this.props.colorState.strokeColor.primary;
+            let strokeColor2 = this.props.colorState.strokeColor.secondary;
+            let strokeGradient = this.props.colorState.strokeColor.gradientType;
+    
+            if (fillColor2 === MIXED) {
+                this.props.clearFillGradient();
+                fillColor2 = null;
+                fillGradient = GradientTypes.SOLID;
+            }
+            if (strokeColor2 === MIXED) {
+                this.props.clearStrokeGradient();
+                strokeColor2 = null;
+                strokeGradient = GradientTypes.SOLID;
+            }
+    
+            const fillColorMissing = fillColor1 === MIXED ||
+                (fillGradient === GradientTypes.SOLID && fillColor1 === null) ||
+                (fillGradient !== GradientTypes.SOLID && fillColor1 === null && fillColor2 === null);
+            const strokeColorMissing = strokeColor1 === MIXED ||
+                strokeWidth === null ||
+                strokeWidth === 0 ||
+                (strokeGradient === GradientTypes.SOLID && strokeColor1 === null) ||
+                (strokeGradient !== GradientTypes.SOLID && strokeColor1 === null && strokeColor2 === null);
+    
+            if (fillColorMissing && strokeColorMissing) {
+                this.props.onChangeFillColor(DEFAULT_COLOR);
+                this.props.clearFillGradient();
+                this.props.onChangeStrokeColor(null);
+                this.props.clearStrokeGradient();
+            } else if (fillColorMissing && !strokeColorMissing) {
+                this.props.onChangeFillColor(null);
+                this.props.clearFillGradient();
+            } else if (!fillColorMissing && strokeColorMissing) {
+                this.props.onChangeStrokeColor(null);
+                this.props.clearStrokeGradient();
+            }
+        }
+        */
+  }
+}
 /*
 onst BitLineComponent = props => (
     <ToolSelectComponent
@@ -56,6 +118,8 @@ export interface IPaintEditor {
   get mode(): any; // Modes
   get imageFormat(): string;
   get color(): Color;
+  get colorState(): ColorState;
+  get brushMode(): BrushMode;
   get bitBrushSize(): any;
   get filled(): boolean;
   get thickness(): number;
@@ -104,6 +168,8 @@ export class PaintEditor implements IPaintEditor {
       imageFormat: 'svg',
       mode: Modes.SELECT,
       color: new Color(DEFAULT_COLOR),
+      colorState: new ColorState(),
+      brushMode: new BrushMode(),
       rotationCenterX: undefined,
       rotationCenterY: undefined,
       filled: false,
@@ -117,6 +183,7 @@ export class PaintEditor implements IPaintEditor {
     this.commands[BitOvalModeCommand_commandId] = new BitOvalModeCommand(this);
     this.commands[BitSelectModeCommand_commandId] = new BitSelectModeCommand(this);
     this.commands[BitTextModeCommand_commandId] = new BitTextModeCommand(this);
+    this.commands[OvalModeCommand_commandId] = new OvalModeCommand(this);
 
     _.bindAll(this, [
       'handleUpdateImage',
@@ -140,6 +207,12 @@ export class PaintEditor implements IPaintEditor {
 
   // @ts-ignore
   public get color(): Color { return this.stateStore.state.color };
+
+  // @ts-ignore
+  public get colorState(): ColorState { return this.stateStore.state.colorState };
+
+  // @ts-ignore
+  public get brushMode(): BrushMode { return this.stateStore.state.brushMode };
 
   // @ts-ignore
   public get bitBrushSize() { return this.stateStore.state.bitBrushSize };
