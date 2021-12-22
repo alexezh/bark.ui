@@ -1,9 +1,11 @@
 import React from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 
 import Button from './button';
 import './ToolSelectButton.css';
-import _ from 'lodash';
+import { IPaintEditor } from './PaintEditor';
+import { IToolSelectCommand } from './ToolSelectCommand'
 
 export interface IToolSelectButtonProps {
     disabled: boolean;
@@ -15,22 +17,19 @@ export interface IToolSelectButtonState {
     version: number;
 }
 
-export interface IToolSelectCommand {
-    componentDidMount(target: any);
-    componentWillUnmount();
-
-    onCommand();
-
-    get imgSrc(): string;
-    get text(): string;
-}
-
 export default class ToolSelectButton extends React.Component<IToolSelectButtonProps, IToolSelectButtonState> {
     public constructor(props) {
         super(props);
         _.bindAll(this, [
+            'componentDidMount',
+            'componentWillUnmount',
+            'shouldComponentUpdate',
             'onClick'
         ]);
+
+        this.state = {
+            version: 1.0,
+        }
     }
     componentDidMount() {
         this.props.command.componentDidMount(this);

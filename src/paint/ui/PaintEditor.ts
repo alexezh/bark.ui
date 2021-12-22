@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { clearSelection, getSelectedLeafItems } from '../tools/selection';
 import { getRaster, hideGuideLayers, showGuideLayers } from '../tools/layer';
 import Modes, { BitmapModes } from '../lib/modes';
@@ -5,9 +6,27 @@ import log from '../log/log';
 import Formats, { isBitmap, isVector } from '../lib/format';
 import { commitOvalToBitmap, commitRectToBitmap, commitSelectionToBitmap, getHitBounds } from '../tools/bitmap';
 import { scaleWithStrokes } from '../tools/math';
+import Cursors from '../lib/cursors';
+import { StateStore } from './StateStore';
 import { ART_BOARD_HEIGHT, ART_BOARD_WIDTH, setWorkspaceBounds, SVG_ART_BOARD_HEIGHT, SVG_ART_BOARD_WIDTH } from '../tools/view';
-import BitBrushModeCommand, { BitBrushModeCommand_commandId } from './BitBrushModeCommand';
-import BitLineModeCommand, { BitLineModeCommand_commandId } from './BitLineModeCommand';
+import GradientTypes from '../lib/gradient-types';
+import BitBrushModeCommand, { BitBrushModeCommand_commandId } from './bit-brush-mode';
+import BitLineModeCommand, { BitLineModeCommand_commandId } from './bit-line-mode';
+import BitOvalModeCommand, { BitOvalModeCommand_commandId } from './bit-oval-mode';
+import { DEFAULT_COLOR } from '../tools/colors';
+
+
+export class Color {
+  public primary: string | null = null;
+  public secondary: string | null = null;
+  public gradientType: any = GradientTypes.SOLID;
+
+  public constructor(primary: string | null, secondary: string | null = null, gradientType: any = GradientTypes.SOLID) {
+    this.primary = primary;
+    this.secondary = secondary;
+    this.gradientType = gradientType;
+  }
+};
 
 /*
 onst BitLineComponent = props => (
@@ -23,23 +42,37 @@ BitLineComponent.propTypes = {
     isSelected: PropTypes.bool.isRequired,
     onMouseDown: PropTypes.func.isRequired
 };
+
+const redrawSelectionBox = function () {
+    return {
+        type: REDRAW_SELECTION_BOX
+    };
+};
+
  */
 export interface IPaintEditor {
   get mode(): any; // Modes
   get imageFormat(): string;
-  get color(): any;
+  get color(): Color;
   get bitBrushSize(): any;
+  get filled(): boolean;
+  get thickness(): number;
+  get zoom(): number;
+  get selectedItems(): [];
 
   registerStateChange(name: string, onChange: any);
+  unregisterStateChange(name: string);
+
   setState(props: {});
   getCommand(key: string): any;
+
   handleUpdateImage(skipSnapshot, formatOverride);
+  handleSetCursor(cursorString: string);
+  handleSetSelectedItems(selectedItems: [], bitmapMode: any);
+  handleClearSelectedItems();
 }
 
 /*
-    clearSelectedItems: () => {
-        dispatch(clearSelectedItems());
-    },
     clearGradient: () => {
         dispatch(clearFillGradient());
     },
@@ -52,53 +85,6 @@ export interface IPaintEditor {
 
 */
 
-class CallbackElem {
-  public weakOnChange: WeakRef<any>;
-  public keys: {};
-
-  public constructor(obj: any, keys: {}) {
-    this.weakOnChange = new WeakRef<any>(obj);
-    this.keys = keys;
-  }
-
-  public deref(): any {
-    return this.weakOnChange.deref();
-  }
-}
-
-//WeakRef();
-export class StateStore {
-  public readonly state: {} = {};
-
-  private _callbacks: { [key: string]: CallbackElem } = {};
-
-  public constructor(state: {}) {
-    this.state = state;
-  }
-
-  public registerStateChange(name: string, onChange: any) {
-    this._callbacks[name] = new CallbackElem(onChange, {});
-  }
-
-  public setState(state: {}) {
-    for (let key in state) {
-      this.state[key] = state[key];
-    }
-
-    // run outside current callstack
-    setTimeout(() => {
-      for (let key in this._callbacks) {
-        let elem = this._callbacks[key];
-        let onChange = elem.deref();
-        if (onChange) {
-          onChange();
-        } else {
-          delete this._callbacks[key];
-        }
-      }
-    }, 0);
-  }
-}
 
 export class PaintEditor implements IPaintEditor {
 
@@ -106,16 +92,34 @@ export class PaintEditor implements IPaintEditor {
 
   private commands: { [key: string]: any } = {};
 
-  public constructor() {
-    this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
-    this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
+  /* selected items managed by paper tools
+   * not stored in state since they can change while drawing happens
+   */
+  private _selectedItems: [] = [];
 
+  public constructor() {
     this.stateStore = new StateStore({
       imageFormat: 'svg',
       mode: Modes.SELECT,
+      color: new Color(DEFAULT_COLOR),
       rotationCenterX: undefined,
-      rotationCenterY: undefined
+      rotationCenterY: undefined,
+      filled: false,
+      thickness: 1.0,
+      cusros: Cursors.DEFAULT,
+      zoom: 1.0,
     });
+
+    this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
+    this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
+    this.commands[BitOvalModeCommand_commandId] = new BitOvalModeCommand(this);
+
+    _.bindAll(this, [
+      'handleUpdateImage',
+      'handleSetSelectedItems',
+      'handleClearSelectedItems',
+      'handleSetCursor'
+    ]);
 
     this.handleUpdateImage.bind(this);
   }
@@ -131,16 +135,32 @@ export class PaintEditor implements IPaintEditor {
   public get imageFormat() { return this.stateStore.state.imageFormat };
 
   // @ts-ignore
-  public get color() { return this.stateStore.state.color };
+  public get color(): Color { return this.stateStore.state.color };
 
   // @ts-ignore
   public get bitBrushSize() { return this.stateStore.state.bitBrushSize };
+
+  // @ts-ignore
+  public get filled(): boolean { return this.stateStore.state.filled };
+
+  // @ts-ignore
+  public get thickness(): number { return this.stateStore.state.thickness };
+
+  // @ts-ignore
+  public get zoom(): number { return this.stateStore.state.zoom };
+
+  // @ts-ignore
+  public get selectedItems(): [] { return this.stateStore._selectedItems };
 
   public setState(state: {}) {
     this.stateStore.setState(state);
   }
   public registerStateChange(name: string, onChange: any) {
     this.stateStore.registerStateChange(name, onChange);
+  }
+
+  public unregisterStateChange(name: string) {
+    this.stateStore.unregisterStateChange(name);
   }
 
   private updateImageState(isVector, image, rotationCenterX, rotationCenterY) {
@@ -177,7 +197,7 @@ export class PaintEditor implements IPaintEditor {
    * but the format used can be overridden here. In particular when converting between formats,
    * the does not accurately represent the format.
    */
-  handleUpdateImage(skipSnapshot, formatOverride) {
+  public handleUpdateImage(skipSnapshot, formatOverride) {
     // If in the middle of switching formats, rely on the current mode instead of format.
     const actualFormat = formatOverride ? formatOverride :
       BitmapModes[this.mode] ? Formats.BITMAP : Formats.VECTOR;
@@ -192,7 +212,21 @@ export class PaintEditor implements IPaintEditor {
     //this.state.updateViewBounds(paper.view.matrix);
   }
 
-  handleUpdateBitmap(skipSnapshot) {
+  public handleSetCursor(cursorString: string) {
+    this.stateStore.setState({ cursor: cursorString });
+  }
+
+  public handleSetSelectedItems(selectedItems: [], bitmapMode: any) {
+    // this.stateStore.setState({ selectedItems: selectedItems });
+    this._selectedItems = selectedItems;
+  }
+
+  public handleClearSelectedItems() {
+    //    this.stateStore.setState({ selectedItems: [] });
+    this._selectedItems = [];
+  }
+
+  private handleUpdateBitmap(skipSnapshot) {
     // @ts-ignore
     if (!getRaster().loaded) {
       // In general, callers of updateImage should wait for getRaster().loaded = true before
@@ -259,7 +293,7 @@ export class PaintEditor implements IPaintEditor {
     }
   }
 
-  handleUpdateVector(skipSnapshot) {
+  private handleUpdateVector(skipSnapshot) {
     // Remove viewbox (this would make it export at MAX_WORKSPACE_BOUNDS)
     let workspaceMask;
 
