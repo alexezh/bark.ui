@@ -1,12 +1,11 @@
 
 import Modes from '../../lib/modes';
 import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
-import OvalTool from '../../tools/tools/oval-tool';
+import OvalTool from '../../tools/vector-tools/oval-tool';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { IPaintEditor } from '../PaintEditor';
 
-import BitOvalTool from '../../tools/bit-tools/oval-tool';
 import ovalIcon from './oval.svg';
 
 

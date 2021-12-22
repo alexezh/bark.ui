@@ -1,5 +1,5 @@
 import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
-import RectTool from '../../tools/tools/rect-tool';
+import RectTool from '../../tools/vector-tools/rect-tool';
 
 import Modes from '../../lib/modes';
 

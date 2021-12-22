@@ -2,9 +2,9 @@ import paper from 'paper';
 import log from '../../log/log';
 import BroadBrushHelper from './broad-brush-helper';
 import SegmentBrushHelper from './segment-brush-helper';
-import { MIXED, styleCursorPreview } from '../../helper/style-path';
-import { clearSelection, getItems } from '../../helper/selection';
-import { getGuideLayer, setGuideItem } from '../../helper/layer';
+import { MIXED, styleCursorPreview } from '../../tools/style-path';
+import { clearSelection, getItems } from '../../tools/selection';
+import { getGuideLayer, setGuideItem } from '../../tools/layer';
 import { isCompoundPathChild } from '../compound-path';
 
 /**

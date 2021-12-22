@@ -3,7 +3,7 @@ import { rectSelect } from '../guides';
 import { clearSelection, processRectangularSelection } from '../selection';
 import { getRaster } from '../layer';
 import { ART_BOARD_WIDTH, ART_BOARD_HEIGHT } from '../view';
-import { getHitBounds } from '../../helper/bitmap';
+import { getHitBounds } from '../../tools/bitmap';
 
 /** Tool to handle drag selection. A dotted line box appears and everything enclosed is selected. */
 class SelectionBoxTool {

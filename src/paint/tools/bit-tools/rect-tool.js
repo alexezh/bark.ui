@@ -1,6 +1,6 @@
 import paper from 'paper';
 import Modes from '../../lib/modes';
-import { styleShape } from '../../helper/style-path';
+import { styleShape } from '../../tools/style-path';
 import { commitRectToBitmap } from '../bitmap';
 import { getRaster } from '../layer';
 import { clearSelection } from '../selection';

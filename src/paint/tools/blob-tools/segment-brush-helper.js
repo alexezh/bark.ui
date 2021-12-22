@@ -1,5 +1,5 @@
 import paper from 'paper';
-import { styleBlob } from '../../helper/style-path';
+import { styleBlob } from '../../tools/style-path';
 
 /**
  * Segment brush functions to add as listeners on the mouse. Call them when the corresponding mouse event happens
