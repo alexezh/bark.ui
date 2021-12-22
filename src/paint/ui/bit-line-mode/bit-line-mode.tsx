@@ -1,10 +1,10 @@
-import { MIXED } from '../tools/style-path';
-import { clearSelection, getSelectedLeafItems } from '../tools/selection';
-import BitLineTool from '../tools/bit-tools/line-tool';
-import { IToolSelectCommand, ToolSelectCommand } from './ToolSelectCommand';
-import { DEFAULT_COLOR } from '../tools/colors';
-import Modes, { BitmapModes } from '../lib/modes';
-import { IPaintEditor } from './PaintEditor';
+import { MIXED } from '../../tools/style-path';
+import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
+import BitLineTool from '../../tools/bit-tools/line-tool';
+import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
+import { DEFAULT_COLOR } from '../../tools/colors';
+import Modes, { BitmapModes } from '../../lib/modes';
+import { IPaintEditor } from '../PaintEditor';
 
 import lineIcon from './line.svg';
 
