@@ -10,9 +10,11 @@ import Cursors from '../lib/cursors';
 import { StateStore } from './StateStore';
 import { ART_BOARD_HEIGHT, ART_BOARD_WIDTH, setWorkspaceBounds, SVG_ART_BOARD_HEIGHT, SVG_ART_BOARD_WIDTH } from '../tools/view';
 import GradientTypes from '../lib/gradient-types';
-import BitBrushModeCommand, { BitBrushModeCommand_commandId } from './bit-brush-mode';
-import BitLineModeCommand, { BitLineModeCommand_commandId } from './bit-line-mode';
-import BitOvalModeCommand, { BitOvalModeCommand_commandId } from './bit-oval-mode';
+import BitBrushModeCommand, { BitBrushModeCommand_commandId } from './bit-brush-mode/bit-brush-mode';
+import BitLineModeCommand, { BitLineModeCommand_commandId } from './bit-line-mode/bit-line-mode';
+import BitOvalModeCommand, { BitOvalModeCommand_commandId } from './bit-oval-mode/bit-oval-mode';
+import BitSelectModeCommand, { BitSelectModeCommand_commandId } from './bit-select-mode/bit-select-mode';
+import BitTextModeCommand, { BitTextModeCommand_commandId } from './bit-text-mode/bit-text-mode';
 import { DEFAULT_COLOR } from '../tools/colors';
 
 
@@ -113,6 +115,8 @@ export class PaintEditor implements IPaintEditor {
     this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
     this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
     this.commands[BitOvalModeCommand_commandId] = new BitOvalModeCommand(this);
+    this.commands[BitSelectModeCommand_commandId] = new BitSelectModeCommand(this);
+    this.commands[BitTextModeCommand_commandId] = new BitTextModeCommand(this);
 
     _.bindAll(this, [
       'handleUpdateImage',
