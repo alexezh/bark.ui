@@ -4,7 +4,7 @@ import Modes from '../../lib/modes';
 import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
 import RectTool from '../../tools/bit-tools/rect-tool';
 
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 import { ToolSelectCommand } from '../ToolSelectCommand';
 
 import textIcon from './text.svg';

@@ -6,7 +6,7 @@ import Blobbiness from '../../tools/blob-tools/blob';
 import { clearSelection } from '../../tools/selection';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 
 import brushIcon from './brush.svg';
 

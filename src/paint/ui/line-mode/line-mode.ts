@@ -10,7 +10,7 @@ import { snapDeltaToAngle } from '../../tools/math';
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { DEFAULT_COLOR } from '../../tools/colors';
 import Modes, { BitmapModes } from '../../lib/modes';
-import { ColorState, IPaintEditor } from '../PaintEditor';
+import { ColorState, IPaintEditor } from '../../PaintEditor';
 
 import lineIcon from './line.svg';
 

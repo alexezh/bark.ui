@@ -1,7 +1,7 @@
 import Modes from '../../lib/modes';
 
 import BitSelectTool from '../../tools/bit-tools/select-tool';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 import { ToolSelectCommand } from '../ToolSelectCommand';
 
 import selectIcon from './marquee.svg';

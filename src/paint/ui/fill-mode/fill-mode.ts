@@ -6,7 +6,7 @@ import { generateSecondaryColor, MIXED } from '../../tools/style-path';
 import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 
 import fillIcon from './fill.svg';
 

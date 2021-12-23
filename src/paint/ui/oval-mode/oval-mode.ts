@@ -4,7 +4,7 @@ import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
 import OvalTool from '../../tools/vector-tools/oval-tool';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 
 import ovalIcon from './oval.svg';
 

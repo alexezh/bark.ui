@@ -4,7 +4,7 @@ import BitLineTool from '../../tools/bit-tools/line-tool';
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { DEFAULT_COLOR } from '../../tools/colors';
 import Modes, { BitmapModes } from '../../lib/modes';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 
 import lineIcon from './line.svg';
 

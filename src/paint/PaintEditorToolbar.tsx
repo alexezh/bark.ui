@@ -1,8 +1,8 @@
 import * as React from 'react';
 import _ from "lodash";
-import { CodeFileDef, project } from './Project';
-import ToolSelectComponent from './paint/ui/ToolSelectButton';
-import { IPaintEditor } from './paint/ui/PaintEditor';
+import { CodeFileDef, project } from '../Project';
+import ToolSelectComponent from './ui/ToolSelectButton';
+import { IPaintEditor } from './PaintEditor';
 
 export interface IPaintEditorToolbarProps {
   paintEditor: IPaintEditor;

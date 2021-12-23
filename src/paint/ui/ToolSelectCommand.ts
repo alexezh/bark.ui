@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { IPaintEditor } from './PaintEditor';
+import { IPaintEditor } from '../PaintEditor';
 
 export interface IToolSelectCommand {
   componentDidMount(target: any);

@@ -4,7 +4,7 @@ import RectTool from '../../tools/vector-tools/rect-tool';
 import Modes from '../../lib/modes';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaintEditor } from '../../PaintEditor';
 
 import rectIcon from './rectangle.svg';
 

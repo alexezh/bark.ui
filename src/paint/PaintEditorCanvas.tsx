@@ -1,18 +1,13 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import _ from "lodash";
-//import { Provider } from 'react-redux';
-//import { createStore, combineReducers } from 'redux';
-//import PaintEditor from './containers/paint-editor';
-//import ScratchPaintReducer from './reducers/scratch-paint-reducer';
-//import PaperCanvas from './containers/paper-canvas';
 
-import PaperCanvas, { IZoomController } from './paint/PaperCanvas'
+import PaperCanvas, { IZoomController } from './PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
-import { editorState } from './EditorState';
-import { CodeFileDef, project } from './Project';
-import { PaintEditor } from './paint/ui/PaintEditor';
+import { editorState } from '../EditorState';
+import { CodeFileDef, project } from '../Project';
+import { PaintEditor } from './PaintEditor';
 
 //import { addLocaleData } from 'react-intl';
 
