@@ -1,6 +1,6 @@
 
 // @ts-nocheck
-
+import paper from 'paper';
 import { clearSelection } from '../../tools/selection';
 import { endPointHit, touching } from '../../tools/snapping';
 import { drawHitPoint, removeHitPoint } from '../../tools//guides';

@@ -3,11 +3,13 @@ import _ from 'lodash';
 import classNames from 'classnames';
 
 import Button from './button';
-import './ToolSelectButton.css';
 import { IPaintEditor } from './PaintEditor';
 import { IToolSelectCommand } from './ToolSelectCommand'
 
+import './ToolSelectButton.css';
+
 export interface IToolSelectButtonProps {
+    className: string;
     disabled: boolean;
     isSelected: boolean;
     command: IToolSelectCommand;
@@ -49,7 +51,7 @@ export default class ToolSelectButton extends React.Component<IToolSelectButtonP
         return (
             <Button
                 className={
-                    'mod-tool-select'
+                    classNames('mod-tool-select')
                     //                    classNames(this.props.className, styles.modToolSelect, {
                     //                        [styles.isSelected]: props.isSelected
                     //                    })
@@ -60,7 +62,7 @@ export default class ToolSelectButton extends React.Component<IToolSelectButtonP
                 onClick={this.onClick}
             >
                 <img
-                    className={'img.tool-select-icon'}
+                    className={'tool-image-icon'}
                     draggable={false}
                     src={this.props.command.imgSrc}
                 />

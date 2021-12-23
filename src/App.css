@@ -64,6 +64,32 @@
 	height: 100%;
 }
 
+.PaintEditor-canvas {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.PaintEditor-workarea {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+.PaintEditor-sidebar {
+	width: 64px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.Sidebar-button {
+	width: 64px;
+	height: 64px;
+}
+
 .ModalEditor-close {
   float: right;
 }

@@ -9,6 +9,7 @@ import _ from "lodash";
 
 import PaperCanvas, { IZoomController } from './paint/PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
+import PaintEditorSidebar from './PaintEditorSidebar'
 import { editorState } from './EditorState';
 import { CodeFileDef, project } from './Project';
 import { PaintEditor } from './paint/ui/PaintEditor';
@@ -67,26 +68,36 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
 
   public render() {
     return (
-      <div className="Paint-canvas">
+      <div className="PaintEditor-canvas">
         <PaintEditorToolbar
           codeFile={editorState.lastEditedCodeFile}
           onClose={this.props.onClose}
+          onChange={this.onToolbarChange}
           paintEditor={this.paintEditor} />
-        <PaperCanvas
-          image={svgString}
-          imageId='1'
-          imageFormat='svg'
-          zoomLevelId='id'
-          zoomLevels={{}}
-          shouldZoomToFit={false}
-          format='svg'
-          cursor='id'
-          zoomController={new ZoomController()}
-        />
+        <div className="PaintEditor-workarea">
+          <PaintEditorSidebar
+            codeFile={editorState.lastEditedCodeFile}
+            onClose={this.props.onClose}
+            onChange={this.onToolbarChange}
+            paintEditor={this.paintEditor} />
+          <PaperCanvas
+            image={svgString}
+            imageId='1'
+            imageFormat='svg'
+            zoomLevelId='id'
+            zoomLevels={{}}
+            shouldZoomToFit={false}
+            format='svg'
+            cursor='id'
+            zoomController={new ZoomController()}
+          />
+        </div>
       </div>
     );
   }
 
+  private onToolbarChange() {
+  }
   /*
   
         <Provider store={store}>
