@@ -8,6 +8,7 @@ import PaintEditorSidebar from './PaintEditorSidebar'
 import { editorState } from '../EditorState';
 import { CodeFileDef, project } from '../Project';
 import { PaintEditor } from './PaintEditor';
+import PaintEditorCostumePane from './PaintEditorCostumePane';
 
 //import { addLocaleData } from 'react-intl';
 
@@ -85,6 +86,10 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
             format='svg'
             cursor='id'
             zoomController={new ZoomController()}
+          />
+          <PaintEditorCostumePane
+            sprite={editorState.lastEditedSprite}
+            paintEditor={this.paintEditor}
           />
         </div>
       </div>

@@ -2,12 +2,12 @@ import * as React from 'react';
 import _ from "lodash";
 import { CodeFileDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
+import List, { ListItem } from 'react-list-select';
 import { IPaintEditor } from './PaintEditor';
 
 export interface IPaintEditorCostumePaneProps {
   paintEditor: IPaintEditor;
   sprite: SpriteDef;
-  onClose: any;
 }
 
 export interface IPaintEditorCostumePaneState {
@@ -30,21 +30,43 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
     return (
       <div className='PaintEditor-costume'>
         <div>
-          <ul>
-          </ul>
+          <List>
+            {
+              this.renderCostumeList()
+            }
+          </List>
         </div >
       </div >
     );
   }
 
-  private renderCostumeList(): any[] {
-    let files: any[] = [];
-    project.forEachSprite((file) => {
-      files.push((
-        <option key={file.name}>{file.name}</option>
-      ));
-    })
-
-    return files;
+  renderItem(text) {
+    return (
+      <div className="contact">
+        <span className="name">{text}</span>
+      </div>
+    )
   }
+  
+
+let example4 = (
+  <List
+    items={comps}
+    disabled={[2]}
+    selected={[0]}
+    onChange={console.log.bind(console)}
+  />
+)
+
+  private renderCostumeList(): any[] {
+  let costumes: any[] = [];
+  for (let i = 0; i < this.state.sprite.costumes.length; i++) {
+    let costume = this.state.sprite.costumes[i];
+    costumes.push((
+      <ListItem key={costume.id}>{costume.name}</ListItem>
+    ));
+  }
+
+  return costumes;
+}
 }

@@ -2,13 +2,13 @@ import { timeStamp } from "console";
 import { BlockList } from "net";
 import { v4 as uuidv4 } from 'uuid';
 
-export interface IProjectObject {
-
-}
-
-export interface IProjectStore {
-  addObject(id: string, obj: any);
-  removeObject(id: string, obj: any);
+export interface IMessageChannel {
+  updateSnapshot(json: string);
+  updateSprite(id: string, SpriteDef: any);
+  removeSprite(id: string, obj: any);
+  updateCostume(id: string, SpriteDef: any);
+  removeCostume(id: string, SpriteDef: any);
+  updateLevel(id: string, SpriteDef: any);
 }
 
 /**
@@ -82,7 +82,7 @@ export class SpriteDef {
     this.name = name;
     this.codeFile = new CodeFileDef(name);
 
-    // add one costume be default
+    // add one costume by default
     this.costumes.push(new CostumeDef());
   }
 }
@@ -108,6 +108,13 @@ export class ProjectDef {
   public sprites: SpriteDef[] = [];
   public level?: TileLevelDef;
   public codeFile: CodeFileDef = new CodeFileDef('game');
+
+  public constructor() {
+    // create a default sprite
+    this.sprites.push(new SpriteDef('Leia'));
+    this.sprites.push(new SpriteDef('Floor'));
+    this.sprites.push(new SpriteDef('Air'));
+  }
 }
 
 /**
