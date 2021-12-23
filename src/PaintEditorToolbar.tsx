@@ -32,9 +32,9 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
   public render() {
     return (
       <div className='PaintEditor-toolbar'>
-        <span>Object: </span>
+        <span>Sprites: </span>
         <select onChange={this.onSelectObject} value={this.state.currentObject}>
-          {this.renderObjectList()}
+          {this.renderSpriteList()}
         </select>
         <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
       </div >
@@ -47,7 +47,7 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
       return;
     }
 
-    let blockId = codeFile?.getLastEditedBlockId();
+    let blockId = CodeFileDef.getLastEditedBlockId(codeFile);
     this.setState({
       codeFile: codeFile,
       currentObject: e.target.value,
@@ -55,11 +55,11 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
     this.props.onChange();
   }
 
-  private renderObjectList(): any[] {
+  private renderSpriteList(): any[] {
     let files: any[] = [];
-    project.forEachCodeFile((file) => {
+    project.forEachSprite((sprite) => {
       files.push((
-        <option key={file.name}>{file.name}</option>
+        <option key={sprite.id}>{sprite.name}</option>
       ));
     })
 

@@ -1,19 +1,34 @@
 import { timeStamp } from "console";
 import { BlockList } from "net";
+import { v4 as uuidv4 } from 'uuid';
 
+export interface IProjectObject {
+
+}
+
+export interface IProjectStore {
+  addObject(id: string, obj: any);
+  removeObject(id: string, obj: any);
+}
+
+/**
+ * ATT: all methods should be static. We will deserialize JS into this class without casting
+ */
 export class CodeFileDef {
   // name of code file; for sprites the same as sprite name
-  public name: string = '';
+  public id: string;
+  public name: string = 'No name';
   public code: { [key: string]: string } = {};
 
   public constructor(name: string) {
+    this.id = uuidv4();
     this.name = name;
   }
 
   // return id of the last edited block
   // useful for opening up editor
-  public getLastEditedBlockId(): string | undefined {
-    for (let item in this.code) {
+  public static getLastEditedBlockId(codeFile: CodeFileDef): string | undefined {
+    for (let item in codeFile.code) {
       return item;
     }
     return undefined;
@@ -36,22 +51,45 @@ export class CodeFileDef {
   }
 }
 
-export class SpriteDef {
-  // unique ID of the sprite
-  public id: string = '';
-  // user defined name of the sprite
-  public name: string = '';
-  public width: number = 0;
-  public height: number = 0;
-  public codeFile: CodeFileDef;
-  public skins: string[] = [];
+/**
+ * ATT: all methods should be static. We will deserialize JS into this class without casting
+ */
+export class CostumeDef {
+  public id: string;
+  public name: string = 'No name';
+  public data: string = '';
 
-  public constructor(name: string) {
-    this.name = name;
-    this.codeFile = new CodeFileDef(name);
+  public constructor() {
+    this.id = uuidv4();
   }
 }
 
+/**
+ * ATT: all methods should be static. We will deserialize JS into this class without casting
+ */
+export class SpriteDef {
+  // unique ID of the sprite
+  public id: string;
+  // user defined name of the sprite
+  public name: string = 'No name';
+  public width: number = 0;
+  public height: number = 0;
+  public codeFile: CodeFileDef;
+  public costumes: CostumeDef[] = [];
+
+  public constructor(name: string) {
+    this.id = uuidv4();
+    this.name = name;
+    this.codeFile = new CodeFileDef(name);
+
+    // add one costume be default
+    this.costumes.push(new CostumeDef());
+  }
+}
+
+/**
+ * ATT: all methods should be static. We will deserialize JS into this class without casting
+ */
 export class TileLevelDef {
   public gridWidth: number = 0;
   public gridHeight: number = 0;
@@ -63,12 +101,18 @@ export class TileLevelDef {
   }
 }
 
+/**
+ * ATT: all methods should be static. We will deserialize JS into this class without casting
+ */
 export class ProjectDef {
   public sprites: SpriteDef[] = [];
   public level?: TileLevelDef;
   public codeFile: CodeFileDef = new CodeFileDef('game');
 }
 
+/**
+ * utility method for managing project
+ */
 export class Project {
   public readonly def: ProjectDef;
 
@@ -87,7 +131,7 @@ export class Project {
     return new Project(def);
   }
 
-  public createSprite(id: string, name: string) {
+  public createSprite(name: string) {
     let sprite = new SpriteDef(name);
 
     sprite.codeFile['timer'] = '// add animation code here';
@@ -97,6 +141,10 @@ export class Project {
   // update model by applying function
   public update(func: () => void) {
     func();
+  }
+
+  public forEachSprite(func: (file: SpriteDef) => void) {
+    this.def.sprites.forEach((x) => func(x));
   }
 
   public forEachCodeFile(func: (file: CodeFileDef) => void) {
@@ -120,6 +168,17 @@ export class Project {
       let sprite = this.def.sprites[spriteKey];
       if (sprite.codeFile.name === file) {
         return sprite.codeFile;
+      }
+    }
+
+    return undefined;
+  }
+
+  public findSprite(id: string): SpriteDef | undefined {
+    for (let spriteKey in this.def.sprites) {
+      let sprite = this.def.sprites[spriteKey];
+      if (sprite.id === id) {
+        return sprite;
       }
     }
 

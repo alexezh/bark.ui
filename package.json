@@ -49,7 +49,8 @@
     "react-style-proptype": "^3.2.2",
     "scratch-l10n": "^3.14.20211219031623",
     "scratch-render-fonts": "^1.0.0-prerelease.20210401210003",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "uuid": "^8.3.2"
   },
   "browserslist": {
     "production": [

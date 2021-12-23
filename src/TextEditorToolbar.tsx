@@ -52,7 +52,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
       return;
     }
 
-    let blockId = codeFile?.getLastEditedBlockId();
+    let blockId = CodeFileDef.getLastEditedBlockId(codeFile);
     this.setState({
       codeFile: codeFile,
       currentObject: e.target.value,

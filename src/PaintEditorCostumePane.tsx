@@ -1,17 +1,17 @@
 import * as React from 'react';
 import _ from "lodash";
-import { CodeFileDef, project } from './Project';
+import { CodeFileDef, project, SpriteDef } from './Project';
 import ToolSelectComponent from './paint/ui/ToolSelectButton';
 import { IPaintEditor } from './paint/ui/PaintEditor';
 
 export interface IPaintEditorCostumePaneProps {
   paintEditor: IPaintEditor;
-  codeFile: CodeFileDef;
+  sprite: SpriteDef;
   onClose: any;
 }
 
 export interface IPaintEditorCostumePaneState {
-  codeFile: CodeFileDef;
+  sprite: SpriteDef;
 }
 
 export default class PaintEditorCostumePane extends React.Component<IPaintEditorCostumePaneProps, IPaintEditorCostumePaneState> {
@@ -22,14 +22,29 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
     ]);
 
     this.state = {
-      codeFile: props.codeFile,
+      sprite: props.sprite,
     }
   }
 
   public render() {
     return (
-      <div className='PaintEditor-sidebar'>
+      <div className='PaintEditor-costume'>
+        <div>
+          <ul>
+          </ul>
+        </div >
       </div >
     );
+  }
+
+  private renderCostumeList(): any[] {
+    let files: any[] = [];
+    project.forEachSprite((file) => {
+      files.push((
+        <option key={file.name}>{file.name}</option>
+      ));
+    })
+
+    return files;
   }
 }

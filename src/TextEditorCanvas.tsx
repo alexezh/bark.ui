@@ -26,7 +26,7 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
     ]);
 
     let codeFile = props.codeFile === undefined ? project.def.codeFile : props.codeFile;
-    let blockId = codeFile?.getLastEditedBlockId();
+    let blockId = CodeFileDef.getLastEditedBlockId(codeFile);
 
     this.state = {
       codeFile: codeFile,
