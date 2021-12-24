@@ -5,7 +5,7 @@ import _ from "lodash";
 import MainToolbar from './MainToolbar';
 import TextEditorCanvas from './TextEditorCanvas';
 import GameCanvas from './GameCanvas';
-import PaintCanvas from './paint/PaintEditorCanvas';
+import PaintEditorCanvas from './paint/PaintEditorCanvas';
 import workspace from './Workspace';
 import { CodeFileDef } from './Project';
 
@@ -55,11 +55,11 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
         <ReactModal isOpen={this.state.showModal} contentLabel="CodeEditor">
           {
             this.state.editorKind === EditorKind.CodeEditor ?
-              <TextEditorCanvas onClose={this.onCloseModal} codeFile={workspace.lastEditedCodeFile} /> : null
+              <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} /> : null
           }
           {
             this.state.editorKind === EditorKind.PaintEditor ?
-              <PaintCanvas onClose={this.onCloseModal} sprite={workspace.lastEditedSprite} /> : null
+              <PaintEditorCanvas onClose={this.onCloseModal} /> : null
           }
         </ReactModal>
       </div>

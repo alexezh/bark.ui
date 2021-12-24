@@ -13,6 +13,7 @@ import {
     clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
 } from './tools/view';
 import { ensureClockwise, scaleWithStrokes } from './tools/math';
+import { CostumeDef } from '../Project';
 import { IPaintEditor } from './PaintEditor';
 
 var paperScope: any = null;
@@ -47,11 +48,9 @@ export interface IPaperCanvasProps {
 
 export interface IPaperCanvasState {
     format: string; // Formats;
-    imageFormat: string;
-    image: string | HTMLImageElement;
+    image: CostumeDef | undefined;
     rotationCenterX?: number;
     rotationCenterY?: number;
-    imageId: string | null;
     cursor: string;
 }
 
@@ -81,11 +80,9 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         this.editor = props.edittor;
         this.state = {
             format: this.editor.state.format,
-            imageFormat: this.editor.state.imageFormat,
             image: this.editor.state.image,
             rotationCenterX: this.editor.state.rotationCenterX,
             rotationCenterY: this.editor.state.rotationCenterY,
-            imageId: this.editor.state.imageId,
             cursor: this.editor.state.cursor
         }
         this.editor.registerStateChange('PaperCanvas', this.onEditorStateChange)
@@ -93,7 +90,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
 
     onEditorStateChange() {
         let updateState = {};
-        if (this.editor.state.imageId !== this.state.imageId) {
+        if (!CostumeDef.isEqual(this.editor.state.image, this.state.image)) {
             // @ts-ignore
             updateState.imageId = this.editor.state.imageId;
         }
@@ -138,7 +135,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.editor.state.rotationCenterX, this.editor.state.rotationCenterY);
     }
     componentWillReceiveProps(newProps) {
-        if (this.editor.state.imageId !== newProps.imageId) {
+        if (!CostumeDef.isEqual(this.editor.state.image, newProps.image)) {
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);

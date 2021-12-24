@@ -1,6 +1,6 @@
-import { timeStamp } from "console";
 import { BlockList } from "net";
 import { v4 as uuidv4 } from 'uuid';
+import { x64Hash64 } from './hash/murmurhash3';
 
 export interface IMessageChannel {
   updateSnapshot(json: string);
@@ -11,66 +11,106 @@ export interface IMessageChannel {
   updateLevel(id: string, SpriteDef: any);
 }
 
-/**
- * ATT: all methods should be static. We will deserialize JS into this class without casting
- */
-export class CodeFileDef {
-  // name of code file; for sprites the same as sprite name
-  public id: string;
-  public name: string = 'No name';
-  public code: { [key: string]: string } = {};
+export interface IObjectDef {
+  get path(): string;
+}
 
-  public constructor(name: string) {
+export class ObjectDef implements IObjectDef {
+  public id: string;
+  public parent: IObjectDef | undefined;
+
+  public constructor(parent: IObjectDef | undefined) {
     this.id = uuidv4();
+    this.parent = parent;
+  }
+
+  public get path(): string {
+    if (this.parent !== undefined) {
+      return this.parent.path + '!' + this.id;
+    } else {
+      return this.id;
+    }
+  }
+}
+
+export class CodeBlockDef extends ObjectDef {
+  public name: string;
+  public code: string;
+  public codeId: string;
+
+  public constructor(parent: IObjectDef, name: string, code: string) {
+    super(parent);
+    this.name = name;
+    this.code = code;
+    this.codeId = x64Hash64(code);
+  }
+
+  public updateCode(code: string) {
+    this.code = code;
+    this.codeId = x64Hash64(code);
+  }
+}
+
+export class CodeFileDef extends ObjectDef {
+  // name of code file; for sprites the same as sprite name
+  public name: string = 'No name';
+  public codeBlocks: CodeBlockDef[] = [];
+
+  public constructor(parent: IObjectDef | undefined, name: string) {
+    super(parent);
     this.name = name;
   }
 
-  // return id of the last edited block
-  // useful for opening up editor
-  public static getLastEditedBlockId(codeFile: CodeFileDef): string | undefined {
-    for (let item in codeFile.code) {
-      return item;
-    }
-    return undefined;
+  public createBlock(name: string, code: string) {
+    this.codeBlocks.push(new CodeBlockDef(this, name, code));
   }
 
-  public static getCode(codeFile?: CodeFileDef, blockId?: string) {
-    if (codeFile === undefined || blockId === undefined) {
-      return '';
-    }
+  public get firstBlock(): CodeBlockDef | undefined { return (this.codeBlocks.length > 0) ? this.codeBlocks[0] : undefined }
+}
 
-    return codeFile.code[blockId];
-  }
-
-  public static updateCode(codeFile: CodeFileDef | undefined, blockId: string | undefined, code: string) {
-    if (codeFile === undefined || blockId === undefined) {
-      return '';
-    }
-
-    codeFile.code[blockId] = code;
-  }
+export enum ImageFormat {
+  svg,
+  png
 }
 
 /**
  * ATT: all methods should be static. We will deserialize JS into this class without casting
  */
-export class CostumeDef {
-  public id: string;
+export class CostumeDef extends ObjectDef {
   public name: string = 'No name';
   public image: string | null = null;
+  public imageFormat: ImageFormat = ImageFormat.svg;
   public imageId: string | null = null;
 
-  public constructor() {
+  public constructor(parent: IObjectDef) {
+    super(parent);
     this.id = uuidv4();
+  }
+
+  public updateImage(imageFormat: ImageFormat, image: string) {
+    this.imageFormat = imageFormat;
+    this.image = image;
+    this.imageId = x64Hash64(image);
+  }
+
+  public static isEqual(a: CostumeDef | undefined, b: CostumeDef | undefined): boolean {
+    if (a === undefined && b === undefined) {
+      return true;
+    } else if (a !== undefined && b === undefined) {
+      return false;
+    } else if (a === undefined && b !== undefined) {
+      return false;
+    } else {
+      // @ts-ignore
+      return a.imageId === b.imageId;
+    }
   }
 }
 
 /**
  * ATT: all methods should be static. We will deserialize JS into this class without casting
  */
-export class SpriteDef {
-  // unique ID of the sprite
-  public id: string;
+export class SpriteDef extends ObjectDef {
   // user defined name of the sprite
   public name: string = 'No name';
   public width: number = 0;
@@ -78,28 +118,41 @@ export class SpriteDef {
   public codeFile: CodeFileDef;
   public costumes: CostumeDef[] = [];
 
-  public constructor(name: string) {
-    this.id = uuidv4();
+  public constructor(parent: IObjectDef | undefined, name: string) {
+    super(parent);
     this.name = name;
-    this.codeFile = new CodeFileDef(name);
+    this.codeFile = new CodeFileDef(this, name);
 
     // add one costume by default
-    this.costumes.push(new CostumeDef());
-    this.costumes.push(new CostumeDef());
+    this.costumes.push(new CostumeDef(this));
+    this.costumes.push(new CostumeDef(this));
+  }
+
+  public get firstCostume(): CostumeDef { return this.costumes[0] }
+
+  public findCostume(id: string): CostumeDef | undefined {
+    for (let i = 0; i < this.costumes.length; i++) {
+      if (this.costumes[i].id == id) {
+        return this.costumes[i];
+      }
+    }
+
+    return undefined;
   }
 }
 
 /**
  * ATT: all methods should be static. We will deserialize JS into this class without casting
  */
-export class TileLevelDef {
+export class TileLevelDef extends ObjectDef {
   public gridWidth: number = 0;
   public gridHeight: number = 0;
   public cells: any[] = [];
   public codeFile: CodeFileDef;
 
   public constructor() {
-    this.codeFile = new CodeFileDef('level');
+    super(undefined)
+    this.codeFile = new CodeFileDef(this, 'level');
   }
 }
 
@@ -109,13 +162,13 @@ export class TileLevelDef {
 export class ProjectDef {
   public sprites: SpriteDef[] = [];
   public level?: TileLevelDef;
-  public codeFile: CodeFileDef = new CodeFileDef('game');
+  public codeFile: CodeFileDef = new CodeFileDef(undefined, 'game');
 
   public constructor() {
     // create a default sprite
-    this.sprites.push(new SpriteDef('Leia'));
-    this.sprites.push(new SpriteDef('Floor'));
-    this.sprites.push(new SpriteDef('Air'));
+    this.sprites.push(new SpriteDef(undefined, 'Leia'));
+    this.sprites.push(new SpriteDef(undefined, 'Floor'));
+    this.sprites.push(new SpriteDef(undefined, 'Air'));
   }
 }
 
@@ -131,7 +184,7 @@ export class Project {
 
   public static createEmptyProject(): Project {
     let def = new ProjectDef();
-    def.codeFile.code['updateScene'] = '// put code to update scene here';
+    def.codeFile.createBlock('updateScene', '// put code to update scene here');
 
     def.level = new TileLevelDef();
     def.level.gridWidth = 48;
@@ -141,7 +194,7 @@ export class Project {
   }
 
   public createSprite(name: string) {
-    let sprite = new SpriteDef(name);
+    let sprite = new SpriteDef(undefined, name);
 
     sprite.codeFile['timer'] = '// add animation code here';
     this.def.sprites.push(sprite);
@@ -164,18 +217,18 @@ export class Project {
     this.def.sprites.forEach((x) => func(x.codeFile));
   }
 
-  public findCodeFile(file: string): CodeFileDef | undefined {
-    if (this.def.codeFile.name === file) {
+  public findCodeFileById(id: string): CodeFileDef | undefined {
+    if (this.def.codeFile.id === id) {
       return this.def.codeFile;
     }
 
-    if (this.def.level !== undefined && this.def.level.codeFile.name === file) {
+    if (this.def.level !== undefined && this.def.level.codeFile.id === id) {
       return this.def.level.codeFile;
     }
 
     for (let spriteKey in this.def.sprites) {
       let sprite = this.def.sprites[spriteKey];
-      if (sprite.codeFile.name === file) {
+      if (sprite.codeFile.id === id) {
         return sprite.codeFile;
       }
     }
@@ -183,7 +236,7 @@ export class Project {
     return undefined;
   }
 
-  public findSprite(id: string): SpriteDef | undefined {
+  public findSpriteById(id: string): SpriteDef | undefined {
     for (let spriteKey in this.def.sprites) {
       let sprite = this.def.sprites[spriteKey];
       if (sprite.id === id) {
@@ -192,6 +245,20 @@ export class Project {
     }
 
     return undefined;
+  }
+
+  /**
+   * updates costume on sprite; sends updates over protocols
+   */
+  public updateCostume(sprite: SpriteDef, costumeId: string, imageId: string, image: string) {
+    let costume = sprite.findCostume(costumeId);
+    if (costume === undefined) {
+      console.log('cannot find costume:' + costumeId);
+      return;
+    }
+
+    costume.image = image;
+    costume.imageId = imageId;
   }
 }
 

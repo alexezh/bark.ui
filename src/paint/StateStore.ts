@@ -1,5 +1,12 @@
 
-//WeakRef();
+/**
+ * stores properties of the interface
+ * provides notification mechanism for propety changes
+ * 
+ * in other words, it provides 90% of redux functionality without reducers
+ * instead we say that store maintains state which code can update and listen
+ * state is mutable; it is responsibility of component to remember the last value(s)
+ */
 export class StateStore<T> {
   public readonly state: {} = {};
 

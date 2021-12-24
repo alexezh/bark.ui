@@ -1,17 +1,18 @@
-import { CodeFileDef, project, SpriteDef } from "./Project";
+import { CodeBlockDef, CodeFileDef, project, SpriteDef } from "./Project";
 
 /**
  * keeps track of project wide properties
  */
 export class Workspace {
-  private _lastEditedCodeFile?: CodeFileDef;
+  private _lastEditedCodeBlock?: CodeBlockDef;
   private _lastEditedSprite?: SpriteDef;
-  public get lastEditedCodeFile(): CodeFileDef {
-    if (this._lastEditedCodeFile !== undefined) {
-      return this._lastEditedCodeFile;
+  public get lastEditedCodeBlock(): CodeBlockDef {
+    if (this._lastEditedCodeBlock !== undefined) {
+      return this._lastEditedCodeBlock;
     }
 
-    return project.def.codeFile;
+    // @ts-ignore project will have one code block
+    return project.def.codeFile.firstBlock;
   }
 
   public get lastEditedSprite(): SpriteDef {

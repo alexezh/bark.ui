@@ -7,7 +7,7 @@ import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
 import workspace from '../Workspace';
 import { CodeFileDef, project, SpriteDef } from '../Project';
-import { PaintEditor } from './PaintEditor';
+import { IPaintEditor, PaintEditor } from './PaintEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
 
 //import { addLocaleData } from 'react-intl';
@@ -30,15 +30,15 @@ const svgString =
   '</svg>';
 
 export interface IPaintCanvasProps {
-  onClose: any
-  sprite?: SpriteDef
+  onClose: any;
 }
 
 export interface IPaintCanvasState {
-  sprite: SpriteDef | undefined
+  sprite: SpriteDef;
+  imageId: string;
 }
 
-export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
+export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
   private paintEditor: PaintEditor;
   constructor(props: IPaintCanvasProps) {
     super(props);
@@ -46,28 +46,46 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
     this.paintEditor = new PaintEditor();
 
     _.bindAll(this, [
+      'onEditorStateChange'
     ]);
 
-    let sprite = props.sprite === undefined ? project.def.sprites[0] : props.sprite;
+    let sprite = workspace.lastEditedSprite;
 
     this.state = {
       sprite: sprite,
+      imageId: sprite.costumes[0].id,
     }
+  }
+
+  componentDidMount() {
+    this.paintEditor.registerStateChange('PaintEditorCanvas', this.onEditorStateChange)
+  }
+  componentWillReceiveProps(newProps) {
+  }
+  componentWillUnmount() {
+  }
+
+  /**
+   * canvas is the object which knows that we are editing particular sprite / costume
+   * when image changes, it updates  
+   */
+  public onEditorStateChange() {
+
   }
 
   public render() {
     return (
       <div className="PaintEditor-canvas">
         <PaintEditorToolbar
-          codeFile={workspace.lastEditedCodeFile}
+          sprite={workspace.lastEditedSprite}
           onClose={this.props.onClose}
           onChange={this.onToolbarChange}
           paintEditor={this.paintEditor} />
         <div className="PaintEditor-workarea">
           <PaintEditorSidebar
-            codeFile={workspace.lastEditedCodeFile}
+            sprite={workspace.lastEditedSprite}
             onClose={this.props.onClose}
-            onChange={this.onToolbarChange}
+            onChange={this.onSidebarChange}
             paintEditor={this.paintEditor} />
           <PaperCanvas
             editor={this.paintEditor}
@@ -81,7 +99,10 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
     );
   }
 
-  private onToolbarChange() {
+  private onToolbarChange(sprite: SpriteDef) {
+  }
+
+  private onSidebarChange() {
   }
   /*
   

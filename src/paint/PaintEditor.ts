@@ -22,6 +22,7 @@ import OvalModeCommand, { OvalModeCommand_commandId } from './ui/oval-mode/oval-
 import LineModeCommand, { LineModeCommand_commandId } from './ui/line-mode/line-mode';
 import FillModeCommand, { FillModeCommand_commandId } from './ui/fill-mode/fill-mode';
 import BrushModeCommand, { BrushModeCommand_commandId } from './ui/brush-mode/brush-mode';
+import { CostumeDef } from '../Project';
 
 export class BrushMode {
   public brushSize: any = 1;
@@ -116,8 +117,8 @@ export interface IPaintEditorState {
   get cursor(): string;
   get zoom(): number;
   get selectedItems(): [];
-  get image(): string;
-  get imageId(): string | null;
+
+  get image(): CostumeDef | undefined;
 
   get zoomLevelId(): number;
   get shouldZoomToFit(): boolean;
@@ -135,6 +136,11 @@ export interface IPaintEditor {
   registerStateChange(name: string, onChange: any);
   unregisterStateChange(name: string);
   setState(props: {});
+
+  /**
+   * set image to be edited
+   */
+  setImage(costume: CostumeDef);
 
   handleUpdateImage(skipSnapshot, formatOverride);
   handleSetCursor(cursorString: string);
@@ -194,8 +200,7 @@ export class PaintEditor implements IPaintEditor {
       zoom: 1.0,
       bitBrushSize: null,
       selectedItems: [],
-      image: '',
-      imageId: null,
+      image: undefined,
 
       zoomLevelId: 0,
       shouldZoomToFit: true,
@@ -236,6 +241,9 @@ export class PaintEditor implements IPaintEditor {
     this.stateStore.unregisterStateChange(name);
   }
 
+  public setImage(costume: CostumeDef) {
+    this.setState({ image: costume });
+  }
   public getCommand(key: string): any {
     return this.commands[key];
   }

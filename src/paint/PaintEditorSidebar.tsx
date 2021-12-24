@@ -1,18 +1,19 @@
 import * as React from 'react';
 import _ from "lodash";
-import { CodeFileDef, project } from '../Project';
+import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaintEditor } from './PaintEditor';
 
 export interface IPaintEditorSidebarProps {
   paintEditor: IPaintEditor;
-  codeFile: CodeFileDef;
+  sprite: SpriteDef;
   onClose: any;
-  onChange: any;
+  onChange: (costume: CostumeDef) => void;
 }
 
 export interface IPaintEditorSidebarState {
-  codeFile: CodeFileDef;
+  sprite: SpriteDef;
+  costume: CostumeDef;
 }
 
 export default class PaintEditorSidebar extends React.Component<IPaintEditorSidebarProps, IPaintEditorSidebarState> {
@@ -23,7 +24,8 @@ export default class PaintEditorSidebar extends React.Component<IPaintEditorSide
     ]);
 
     this.state = {
-      codeFile: props.codeFile,
+      sprite: props.sprite,
+      costume: props.sprite.firstCostume
     }
   }
 

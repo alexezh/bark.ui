@@ -40,6 +40,7 @@
     "lodash.bindall": "^4.4.0",
     "lodash.omit": "^4.5.0",
     "minilog": "^3.1.0",
+    "non-crypto-hash": "^0.1.2",
     "parse-color": "^1.0.0",
     "react-intl": "^2",
     "react-intl-redux": "^0.7",

@@ -1,17 +1,16 @@
 import * as React from 'react';
-import { CodeFileDef, project } from './Project';
+import { CodeBlockDef, CodeFileDef, project } from './Project';
 import _ from "lodash";
 
 export interface ITextEditorToolbarProps {
-  codeFile: CodeFileDef;
+  codeBlock: CodeBlockDef;
   onClose: any;
-  onChange: (file: CodeFileDef, block?: string) => void;
+  onChange: (codeBLock: CodeBlockDef | undefined) => void;
 }
 
 export interface ITextEditorToolbarState {
-  codeFile: CodeFileDef;
-  currentObject: any;
-  currentFunction: any;
+  codeFile?: CodeFileDef;
+  codeBlock?: CodeBlockDef;
 }
 
 export default class TextEditorToolbar extends React.Component<ITextEditorToolbarProps, ITextEditorToolbarState> {
@@ -24,9 +23,8 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     ]);
 
     this.state = {
-      codeFile: props.codeFile,
-      currentObject: undefined,
-      currentFunction: undefined,
+      codeBlock: props.codeBlock,
+      codeFile: props.codeBlock?.parent as CodeFileDef
     }
   }
 
@@ -34,11 +32,11 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     return (
       <div className='TextEditor-toolbar'>
         <span>Object: </span>
-        <select onChange={this.onSelectObject} value={this.state.currentObject}>
-          {this.renderObjectList()}
+        <select onChange={this.onSelectFile} value={this.state.codeFile?.id}>
+          {this.renderFileList()}
         </select>
         <span margin-left="20px">Functions: </span>
-        <select onChange={this.onSelectFunction} value={this.state.currentFunction}>
+        <select onChange={this.onSelectFunction} value={this.state.codeBlock?.id}>
           {this.renderFunctionList()}
         </select>
         <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
@@ -46,48 +44,50 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     );
   }
 
-  private onSelectObject(e: any) {
-    let codeFile = project.findCodeFile(e.target.value);
+  private onSelectFile(e: any) {
+    let codeFile = project.findCodeFileById(e.target.value);
     if (codeFile === undefined) {
       return;
     }
 
-    let blockId = CodeFileDef.getLastEditedBlockId(codeFile);
     this.setState({
       codeFile: codeFile,
-      currentObject: e.target.value,
-      currentFunction: blockId
+      codeBlock: codeFile.firstBlock
     });
-    this.props.onChange(codeFile, blockId);
+    this.props.onChange(codeFile.firstBlock);
   }
 
   private onSelectFunction(e: any) {
+    let codeFile = project.findCodeFileById(e.target.value);
+    let codeBlock = codeFile?.firstBlock;
     this.setState({
-      currentFunction: e.target.value
+      codeBlock: codeFile?.firstBlock,
+      codeFile: codeFile
     });
-    this.props.onChange(this.state.codeFile, e.target.value);
+    this.props.onChange(codeBlock);
   }
 
   private renderFunctionList(): any[] {
-    if (this.props.codeFile === undefined) {
+    if (this.state.codeFile === undefined) {
       return [];
     }
 
     let funcs: any[] = [];
-    for (let item in this.props.codeFile.code) {
+    for (let idx in this.state.codeFile.codeBlocks) {
+      let item = this.state.codeFile.codeBlocks[idx];
       funcs.push((
-        <option key={item}>{item}</option>
+        <option key={item.id}>{item.name}</option>
       ));
     }
 
     return funcs;
   }
 
-  private renderObjectList(): any[] {
+  private renderFileList(): any[] {
     let files: any[] = [];
     project.forEachCodeFile((file) => {
       files.push((
-        <option key={file.name}>{file.name}</option>
+        <option key={file.path}>{file.name}</option>
       ));
     })
 

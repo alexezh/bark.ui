@@ -3,17 +3,16 @@ import _ from "lodash";
 
 import workspace from './Workspace';
 import TextEditorToolbar from './TextEditorToolbar';
-import { CodeFileDef, project } from './Project';
+import { CodeBlockDef, CodeFileDef, project } from './Project';
 
 export interface ITextEditorCanvasProps {
-  onClose: any
-  codeFile?: CodeFileDef
+  onClose: any;
+  codeBlock?: CodeBlockDef;
 }
 
 export interface ITextEditorCanvasState {
-  codeFile: CodeFileDef | undefined
-  codeFileBlock?: string
-  code: string
+  codeBlock: CodeBlockDef | undefined
+  codeId: string | undefined;
 }
 
 export default class TextEditorCanvas extends React.Component<ITextEditorCanvasProps, ITextEditorCanvasState> {
@@ -25,13 +24,11 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
       'onToolbarChange'
     ]);
 
-    let codeFile = props.codeFile === undefined ? project.def.codeFile : props.codeFile;
-    let blockId = CodeFileDef.getLastEditedBlockId(codeFile);
+    let codeBlock = props.codeBlock === undefined ? project.def.codeFile.firstBlock : props.codeBlock;
 
     this.state = {
-      codeFile: codeFile,
-      codeFileBlock: blockId,
-      code: CodeFileDef.getCode(codeFile, blockId)
+      codeBlock: codeBlock,
+      codeId: codeBlock?.codeId
     }
   }
 
@@ -39,12 +36,12 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
     return (
       <div className="TextEditor-canvas">
         <TextEditorToolbar
-          codeFile={workspace.lastEditedCodeFile}
+          codeBlock={workspace.lastEditedCodeBlock}
           onClose={this.props.onClose}
           onChange={this.onToolbarChange} />
         <textarea
           className="TextEditor-text"
-          value={this.state.code}
+          value={this.state.codeBlock?.code}
           onChange={this.onCodeChange}
         />
       </div>
@@ -52,18 +49,18 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
   }
 
   private onCodeChange(event: any) {
-    this.setState({ code: event.target.value });
-    if (this.state.codeFile !== undefined) {
-      CodeFileDef.updateCode(this.state.codeFile, this.state.codeFileBlock, event.target.value);
+    if (this.state.codeBlock !== undefined) {
+      this.state.codeBlock.updateCode(event.target.value);
     }
+    // update id to trigger reload
+    this.setState({ codeId: this.state.codeBlock?.codeId });
   }
 
-  private onToolbarChange(file: CodeFileDef, block?: string) {
-    console.log(block);
+  private onToolbarChange(codeBlock: CodeBlockDef | undefined) {
+    console.log(codeBlock);
     this.setState({
-      codeFile: file,
-      codeFileBlock: block,
-      code: CodeFileDef.getCode(file, block)
+      codeBlock: codeBlock,
+      codeId: codeBlock?.codeId
     });
   }
 }

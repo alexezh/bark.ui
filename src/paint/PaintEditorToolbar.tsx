@@ -1,19 +1,18 @@
 import * as React from 'react';
 import _ from "lodash";
-import { CodeFileDef, project } from '../Project';
+import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaintEditor } from './PaintEditor';
 
 export interface IPaintEditorToolbarProps {
   paintEditor: IPaintEditor;
-  codeFile: CodeFileDef;
+  sprite: SpriteDef;
   onClose: any;
-  onChange: () => void;
+  onChange: (sprite: SpriteDef) => void;
 }
 
 export interface IPaintEditorToolbarState {
-  codeFile: CodeFileDef;
-  currentObject: any;
+  sprite: SpriteDef;
 }
 
 export default class PaintEditorToolbar extends React.Component<IPaintEditorToolbarProps, IPaintEditorToolbarState> {
@@ -21,11 +20,11 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
     super(props);
 
     _.bindAll(this, [
+      'onSelectSprite'
     ]);
 
     this.state = {
-      codeFile: props.codeFile,
-      currentObject: undefined
+      sprite: props.sprite,
     }
   }
 
@@ -33,7 +32,7 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
     return (
       <div className='PaintEditor-toolbar'>
         <span>Sprites: </span>
-        <select onChange={this.onSelectObject} value={this.state.currentObject}>
+        <select onChange={this.onSelectSprite} value={this.state.sprite.id}>
           {this.renderSpriteList()}
         </select>
         <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
@@ -41,18 +40,16 @@ export default class PaintEditorToolbar extends React.Component<IPaintEditorTool
     );
   }
 
-  private onSelectObject(e: any) {
-    let codeFile = project.findCodeFile(e.target.value);
-    if (codeFile === undefined) {
+  private onSelectSprite(e: any) {
+    let sprite = project.findSpriteById(e.target.value);
+    if (sprite === undefined) {
       return;
     }
 
-    let blockId = CodeFileDef.getLastEditedBlockId(codeFile);
     this.setState({
-      codeFile: codeFile,
-      currentObject: e.target.value,
+      sprite: sprite,
     });
-    this.props.onChange();
+    this.props.onChange(sprite);
   }
 
   private renderSpriteList(): any[] {
