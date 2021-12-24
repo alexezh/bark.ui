@@ -74,10 +74,11 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             'maybeZoomToFit',
             'switchCostume',
             'onViewResize',
-            'recalibrateSize'
+            'recalibrateSize',
+            'onEditorStateChange'
         ]);
 
-        this.editor = props.edittor;
+        this.editor = props.editor;
         this.state = {
             format: this.editor.state.format,
             image: this.editor.state.image,
@@ -92,7 +93,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         let updateState = {};
         if (!CostumeDef.isEqual(this.editor.state.image, this.state.image)) {
             // @ts-ignore
-            updateState.imageId = this.editor.state.imageId;
+            updateState.imageId = this.editor.state.image?.imageId;
         }
         if (this.editor.state.format !== this.state.format) {
             // @ts-ignore

@@ -446,14 +446,7 @@ export let x64Hash128 = function (key, seed) {
     return ("00000000" + (h1[0] >>> 0).toString(16)).slice(-8) + ("00000000" + (h1[1] >>> 0).toString(16)).slice(-8) + ("00000000" + (h2[0] >>> 0).toString(16)).slice(-8) + ("00000000" + (h2[1] >>> 0).toString(16)).slice(-8);
 };
 
-var hash = function (key, seed) {
+export let hash = function (key, seed) {
     return x64Hash128(key, seed);
 };
 
-module.exports = {
-    x86Hash32: x86Hash32,
-    x86Hash128: x86Hash128,
-    x64Hash64: x64Hash64,
-    x64Hash128: x64Hash128,
-    hash: hash
-};

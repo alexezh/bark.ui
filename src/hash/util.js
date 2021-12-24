@@ -1,10 +1,10 @@
-function toU8IntArray(inputString) {
+export function toU8IntArray(inputString) {
     var array = [];
     var tempArrayOfChar = [];
     for (var i = 0; i < inputString.length; i++) {
         var charCode = inputString.charCodeAt(i);
         var temp;
-        tempArrayOfChar.length  = 0;
+        tempArrayOfChar.length = 0;
         while ((temp = charCode & 0xff) || charCode) {
             // pushing one byte
             tempArrayOfChar.push(temp);
@@ -16,7 +16,7 @@ function toU8IntArray(inputString) {
     return array;
 }
 
-function intToUnsignedHex(number) {
+export function intToUnsignedHex(number) {
     var temp;
     var hexArray = [];
     while ((temp = number & 0xffff) || number) {
@@ -28,7 +28,3 @@ function intToUnsignedHex(number) {
     return hexArray.reverse().join('');
 }
 
-module.exports = {
-    toU8IntArray: toU8IntArray,
-    intToUnsignedHex: intToUnsignedHex
-};
