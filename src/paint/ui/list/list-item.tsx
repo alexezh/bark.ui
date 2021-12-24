@@ -2,6 +2,8 @@
 
 import * as React from 'react'
 import cx from 'classnames'
+import './list.css'
+import _ from 'lodash'
 
 export interface IListItemProps {
 	selected: boolean;
@@ -16,6 +18,14 @@ export default class ListItem extends React.Component<IListItemProps> {
 	static defaultProps = {
 		selected: false,
 		focused: false,
+	}
+
+	public constructor(props: any) {
+		super(props);
+		_.bindAll(this, [
+			'handleMouseOver',
+			'handleChange'
+		]);
 	}
 
 	handleMouseOver() {

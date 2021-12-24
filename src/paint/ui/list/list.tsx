@@ -6,11 +6,10 @@
 import * as React from 'react'
 import cx from 'classnames'
 import includes from 'lodash/includes'
-import range from 'lodash/range'
-import reject from 'lodash/reject'
-import uniq from 'lodash/uniq'
 import { KEYS, KEY } from './keys'
 import ListItem from './list-item'
+import './list.css'
+import _ from 'lodash'
 
 export interface IListProps {
 	className?: string;
@@ -39,12 +38,20 @@ export default class List extends React.Component<IListProps, IListState> {
 		keyboardEvents: true,
 	}
 
-	state = {
-		itemCount: this.props.itemCount,
-		render: this.props.render,
-		selectedItem: this.props.selectedItem,
-		focusedIndex: null,
-		lastSelected: null,
+	public constructor(props: any) {
+		super(props);
+		_.bindAll(this, [
+			'focusIndex',
+			'toggleMouseSelect'
+		]);
+
+		this.state = {
+			itemCount: this.props.itemCount,
+			render: this.props.render,
+			selectedItem: this.props.selectedItem,
+			focusedIndex: null,
+			lastSelected: null,
+		}
 	}
 
 	componentWillReceiveProps(nextProps: IListProps) {
@@ -207,8 +214,6 @@ export default class List extends React.Component<IListProps, IListState> {
 					{item.item}
 				</ListItem>
 			));
-
-			return items;
 		}
 
 		return (

@@ -30,13 +30,11 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
   public render() {
     return (
       <div className='PaintEditor-costume'>
-        <div>
-          <List
-            itemCount={this.state.sprite.costumes.length}
-            render={(index) => this.renderItem(index)}
-            selectedItem={0}
-            onChange={console.log.bind(console)} />
-        </div >
+        <List
+          itemCount={this.state.sprite.costumes.length}
+          render={(index) => this.renderItem(index)}
+          selectedItem={0}
+          onChange={console.log.bind(console)} />
       </div >
     );
   }
@@ -52,7 +50,8 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
         <div className="contact">
           <span className="name">{costume.name}</span>
         </div>
-      ), key: costume.id
+      ),
+      key: costume.id
     };
   }
 }

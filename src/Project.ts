@@ -84,6 +84,7 @@ export class SpriteDef {
 
     // add one costume by default
     this.costumes.push(new CostumeDef());
+    this.costumes.push(new CostumeDef());
   }
 }
 
