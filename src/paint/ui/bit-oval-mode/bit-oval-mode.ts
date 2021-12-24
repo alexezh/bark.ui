@@ -20,27 +20,27 @@ export default class BitOvalModeCommand extends ToolSelectCommand<BitOvalTool> {
     public constructor(editor: IPaintEditor) {
         super(editor, BitOvalModeCommand_commandId, Modes.BIT_OVAL, ovalIcon, 'hello');
 
-        this.selectedItems = this.editor.selectedItems;
+        this.selectedItems = this.editor.state.selectedItems;
         this.zoom = 1.0;
     }
 
     updateState(): boolean {
         let isDirty = false;
         if (this.tool) {
-            if (this.editor.color !== this.tool.color) {
-                this.tool.setColor(this.editor.color);
+            if (this.editor.state.color !== this.tool.color) {
+                this.tool.setColor(this.editor.state.color);
                 isDirty = true;
             }
             //if (this.editor.selectedItems !== this.selectedItems) {
             //    this.selectedItems = this.editor.selectedItems;
             //    this.tool.onSelectionChanged(this.editor.selectedItems);
             //}
-            if (this.editor.filled !== this.tool.filled) {
-                this.tool.setFilled(this.editor.filled);
+            if (this.editor.state.filled !== this.tool.filled) {
+                this.tool.setFilled(this.editor.state.filled);
             }
-            if (this.editor.thickness !== this.tool.thickness ||
-                this.editor.zoom !== this.zoom) {
-                this.tool.setThickness(this.editor.thickness);
+            if (this.editor.state.thickness !== this.tool.thickness ||
+                this.editor.state.zoom !== this.zoom) {
+                this.tool.setThickness(this.editor.state.thickness);
             }
         }
         return isDirty;
@@ -48,7 +48,7 @@ export default class BitOvalModeCommand extends ToolSelectCommand<BitOvalTool> {
     activateTool() {
         clearSelection(this.editor.handleClearSelectedItems);
         // Force the default brush color if fill is MIXED or transparent
-        const fillColorPresent = this.editor.color.primary !== MIXED && this.editor.color.primary !== null;
+        const fillColorPresent = this.editor.state.color.primary !== MIXED && this.editor.state.color.primary !== null;
         if (!fillColorPresent) {
             //this.props.onChangeFillColor(DEFAULT_COLOR);
         }
@@ -59,9 +59,9 @@ export default class BitOvalModeCommand extends ToolSelectCommand<BitOvalTool> {
             this.editor.handleSetCursor,
             this.editor.handleUpdateImage
         );
-        this.tool.setColor(this.editor.color);
-        this.tool.setFilled(this.editor.filled);
-        this.tool.setThickness(this.editor.thickness);
+        this.tool.setColor(this.editor.state.color);
+        this.tool.setFilled(this.editor.state.filled);
+        this.tool.setThickness(this.editor.state.thickness);
         this.tool.activate();
     }
 }

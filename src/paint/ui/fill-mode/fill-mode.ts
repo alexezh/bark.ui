@@ -20,7 +20,7 @@ export default class FillModeCommand extends ToolSelectCommand<FillTool> {
     public constructor(editor: IPaintEditor) {
         super(editor, FillModeCommand_commandId, Modes.FILL, fillIcon, 'hello');
 
-        this.selectedItems = this.editor.selectedItems;
+        this.selectedItems = this.editor.state.selectedItems;
         this.zoom = 1.0;
     }
 

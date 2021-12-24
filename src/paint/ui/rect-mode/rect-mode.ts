@@ -17,7 +17,7 @@ export default class RectModeCommand extends ToolSelectCommand<RectTool> {
     public constructor(editor: IPaintEditor) {
         super(editor, RectModeCommand_commandId, Modes.RECT, rectIcon, 'hello');
 
-        this.selectedItems = this.editor.selectedItems;
+        this.selectedItems = this.editor.state.selectedItems;
         this.zoom = 1.0;
     }
 
@@ -43,7 +43,7 @@ export default class RectModeCommand extends ToolSelectCommand<RectTool> {
             this.editor.handleSetCursor,
             this.editor.handleUpdateImage
         );
-        this.tool.setColorState(this.editor.colorState);
+        this.tool.setColorState(this.editor.state.colorState);
 
         // @ts-ignore
         this.tool.activate();

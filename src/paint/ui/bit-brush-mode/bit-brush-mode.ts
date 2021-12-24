@@ -34,12 +34,12 @@ export default class BitBrushModeCommand extends ToolSelectCommand<BitBrushTool>
     updateState(): boolean {
         let isDirty = false;
         if (this.tool) {
-            if (this.tool.color !== this.editor.color) {
-                this.tool.setColor(this.editor.color);
+            if (this.tool.color !== this.editor.state.color) {
+                this.tool.setColor(this.editor.state.color);
                 isDirty = true;
             }
-            if (this.tool.size !== this.editor.bitBrushSize) {
-                this.tool.setBrushSize(this.editor.bitBrushSize);
+            if (this.tool.size !== this.editor.state.bitBrushSize) {
+                this.tool.setBrushSize(this.editor.state.bitBrushSize);
                 isDirty = true;
             }
         }
@@ -50,7 +50,7 @@ export default class BitBrushModeCommand extends ToolSelectCommand<BitBrushTool>
         //clearSelection(props.clearSelectedItems);
         // this.clearGradient();
         // Force the default brush color if fill is MIXED or transparent
-        let color = this.editor.color;
+        let color = this.editor.state.color;
         if (!color || color.primary === MIXED) {
             // this.props.onChangeFillColor(DEFAULT_COLOR);
             color.primary = DEFAULT_COLOR;
@@ -61,7 +61,7 @@ export default class BitBrushModeCommand extends ToolSelectCommand<BitBrushTool>
             this.editor.handleUpdateImage
         );
         this.tool.setColor(color);
-        this.tool.setBrushSize(this.editor.bitBrushSize);
+        this.tool.setBrushSize(this.editor.state.bitBrushSize);
 
         this.tool.activate();
     }

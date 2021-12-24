@@ -118,7 +118,11 @@ const redrawSelectionBox = function () {
 };
 
  */
-export interface IPaintEditor {
+
+/**
+ * observable state used by controls
+ */
+export interface IPaintEditorState {
   get mode(): any; // Modes
   get imageFormat(): string;
   get color(): Color;
@@ -132,8 +136,14 @@ export interface IPaintEditor {
 
   registerStateChange(name: string, onChange: any);
   unregisterStateChange(name: string);
-
   setState(props: {});
+}
+
+/**
+ * provides methods for managing state of editor
+ */
+export interface IPaintEditor {
+  get state(): IPaintEditorState;
   getCommand(key: string): any;
 
   handleUpdateImage(skipSnapshot, formatOverride);
@@ -155,17 +165,8 @@ export interface IPaintEditor {
 
 */
 
-
-export class PaintEditor implements IPaintEditor {
-
+export class PaintEditorState implements IPaintEditorState {
   private stateStore: StateStore;
-
-  private commands: { [key: string]: any } = {};
-
-  /* selected items managed by paper tools
-   * not stored in state since they can change while drawing happens
-   */
-  private _selectedItems: [] = [];
 
   public constructor() {
     this.stateStore = new StateStore({
@@ -181,30 +182,6 @@ export class PaintEditor implements IPaintEditor {
       cusros: Cursors.DEFAULT,
       zoom: 1.0,
     });
-
-    this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
-    this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
-    this.commands[BitOvalModeCommand_commandId] = new BitOvalModeCommand(this);
-    this.commands[BitSelectModeCommand_commandId] = new BitSelectModeCommand(this);
-    this.commands[BitTextModeCommand_commandId] = new BitTextModeCommand(this);
-    this.commands[OvalModeCommand_commandId] = new OvalModeCommand(this);
-    this.commands[RectModeCommand_commandId] = new RectModeCommand(this);
-    this.commands[LineModeCommand_commandId] = new LineModeCommand(this);
-    this.commands[FillModeCommand_commandId] = new FillModeCommand(this);
-    this.commands[BrushModeCommand_commandId] = new BrushModeCommand(this);
-
-    _.bindAll(this, [
-      'handleUpdateImage',
-      'handleSetSelectedItems',
-      'handleClearSelectedItems',
-      'handleSetCursor'
-    ]);
-
-    this.handleUpdateImage.bind(this);
-  }
-
-  public getCommand(key: string): any {
-    return this.commands[key];
   }
 
   // @ts-ignore
@@ -247,9 +224,55 @@ export class PaintEditor implements IPaintEditor {
   public unregisterStateChange(name: string) {
     this.stateStore.unregisterStateChange(name);
   }
+}
+
+export class PaintEditor implements IPaintEditor {
+
+  private commands: { [key: string]: any } = {};
+  private _state: PaintEditorState;
+
+  /**
+   * canvas used to generate snapshots of images
+   */
+  private reusableCanvas: any;
+
+  /* selected items managed by paper tools
+   * not stored in state since they can change while drawing happens
+   */
+  private _selectedItems: [] = [];
+
+  public constructor() {
+
+    this._state = new PaintEditorState();
+
+    this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
+    this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
+    this.commands[BitOvalModeCommand_commandId] = new BitOvalModeCommand(this);
+    this.commands[BitSelectModeCommand_commandId] = new BitSelectModeCommand(this);
+    this.commands[BitTextModeCommand_commandId] = new BitTextModeCommand(this);
+    this.commands[OvalModeCommand_commandId] = new OvalModeCommand(this);
+    this.commands[RectModeCommand_commandId] = new RectModeCommand(this);
+    this.commands[LineModeCommand_commandId] = new LineModeCommand(this);
+    this.commands[FillModeCommand_commandId] = new FillModeCommand(this);
+    this.commands[BrushModeCommand_commandId] = new BrushModeCommand(this);
+
+    _.bindAll(this, [
+      'handleUpdateImage',
+      'handleSetSelectedItems',
+      'handleClearSelectedItems',
+      'handleSetCursor'
+    ]);
+
+    this.reusableCanvas = document.createElement('canvas');
+  }
+
+  public get state() { return this._state; }
+  public getCommand(key: string): any {
+    return this.commands[key];
+  }
 
   private updateImageState(isVector, image, rotationCenterX, rotationCenterY) {
-    this.setState({
+    this.state.setState({
       imageFormat: isVector ? 'svg' : 'png'
     });
     if (!isVector) {
@@ -257,21 +280,19 @@ export class PaintEditor implements IPaintEditor {
     }
     console.log(`rotationCenterX: ${rotationCenterX}    rotationCenterY: ${rotationCenterY}`);
     if (isVector) {
-      this.setState({ image, rotationCenterX, rotationCenterY });
+      this.state.setState({ image, rotationCenterX, rotationCenterY });
     } else { // is Bitmap
       // image parameter has type ImageData
       // paint editor takes dataURI as input
-      /*
       this.reusableCanvas.width = image.width;
       this.reusableCanvas.height = image.height;
       const context = this.reusableCanvas.getContext('2d');
       context.putImageData(image, 0, 0);
-      this.setState({
-          image: this.reusableCanvas.toDataURL('image/png'),
-          rotationCenterX: rotationCenterX,
-          rotationCenterY: rotationCenterY
+      this.state.setState({
+        image: this.reusableCanvas.toDataURL('image/png'),
+        rotationCenterX: rotationCenterX,
+        rotationCenterY: rotationCenterY
       });
-      */
     }
   }
 
@@ -285,7 +306,7 @@ export class PaintEditor implements IPaintEditor {
   public handleUpdateImage(skipSnapshot, formatOverride) {
     // If in the middle of switching formats, rely on the current mode instead of format.
     const actualFormat = formatOverride ? formatOverride :
-      BitmapModes[this.mode] ? Formats.BITMAP : Formats.VECTOR;
+      BitmapModes[this.state.mode] ? Formats.BITMAP : Formats.VECTOR;
     if (isBitmap(actualFormat)) {
       this.handleUpdateBitmap(skipSnapshot);
     } else if (isVector(actualFormat)) {
@@ -298,7 +319,7 @@ export class PaintEditor implements IPaintEditor {
   }
 
   public handleSetCursor(cursorString: string) {
-    this.stateStore.setState({ cursor: cursorString });
+    this.state.setState({ cursor: cursorString });
   }
 
   public handleSetSelectedItems(selectedItems: [], bitmapMode: any) {

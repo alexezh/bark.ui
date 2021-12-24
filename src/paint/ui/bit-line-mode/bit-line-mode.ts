@@ -19,12 +19,12 @@ export default class BitLineModeCommand extends ToolSelectCommand<BitLineTool> {
     updateState(): boolean {
         let isDirty: boolean = false;
         if (this.tool) {
-            if (this.tool.color !== this.editor.color) {
-                this.tool.setColor(this.editor.color);
+            if (this.tool.color !== this.editor.state.color) {
+                this.tool.setColor(this.editor.state.color);
                 isDirty = true;
             }
-            if (this.tool.size !== this.editor.bitBrushSize) {
-                this.tool.setLineSize(this.editor.bitBrushSize);
+            if (this.tool.size !== this.editor.state.bitBrushSize) {
+                this.tool.setLineSize(this.editor.state.bitBrushSize);
                 isDirty = true;
             }
         }
@@ -35,7 +35,7 @@ export default class BitLineModeCommand extends ToolSelectCommand<BitLineTool> {
         // clearSelection(props.clearSelectedItems);
         //props.clearGradient();
         // Force the default line color if fill is MIXED or transparent
-        let color = this.editor.color;
+        let color = this.editor.state.color;
         if (!color || color.primary === MIXED) {
             //props.onChangeFillColor(DEFAULT_COLOR);
             color.primary = DEFAULT_COLOR;
@@ -44,7 +44,7 @@ export default class BitLineModeCommand extends ToolSelectCommand<BitLineTool> {
             this.editor.handleUpdateImage
         );
         this.tool.setColor(color);
-        this.tool.setLineSize(this.editor.bitBrushSize);
+        this.tool.setLineSize(this.editor.state.bitBrushSize);
 
         this.tool.activate();
     }

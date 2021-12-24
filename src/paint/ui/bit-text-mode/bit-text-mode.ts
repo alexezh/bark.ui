@@ -15,24 +15,24 @@ export default class BitTextModeCommand extends ToolSelectCommand<RectTool> {
     private zoom: number;
     public constructor(editor: IPaintEditor) {
         super(editor, BitTextModeCommand_commandId, Modes.BIT_RECT, textIcon, 'hello');
-        this.zoom = this.editor.zoom;
+        this.zoom = this.editor.state.zoom;
     }
 
     updateState(): boolean {
         let isDirty = false;
         if (this.tool) {
-            if (this.tool.color !== this.editor.color) {
-                this.tool.setColor(this.editor.color);
+            if (this.tool.color !== this.editor.state.color) {
+                this.tool.setColor(this.editor.state.color);
             }
             //if (nextProps.selectedItems !== this.props.selectedItems) {
             //    this.tool.onSelectionChanged(nextProps.selectedItems);
             //}
-            if (this.tool.filled !== this.editor.filled) {
-                this.tool.setFilled(this.editor.filled);
+            if (this.tool.filled !== this.editor.state.filled) {
+                this.tool.setFilled(this.editor.state.filled);
             }
-            if (this.tool.thickness !== this.editor.thickness ||
-                this.zoom !== this.editor.zoom) {
-                this.tool.setThickness(this.editor.thickness);
+            if (this.tool.thickness !== this.editor.state.thickness ||
+                this.zoom !== this.editor.state.zoom) {
+                this.tool.setThickness(this.editor.state.thickness);
             }
         }
         return isDirty;
@@ -51,9 +51,9 @@ export default class BitTextModeCommand extends ToolSelectCommand<RectTool> {
             this.editor.handleSetCursor,
             this.editor.handleUpdateImage
         );
-        this.tool.setColor(this.editor.color);
-        this.tool.setFilled(this.editor.filled);
-        this.tool.setThickness(this.editor.thickness);
+        this.tool.setColor(this.editor.state.color);
+        this.tool.setFilled(this.editor.state.filled);
+        this.tool.setThickness(this.editor.state.thickness);
         this.tool.activate();
     }
 }

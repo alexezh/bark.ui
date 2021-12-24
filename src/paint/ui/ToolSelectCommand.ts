@@ -41,29 +41,29 @@ export class ToolSelectCommand<T> implements IToolSelectCommand {
   }
 
   onCommand() {
-    this.editor.setState({ mode: this._toolMode });
+    this.editor.state.setState({ mode: this._toolMode });
   }
 
   componentDidMount(target: any) {
     this.target = new WeakRef<any>(target);
-    if (this.editor.mode === this._toolMode) {
+    if (this.editor.state.mode === this._toolMode) {
       this.activateTool();
     }
-    this.editor.registerStateChange(this._commandId, this.onStateChanged);
+    this.editor.state.registerStateChange(this._commandId, this.onStateChanged);
   }
 
   componentWillUnmount() {
     this.deactivateTool();
-    this.editor.unregisterStateChange(this._commandId);
+    this.editor.state.unregisterStateChange(this._commandId);
   }
 
   onStateChanged() {
     let isDirty = this.updateState();
 
-    if (!this.tool && this.editor.mode === this._toolMode) {
+    if (!this.tool && this.editor.state.mode === this._toolMode) {
       this.activateTool();
       isDirty = true;
-    } else if (this.tool && this.editor.mode !== this._toolMode) {
+    } else if (this.tool && this.editor.state.mode !== this._toolMode) {
       this.deactivateTool();
       isDirty = true;
     }

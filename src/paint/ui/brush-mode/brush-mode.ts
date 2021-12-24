@@ -20,7 +20,7 @@ export default class BrushModeCommand extends ToolSelectCommand<paper.Tool> {
     public constructor(editor: IPaintEditor) {
         super(editor, BrushModeCommand_commandId, Modes.BRUSH, brushIcon, 'hello');
 
-        this.selectedItems = this.editor.selectedItems;
+        this.selectedItems = this.editor.state.selectedItems;
         this.zoom = 1.0;
         this.blob = new Blobbiness(
             this.editor.handleUpdateImage, this.editor.handleClearSelectedItems);
@@ -66,8 +66,8 @@ export default class BrushModeCommand extends ToolSelectCommand<paper.Tool> {
         //}
         this.blob.activateTool({
             isEraser: false,
-            ...this.editor.colorState,
-            ...this.editor.brushMode
+            ...this.editor.state.colorState,
+            ...this.editor.state.brushMode
         });
     }
 

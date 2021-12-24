@@ -18,7 +18,7 @@ export default class OvalModeCommand extends ToolSelectCommand<OvalTool> {
     public constructor(editor: IPaintEditor) {
         super(editor, OvalModeCommand_commandId, Modes.OVAL, ovalIcon, 'hello');
 
-        this.selectedItems = this.editor.selectedItems;
+        this.selectedItems = this.editor.state.selectedItems;
         this.zoom = 1.0;
     }
 
@@ -43,7 +43,7 @@ export default class OvalModeCommand extends ToolSelectCommand<OvalTool> {
             this.editor.handleSetCursor,
             this.editor.handleUpdateImage
         );
-        this.tool.setColorState(this.editor.colorState);
+        this.tool.setColorState(this.editor.state.colorState);
         // @ts-ignore
         this.tool.activate();
     }
