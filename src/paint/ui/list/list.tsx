@@ -10,149 +10,87 @@ import range from 'lodash/range'
 import reject from 'lodash/reject'
 import uniq from 'lodash/uniq'
 import { KEYS, KEY } from './keys'
-import { ListItem } from './list-item'
+import ListItem from './list-item'
 
 export interface IListProps {
 	className?: string;
-	items: Array<React.ReactNode>;
-	selected: number[];
-	disabled: Array<number>;
-	multiple: boolean;
-	onChange: (event: null | number | Array<number>) => void;
+	itemCount: number;
+	render: (idx: number) => { item: React.ReactNode, key: string } | undefined;
+	selectedItem: null | number;
+	onChange: (event: null | number) => void;
 	keyboardEvents: boolean;
 }
 
 export interface IListState {
-	items: Array<React.ReactNode>;
-	selectedItems: Array<number>;
-	disabledItems: Array<number>;
+	itemCount: number;
+	render: (idx: number) => { item: React.ReactNode, key: string } | undefined;
+	selectedItem: null | number;
 	focusedIndex: null | number;
 	lastSelected: null | number;
 }
 
-export class SelectArgs {
-	index: null | number;
-	contiguous: boolean;
-}
-
 export default class List extends React.Component<IListProps, IListState> {
 	static defaultProps = {
-		items: [],
-		selected: [],
-		disabled: [],
+		itemCount: 0,
+		render: () => undefined,
+		selectedItem: null,
 		multiple: false,
 		onChange: () => { },
 		keyboardEvents: true,
 	}
 
 	state = {
-		items: this.props.items,
-		selectedItems: this.props.selected,
-		disabledItems: this.props.disabled,
+		itemCount: this.props.itemCount,
+		render: this.props.render,
+		selectedItem: this.props.selectedItem,
 		focusedIndex: null,
 		lastSelected: null,
 	}
 
 	componentWillReceiveProps(nextProps: IListProps) {
 		this.setState(() => ({
-			items: nextProps.items,
-			selectedItems: nextProps.selected,
-			disabledItems: nextProps.disabled,
+			itemCount: nextProps.itemCount,
+			render: nextProps.render,
+			selectedItem: nextProps.selectedItem,
 		}))
 	}
 
 	clear() {
 		this.setState(() => ({
-			selectedItems: [],
-			disabledItems: [],
+			selectedItem: null,
 			focusedIndex: null,
 			lastSelected: null,
 		}))
 	}
 
-	select(args: SelectArgs) {
-		if (args.index === null) {
-			return
-		}
-
-		if (includes(this.state.disabledItems, args.index)) {
+	select(index: null | number) {
+		if (index === null) {
 			return
 		}
 
 		this.setState(
 			state => {
-				let { multiple } = this.props
-				let { lastSelected } = state
-				let selectedItems = multiple
-					? [...state.selectedItems, args.index]
-					: [args.index]
-
-				if (
-					args.contiguous &&
-					multiple &&
-					typeof lastSelected === 'number'
-				) {
-					let start = Math.min(lastSelected, args.index)
-					let end = Math.max(lastSelected, args.index)
-
-					selectedItems = uniq([
-						...selectedItems,
-						...range(start, end + 1),
-					])
-				}
-
-				return { selectedItems, lastSelected: args.index }
+				return { selectedItem: index, lastSelected: index }
 			},
 			() => {
-				this.props.onChange(
-					this.props.multiple
-						? this.state.selectedItems
-						: this.state.lastSelected,
-				)
+				this.props.onChange(this.state.lastSelected)
 			},
 		)
 	}
 
-	deselect(args: SelectArgs) {
-		if (args.index === null) {
+	deselect(index: null | number) {
+		if (index === null) {
 			return
 		}
 
 		this.setState(
 			state => {
-				let { multiple } = this.props
-				let { selectedItems, lastSelected } = state
-
-				if (
-					args.contiguous &&
-					multiple &&
-					typeof lastSelected === 'number'
-				) {
-					let start = Math.min(lastSelected, args.index)
-					let end = Math.max(lastSelected, args.index)
-
-					let toDeselect = range(start, end + 1)
-					selectedItems = reject(selectedItems, idx =>
-						includes(toDeselect, idx),
-					)
-				} else {
-					selectedItems = reject(selectedItems, idx => idx === args.index)
-				}
-
-				return { selectedItems, lastSelected: args.index }
+				return { selectedItem: null, lastSelected: index }
 			},
 			() => {
-				this.props.onChange(
-					this.props.multiple ? this.state.selectedItems : null,
-				)
+				this.props.onChange(null)
 			},
 		)
-	}
-
-	disable(index: number) {
-		this.setState(state => ({
-			disabledItems: [...state.disabledItems, index],
-		}))
 	}
 
 	focusIndex(index: null | number = null) {
@@ -162,11 +100,9 @@ export default class List extends React.Component<IListProps, IListState> {
 				return {}
 			}
 
-			let { focusedIndex, disabledItems } = state
+			let { focusedIndex } = state
 
-			if (!includes(disabledItems, index) && typeof index === 'number') {
-				focusedIndex = index
-			}
+			focusedIndex = index
 
 			return { focusedIndex }
 		})
@@ -174,8 +110,8 @@ export default class List extends React.Component<IListProps, IListState> {
 
 	focusPrevious() {
 		this.setState(state => {
-			let { focusedIndex, disabledItems } = state
-			let lastItem = state.items.length - 1
+			let { focusedIndex } = state
+			let lastItem = state.itemCount - 1
 
 			if (focusedIndex === null) {
 				focusedIndex = lastItem
@@ -184,22 +120,14 @@ export default class List extends React.Component<IListProps, IListState> {
 				focusedIndex = focusedIndex <= 0 ? lastItem : focusedIndex - 1
 			}
 
-			// skip disabled items
-			if (disabledItems.length) {
-				while (includes(disabledItems, focusedIndex)) {
-					focusedIndex =
-						focusedIndex <= 0 ? lastItem : focusedIndex - 1
-				}
-			}
-
 			return { focusedIndex }
 		})
 	}
 
 	focusNext() {
 		this.setState(state => {
-			let { focusedIndex, disabledItems } = state
-			let lastItem = state.items.length - 1
+			let { focusedIndex } = state
+			let lastItem = state.itemCount - 1
 
 			if (focusedIndex === null) {
 				focusedIndex = 0
@@ -208,19 +136,11 @@ export default class List extends React.Component<IListProps, IListState> {
 				focusedIndex = focusedIndex >= lastItem ? 0 : focusedIndex + 1
 			}
 
-			// skip disabled items
-			if (disabledItems.length) {
-				while (includes(disabledItems, focusedIndex)) {
-					focusedIndex =
-						focusedIndex >= lastItem ? 0 : focusedIndex + 1
-				}
-			}
-
 			return { focusedIndex }
 		})
 	}
 
-	onKeyDown(event: any) {
+	onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
 		let key = event.keyCode
 
 		if (key === KEY.UP || key === KEY.K) {
@@ -247,11 +167,7 @@ export default class List extends React.Component<IListProps, IListState> {
 			return
 		}
 
-		if (!includes(this.state.selectedItems, index)) {
-			this.select({ index, contiguous })
-		} else if (this.props.multiple) {
-			this.deselect({ index, contiguous })
-		}
+		this.select(index)
 	}
 
 	toggleKeyboardSelect(args: {
@@ -271,24 +187,29 @@ export default class List extends React.Component<IListProps, IListState> {
 	}
 
 	public render() {
-		let items = this.props.items.map((itemContent, index) => {
-			let disabled = includes(this.state.disabledItems, index);
-			let selected = includes(this.state.selectedItems, index);
+		let items: any[] = [];
+		for (let index = 0; index < this.state.itemCount; index++) {
+			let item = this.state.render(index);
+			if (item == undefined) {
+				break;
+			}
+			let selected = this.state.selectedItem == index;
 			let focused = this.state.focusedIndex === index;
-			return (
+			items.push((
 				<ListItem
-					key={index}
+					key={item.key}
 					index={index}
-					disabled={disabled}
 					selected={selected}
 					focused={focused}
 					onMouseOver={this.focusIndex}
 					onChange={this.toggleMouseSelect}
 				>
-					{itemContent}
+					{item.item}
 				</ListItem>
-			);
-		});
+			));
+
+			return items;
+		}
 
 		return (
 			<ul

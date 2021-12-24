@@ -2,7 +2,8 @@ import * as React from 'react';
 import _ from "lodash";
 import { CodeFileDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
-import List, { ListItem } from 'react-list-select';
+import List from './ui/list/list';
+import ListItem from './ui/list/list-item';
 import { IPaintEditor } from './PaintEditor';
 
 export interface IPaintEditorCostumePaneProps {
@@ -30,43 +31,28 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
     return (
       <div className='PaintEditor-costume'>
         <div>
-          <List>
-            {
-              this.renderCostumeList()
-            }
-          </List>
+          <List
+            itemCount={this.state.sprite.costumes.length}
+            render={(index) => this.renderItem(index)}
+            selectedItem={0}
+            onChange={console.log.bind(console)} />
         </div >
       </div >
     );
   }
 
-  renderItem(text) {
-    return (
-      <div className="contact">
-        <span className="name">{text}</span>
-      </div>
-    )
+  renderItem(idx: number): { item: React.ReactNode, key: string } | undefined {
+    if (idx >= this.state.sprite.costumes.length) {
+      return undefined;
+    }
+    let costume = this.state.sprite.costumes[idx];
+
+    return {
+      item: (
+        <div className="contact">
+          <span className="name">{costume.name}</span>
+        </div>
+      ), key: costume.id
+    };
   }
-  
-
-let example4 = (
-  <List
-    items={comps}
-    disabled={[2]}
-    selected={[0]}
-    onChange={console.log.bind(console)}
-  />
-)
-
-  private renderCostumeList(): any[] {
-  let costumes: any[] = [];
-  for (let i = 0; i < this.state.sprite.costumes.length; i++) {
-    let costume = this.state.sprite.costumes[i];
-    costumes.push((
-      <ListItem key={costume.id}>{costume.name}</ListItem>
-    ));
-  }
-
-  return costumes;
-}
 }
