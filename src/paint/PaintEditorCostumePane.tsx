@@ -39,6 +39,15 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
     );
   }
 
+  componentDidMount() {
+  }
+
+  componentWillReceiveProps(newProps) {
+  }
+
+  componentWillUnmount() {
+  }
+
   renderItem(idx: number): { item: React.ReactNode, key: string } | undefined {
     if (idx >= this.state.sprite.costumes.length) {
       return undefined;

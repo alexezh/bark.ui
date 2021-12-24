@@ -1,7 +1,7 @@
 import * as React from 'react';
 import _ from "lodash";
 
-import { editorState } from './EditorState';
+import workspace from './Workspace';
 import TextEditorToolbar from './TextEditorToolbar';
 import { CodeFileDef, project } from './Project';
 
@@ -39,7 +39,7 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
     return (
       <div className="TextEditor-canvas">
         <TextEditorToolbar
-          codeFile={editorState.lastEditedCodeFile}
+          codeFile={workspace.lastEditedCodeFile}
           onClose={this.props.onClose}
           onChange={this.onToolbarChange} />
         <textarea

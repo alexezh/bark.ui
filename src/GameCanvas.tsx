@@ -1,7 +1,7 @@
 import * as React from 'react';
 import _ from "lodash";
 
-import { editorState } from './EditorState';
+import workspace from './Workspace';
 import { CodeFileDef, project } from './Project';
 
 export interface IGameCanvasProps {

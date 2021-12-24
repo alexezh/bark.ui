@@ -5,8 +5,8 @@ import _ from "lodash";
 import PaperCanvas from './PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
-import { editorState } from '../EditorState';
-import { CodeFileDef, project } from '../Project';
+import workspace from '../Workspace';
+import { CodeFileDef, project, SpriteDef } from '../Project';
 import { PaintEditor } from './PaintEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
 
@@ -31,11 +31,11 @@ const svgString =
 
 export interface IPaintCanvasProps {
   onClose: any
-  codeFile?: CodeFileDef
+  sprite?: SpriteDef
 }
 
 export interface IPaintCanvasState {
-  codeFile: CodeFileDef | undefined
+  sprite: SpriteDef | undefined
 }
 
 export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
@@ -48,10 +48,10 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
     _.bindAll(this, [
     ]);
 
-    let codeFile = props.codeFile === undefined ? project.def.codeFile : props.codeFile;
+    let sprite = props.sprite === undefined ? project.def.sprites[0] : props.sprite;
 
     this.state = {
-      codeFile: codeFile,
+      sprite: sprite,
     }
   }
 
@@ -59,13 +59,13 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
     return (
       <div className="PaintEditor-canvas">
         <PaintEditorToolbar
-          codeFile={editorState.lastEditedCodeFile}
+          codeFile={workspace.lastEditedCodeFile}
           onClose={this.props.onClose}
           onChange={this.onToolbarChange}
           paintEditor={this.paintEditor} />
         <div className="PaintEditor-workarea">
           <PaintEditorSidebar
-            codeFile={editorState.lastEditedCodeFile}
+            codeFile={workspace.lastEditedCodeFile}
             onClose={this.props.onClose}
             onChange={this.onToolbarChange}
             paintEditor={this.paintEditor} />
@@ -73,7 +73,7 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
             editor={this.paintEditor}
           />
           <PaintEditorCostumePane
-            sprite={editorState.lastEditedSprite}
+            sprite={workspace.lastEditedSprite}
             paintEditor={this.paintEditor}
           />
         </div>

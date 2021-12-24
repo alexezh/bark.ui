@@ -1,6 +1,9 @@
 import { CodeFileDef, project, SpriteDef } from "./Project";
 
-export class BarkEditorState {
+/**
+ * keeps track of project wide properties
+ */
+export class Workspace {
   private _lastEditedCodeFile?: CodeFileDef;
   private _lastEditedSprite?: SpriteDef;
   public get lastEditedCodeFile(): CodeFileDef {
@@ -20,5 +23,5 @@ export class BarkEditorState {
   }
 }
 
-let editorState = new BarkEditorState();
-export { editorState };
+let workspace = new Workspace();
+export default workspace;

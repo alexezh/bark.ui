@@ -57,7 +57,8 @@ export class CodeFileDef {
 export class CostumeDef {
   public id: string;
   public name: string = 'No name';
-  public data: string = '';
+  public image: string | null = null;
+  public imageId: string | null = null;
 
   public constructor() {
     this.id = uuidv4();
