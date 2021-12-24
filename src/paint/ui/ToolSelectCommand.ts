@@ -41,7 +41,7 @@ export class ToolSelectCommand<T> implements IToolSelectCommand {
   }
 
   onCommand() {
-    this.editor.state.setState({ mode: this._toolMode });
+    this.editor.setState({ mode: this._toolMode });
   }
 
   componentDidMount(target: any) {
@@ -49,12 +49,12 @@ export class ToolSelectCommand<T> implements IToolSelectCommand {
     if (this.editor.state.mode === this._toolMode) {
       this.activateTool();
     }
-    this.editor.state.registerStateChange(this._commandId, this.onStateChanged);
+    this.editor.registerStateChange(this._commandId, this.onStateChanged);
   }
 
   componentWillUnmount() {
     this.deactivateTool();
-    this.editor.state.unregisterStateChange(this._commandId);
+    this.editor.unregisterStateChange(this._commandId);
   }
 
   onStateChanged() {

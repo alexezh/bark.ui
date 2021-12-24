@@ -17,6 +17,11 @@ import { ensureClockwise, scaleWithStrokes } from './tools/math';
 var paperScope: any = null;
 
 export interface IZoomController {
+    zoomLevelId: string;
+    shouldZoomToFit: boolean;
+    zoomLevels: {
+        [key: string]: paper.Matrix
+    };
     saveZoomLevel();
     setZoomLevelId(newZoomLevelId: string);
 }
@@ -34,13 +39,8 @@ export interface IPaperCanvasProps {
     image: any;
     rotationCenterX?: number;
     rotationCenterY?: number;
-    zoomLevelId: string;
     imageId: string;
-    shouldZoomToFit: boolean;
     cursor: string;
-    zoomLevels: {
-        [key: string]: paper.Matrix
-    };
     zoomController: IZoomController;
     //    currentZoomLevelId: PropTypes.string
     //})
@@ -129,7 +129,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         if (this.props.imageId !== newProps.imageId) {
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
-                this.props.zoomLevelId, newProps.zoomLevelId);
+                this.props.zoomController.zoomLevelId, newProps.zoomLevelId);
         }
         if (this.props.format !== newProps.format) {
             this.recalibrateSize();
@@ -161,8 +161,8 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.props.zoomController.saveZoomLevel();
         }
         if (newZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
-            if (this.props.zoomLevels[newZoomLevelId]) {
-                this.shouldZoomToFit = this.props.zoomLevels[newZoomLevelId];
+            if (this.props.zoomController.zoomLevels[newZoomLevelId]) {
+                this.shouldZoomToFit = this.props.zoomController.zoomLevels[newZoomLevelId];
             } else {
                 this.shouldZoomToFit = true;
             }

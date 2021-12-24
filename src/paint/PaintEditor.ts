@@ -133,18 +133,21 @@ export interface IPaintEditorState {
   get thickness(): number;
   get zoom(): number;
   get selectedItems(): [];
-
-  registerStateChange(name: string, onChange: any);
-  unregisterStateChange(name: string);
-  setState(props: {});
+  get image(): string;
+  get imageId(): string;
 }
 
 /**
  * provides methods for managing state of editor
  */
 export interface IPaintEditor {
-  get state(): IPaintEditorState;
   getCommand(key: string): any;
+
+  get state(): IPaintEditorState;
+
+  registerStateChange(name: string, onChange: any);
+  unregisterStateChange(name: string);
+  setState(props: {});
 
   handleUpdateImage(skipSnapshot, formatOverride);
   handleSetCursor(cursorString: string);
@@ -165,6 +168,11 @@ export interface IPaintEditor {
 
 */
 
+/**
+ * manages properties related to painting. Provides notification on property
+ * for updating ui buttons
+ */
+/*
 export class PaintEditorState implements IPaintEditorState {
   private stateStore: StateStore;
 
@@ -213,23 +221,17 @@ export class PaintEditorState implements IPaintEditorState {
 
   // @ts-ignore
   public get selectedItems(): [] { return this.stateStore._selectedItems };
-
-  public setState(state: {}) {
-    this.stateStore.setState(state);
-  }
-  public registerStateChange(name: string, onChange: any) {
-    this.stateStore.registerStateChange(name, onChange);
-  }
-
-  public unregisterStateChange(name: string) {
-    this.stateStore.unregisterStateChange(name);
-  }
 }
+*/
 
+/**
+ * 'model' object for paint editor. Provides set of methods and properties
+ * used by PaintEditorCanvas and buttons
+ */
 export class PaintEditor implements IPaintEditor {
 
   private commands: { [key: string]: any } = {};
-  private _state: PaintEditorState;
+  private stateStore: StateStore;
 
   /**
    * canvas used to generate snapshots of images
@@ -243,7 +245,19 @@ export class PaintEditor implements IPaintEditor {
 
   public constructor() {
 
-    this._state = new PaintEditorState();
+    this.stateStore = new StateStore({
+      imageFormat: 'svg',
+      mode: Modes.SELECT,
+      color: new Color(DEFAULT_COLOR),
+      colorState: new ColorState(),
+      brushMode: new BrushMode(),
+      rotationCenterX: undefined,
+      rotationCenterY: undefined,
+      filled: false,
+      thickness: 1.0,
+      cusros: Cursors.DEFAULT,
+      zoom: 1.0,
+    });
 
     this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
     this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
@@ -266,7 +280,19 @@ export class PaintEditor implements IPaintEditor {
     this.reusableCanvas = document.createElement('canvas');
   }
 
-  public get state() { return this._state; }
+  public get state(): IPaintEditorState { return this.stateStore.state as IPaintEditorState; }
+
+  public setState(state: {}) {
+    this.stateStore.setState(state);
+  }
+  public registerStateChange(name: string, onChange: any) {
+    this.stateStore.registerStateChange(name, onChange);
+  }
+
+  public unregisterStateChange(name: string) {
+    this.stateStore.unregisterStateChange(name);
+  }
+
   public getCommand(key: string): any {
     return this.commands[key];
   }
