@@ -13,37 +13,12 @@ import {
     clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
 } from './tools/view';
 import { ensureClockwise, scaleWithStrokes } from './tools/math';
+import { IPaintEditor } from './PaintEditor';
 
 var paperScope: any = null;
 
-export interface IZoomController {
-    zoomLevelId: string;
-    shouldZoomToFit: boolean;
-    zoomLevels: {
-        [key: string]: paper.Matrix
-    };
-    saveZoomLevel();
-    setZoomLevelId(newZoomLevelId: string);
-}
-
 export interface IPaperCanvasProps {
-    format: any; // Formats;
-    imageFormat: any;
-
-    /*
-     image: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.instanceOf(HTMLImageElement)
-    ]),
-    */
-    image: any;
-    rotationCenterX?: number;
-    rotationCenterY?: number;
-    imageId: string;
-    cursor: string;
-    zoomController: IZoomController;
-    //    currentZoomLevelId: PropTypes.string
-    //})
+    editor: IPaintEditor;
 
     /*
         canvasRef: PropTypes.func,
@@ -71,10 +46,18 @@ export interface IPaperCanvasProps {
 }
 
 export interface IPaperCanvasState {
+    format: string; // Formats;
+    imageFormat: string;
+    image: string | HTMLImageElement;
+    rotationCenterX?: number;
+    rotationCenterY?: number;
+    imageId: string | null;
+    cursor: string;
 }
 
 export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> {
     public canvas: any;
+    private editor: IPaintEditor;
     private shouldZoomToFit: boolean | paper.Matrix = false;
 
     // is set if we are loading image
@@ -94,7 +77,35 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             'onViewResize',
             'recalibrateSize'
         ]);
+
+        this.editor = props.edittor;
+        this.state = {
+            format: this.editor.state.format,
+            imageFormat: this.editor.state.imageFormat,
+            image: this.editor.state.image,
+            rotationCenterX: this.editor.state.rotationCenterX,
+            rotationCenterY: this.editor.state.rotationCenterY,
+            imageId: this.editor.state.imageId,
+            cursor: this.editor.state.cursor
+        }
+        this.editor.registerStateChange('PaperCanvas', this.onEditorStateChange)
     }
+
+    onEditorStateChange() {
+        let updateState = {};
+        if (this.editor.state.imageId !== this.state.imageId) {
+            // @ts-ignore
+            updateState.imageId = this.editor.state.imageId;
+        }
+        if (this.editor.state.format !== this.state.format) {
+            // @ts-ignore
+            updateState.format = this.editor.state.format;
+        }
+        if (Object.keys(updateState).length > 0) {
+            this.setState(updateState);
+        }
+    }
+
     componentDidMount() {
         paper.setup(this.canvas);
         paper.view.on('resize', this.onViewResize);
@@ -121,17 +132,18 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         // Don't show handles by default
         paper.settings.handleSize = 0;
         // Make layers.
-        setupLayers(this.props.format);
+        setupLayers(this.props.editor.state.format);
         this.importImage(
-            this.props.imageFormat, this.props.image, this.props.rotationCenterX, this.props.rotationCenterY);
+            this.editor.state.imageFormat, this.editor.state.image,
+            this.editor.state.rotationCenterX, this.editor.state.rotationCenterY);
     }
     componentWillReceiveProps(newProps) {
-        if (this.props.imageId !== newProps.imageId) {
+        if (this.editor.state.imageId !== newProps.imageId) {
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
-                this.props.zoomController.zoomLevelId, newProps.zoomLevelId);
+                this.editor.state.zoomLevelId, newProps.zoomLevelId);
         }
-        if (this.props.format !== newProps.format) {
+        if (this.editor.state.format !== newProps.format) {
             this.recalibrateSize();
             convertBackgroundGuideLayer(newProps.format);
         }
@@ -140,10 +152,12 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         this.clearQueuedImport();
         // shouldZoomToFit means the zoom level hasn't been initialized yet
         if (!this.shouldZoomToFit) {
-            this.props.zoomController.saveZoomLevel();
+            this.editor.saveZoomLevel();
         }
         // @ts-ignore
         paper.remove();
+
+        this.editor.unregisterStateChange('PaperCanvas');
     }
     clearQueuedImport() {
         if (this.queuedImport) {
@@ -158,15 +172,15 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
     }
     switchCostume(format, image, rotationCenterX, rotationCenterY, oldZoomLevelId, newZoomLevelId) {
         if (oldZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
-            this.props.zoomController.saveZoomLevel();
+            this.editor.saveZoomLevel();
         }
         if (newZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
-            if (this.props.zoomController.zoomLevels[newZoomLevelId]) {
-                this.shouldZoomToFit = this.props.zoomController.zoomLevels[newZoomLevelId];
+            if (this.editor.state.zoomLevels[newZoomLevelId]) {
+                this.shouldZoomToFit = this.editor.state.zoomLevels[newZoomLevelId];
             } else {
                 this.shouldZoomToFit = true;
             }
-            this.props.zoomController.setZoomLevelId(newZoomLevelId);
+            this.editor.setZoomLevelId(newZoomLevelId);
         }
         for (const layer of paper.project.layers) {
             if (layer.data.isRasterLayer) {
@@ -410,7 +424,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             <canvas
                 className='Paper-canvas'
                 ref={this.setCanvas}
-                style={{ cursor: this.props.cursor }}
+                style={{ cursor: this.state.cursor }}
             />
         );
     }

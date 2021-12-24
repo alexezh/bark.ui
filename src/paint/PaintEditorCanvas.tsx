@@ -2,7 +2,7 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 import _ from "lodash";
 
-import PaperCanvas, { IZoomController } from './PaperCanvas'
+import PaperCanvas from './PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
 import { editorState } from '../EditorState';
@@ -38,13 +38,6 @@ export interface IPaintCanvasState {
   codeFile: CodeFileDef | undefined
 }
 
-class ZoomController implements IZoomController {
-  saveZoomLevel() {
-  }
-  setZoomLevelId(newZoomLevelId: string) {
-  }
-}
-
 export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
   private paintEditor: PaintEditor;
   constructor(props: IPaintCanvasProps) {
@@ -77,15 +70,7 @@ export default class PaintCanvas extends React.Component<IPaintCanvasProps, IPai
             onChange={this.onToolbarChange}
             paintEditor={this.paintEditor} />
           <PaperCanvas
-            image={svgString}
-            imageId='1'
-            imageFormat='svg'
-            zoomLevelId='id'
-            zoomLevels={{}}
-            shouldZoomToFit={false}
-            format='svg'
-            cursor='id'
-            zoomController={new ZoomController()}
+            editor={this.paintEditor}
           />
           <PaintEditorCostumePane
             sprite={editorState.lastEditedSprite}

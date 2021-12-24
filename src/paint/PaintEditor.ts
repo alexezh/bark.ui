@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import paper from 'paper';
 import { clearSelection, getSelectedLeafItems } from './tools/selection';
 import { getRaster, hideGuideLayers, showGuideLayers } from './tools/layer';
 import Modes, { BitmapModes } from './lib/modes';
@@ -96,45 +97,31 @@ export class ColorState {
         */
   }
 }
-/*
-onst BitLineComponent = props => (
-    <ToolSelectComponent
-        imgDescriptor={messages.line}
-        imgSrc={lineIcon}
-        isSelected={props.isSelected}
-        onMouseDown={props.onMouseDown}
-    />
-);
-
-BitLineComponent.propTypes = {
-    isSelected: PropTypes.bool.isRequired,
-    onMouseDown: PropTypes.func.isRequired
-};
-
-const redrawSelectionBox = function () {
-    return {
-        type: REDRAW_SELECTION_BOX
-    };
-};
-
- */
 
 /**
  * observable state used by controls
  */
 export interface IPaintEditorState {
-  get mode(): any; // Modes
+  get format(): string; // seems to be the same as mode
   get imageFormat(): string;
+  get mode(): any; // current editing tool
   get color(): Color;
   get colorState(): ColorState;
   get brushMode(): BrushMode;
   get bitBrushSize(): any;
   get filled(): boolean;
   get thickness(): number;
+  get rotationCenterY(): number | undefined;
+  get rotationCenterX(): number | undefined;
+  get cursor(): string;
   get zoom(): number;
   get selectedItems(): [];
   get image(): string;
-  get imageId(): string;
+  get imageId(): string | null;
+
+  get zoomLevelId(): number;
+  get shouldZoomToFit(): boolean;
+  get zoomLevels(): paper.Matrix[];
 }
 
 /**
@@ -153,6 +140,9 @@ export interface IPaintEditor {
   handleSetCursor(cursorString: string);
   handleSetSelectedItems(selectedItems: [], bitmapMode: any);
   handleClearSelectedItems();
+
+  saveZoomLevel();
+  setZoomLevelId(newZoomLevelId: string);
 }
 
 /*
@@ -169,69 +159,13 @@ export interface IPaintEditor {
 */
 
 /**
- * manages properties related to painting. Provides notification on property
- * for updating ui buttons
- */
-/*
-export class PaintEditorState implements IPaintEditorState {
-  private stateStore: StateStore;
-
-  public constructor() {
-    this.stateStore = new StateStore({
-      imageFormat: 'svg',
-      mode: Modes.SELECT,
-      color: new Color(DEFAULT_COLOR),
-      colorState: new ColorState(),
-      brushMode: new BrushMode(),
-      rotationCenterX: undefined,
-      rotationCenterY: undefined,
-      filled: false,
-      thickness: 1.0,
-      cusros: Cursors.DEFAULT,
-      zoom: 1.0,
-    });
-  }
-
-  // @ts-ignore
-  public get mode() { return this.stateStore.state.mode };
-
-  // @ts-ignore
-  public get imageFormat() { return this.stateStore.state.imageFormat };
-
-  // @ts-ignore
-  public get color(): Color { return this.stateStore.state.color };
-
-  // @ts-ignore
-  public get colorState(): ColorState { return this.stateStore.state.colorState };
-
-  // @ts-ignore
-  public get brushMode(): BrushMode { return this.stateStore.state.brushMode };
-
-  // @ts-ignore
-  public get bitBrushSize() { return this.stateStore.state.bitBrushSize };
-
-  // @ts-ignore
-  public get filled(): boolean { return this.stateStore.state.filled };
-
-  // @ts-ignore
-  public get thickness(): number { return this.stateStore.state.thickness };
-
-  // @ts-ignore
-  public get zoom(): number { return this.stateStore.state.zoom };
-
-  // @ts-ignore
-  public get selectedItems(): [] { return this.stateStore._selectedItems };
-}
-*/
-
-/**
  * 'model' object for paint editor. Provides set of methods and properties
  * used by PaintEditorCanvas and buttons
  */
 export class PaintEditor implements IPaintEditor {
 
   private commands: { [key: string]: any } = {};
-  private stateStore: StateStore;
+  private stateStore: StateStore<IPaintEditorState>;
 
   /**
    * canvas used to generate snapshots of images
@@ -245,8 +179,9 @@ export class PaintEditor implements IPaintEditor {
 
   public constructor() {
 
-    this.stateStore = new StateStore({
+    this.stateStore = new StateStore<IPaintEditorState>({
       imageFormat: 'svg',
+      format: 'svg',
       mode: Modes.SELECT,
       color: new Color(DEFAULT_COLOR),
       colorState: new ColorState(),
@@ -255,8 +190,16 @@ export class PaintEditor implements IPaintEditor {
       rotationCenterY: undefined,
       filled: false,
       thickness: 1.0,
-      cusros: Cursors.DEFAULT,
+      cursor: Cursors.DEFAULT,
       zoom: 1.0,
+      bitBrushSize: null,
+      selectedItems: [],
+      image: '',
+      imageId: null,
+
+      zoomLevelId: 0,
+      shouldZoomToFit: true,
+      zoomLevels: [new paper.Matrix()]
     });
 
     this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
@@ -297,29 +240,9 @@ export class PaintEditor implements IPaintEditor {
     return this.commands[key];
   }
 
-  private updateImageState(isVector, image, rotationCenterX, rotationCenterY) {
-    this.state.setState({
-      imageFormat: isVector ? 'svg' : 'png'
-    });
-    if (!isVector) {
-      console.log(`Image width: ${image.width}    Image height: ${image.height}`);
-    }
-    console.log(`rotationCenterX: ${rotationCenterX}    rotationCenterY: ${rotationCenterY}`);
-    if (isVector) {
-      this.state.setState({ image, rotationCenterX, rotationCenterY });
-    } else { // is Bitmap
-      // image parameter has type ImageData
-      // paint editor takes dataURI as input
-      this.reusableCanvas.width = image.width;
-      this.reusableCanvas.height = image.height;
-      const context = this.reusableCanvas.getContext('2d');
-      context.putImageData(image, 0, 0);
-      this.state.setState({
-        image: this.reusableCanvas.toDataURL('image/png'),
-        rotationCenterX: rotationCenterX,
-        rotationCenterY: rotationCenterY
-      });
-    }
+  public saveZoomLevel() {
+  }
+  public setZoomLevelId(newZoomLevelId: string) {
   }
 
   /**
@@ -345,7 +268,7 @@ export class PaintEditor implements IPaintEditor {
   }
 
   public handleSetCursor(cursorString: string) {
-    this.state.setState({ cursor: cursorString });
+    this.setState({ cursor: cursorString });
   }
 
   public handleSetSelectedItems(selectedItems: [], bitmapMode: any) {
@@ -414,7 +337,7 @@ export class PaintEditor implements IPaintEditor {
 
     const imageData = plasteredRaster.getImageData(rect);
 
-    this.updateImageState(
+    this.updateImageBits(
       false /* isVector */,
       imageData,
       (ART_BOARD_WIDTH / 2) - rect.x,
@@ -433,6 +356,7 @@ export class PaintEditor implements IPaintEditor {
     if (paper.project.activeLayer.clipped) {
       // @ts-ignore
       for (const child of paper.project.activeLayer.children) {
+        // @ts-ignore
         if (child.isClipMask()) {
           workspaceMask = child;
           break;
@@ -458,7 +382,7 @@ export class PaintEditor implements IPaintEditor {
     const centerX = bounds.width === 0 ? 0 : (SVG_ART_BOARD_WIDTH / 2) - bounds.x;
     const centerY = bounds.height === 0 ? 0 : (SVG_ART_BOARD_HEIGHT / 2) - bounds.y;
 
-    this.updateImageState(
+    this.updateImageBits(
       true /* isVector */,
       // @ts-ignore
       paper.project.exportSVG({
@@ -485,6 +409,31 @@ export class PaintEditor implements IPaintEditor {
 
     if (!skipSnapshot) {
       //performSnapshot(this.state.undoSnapshot, Formats.VECTOR);
+    }
+  }
+
+  private updateImageBits(isVector, image, rotationCenterX, rotationCenterY) {
+    this.setState({
+      imageFormat: isVector ? 'svg' : 'png'
+    });
+    if (!isVector) {
+      console.log(`Image width: ${image.width}    Image height: ${image.height}`);
+    }
+    console.log(`rotationCenterX: ${rotationCenterX}    rotationCenterY: ${rotationCenterY}`);
+    if (isVector) {
+      this.setState({ image, rotationCenterX, rotationCenterY });
+    } else { // is Bitmap
+      // image parameter has type ImageData
+      // paint editor takes dataURI as input
+      this.reusableCanvas.width = image.width;
+      this.reusableCanvas.height = image.height;
+      const context = this.reusableCanvas.getContext('2d');
+      context.putImageData(image, 0, 0);
+      this.setState({
+        image: this.reusableCanvas.toDataURL('image/png'),
+        rotationCenterX: rotationCenterX,
+        rotationCenterY: rotationCenterY
+      });
     }
   }
 }

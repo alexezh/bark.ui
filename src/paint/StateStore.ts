@@ -1,11 +1,11 @@
 
 //WeakRef();
-export class StateStore {
+export class StateStore<T> {
   public readonly state: {} = {};
 
   private _callbacks: { [key: string]: any } = {};
 
-  public constructor(state: {}) {
+  public constructor(state: T) {
     this.state = state;
   }
 
