@@ -37,6 +37,8 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
       'onEditLevel',
       'onDownloadProject',
       'handleResize',
+      'onStartGame',
+      'onStopGame',
       'onCloseModal'
     ]);
 
@@ -61,30 +63,6 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
     window.addEventListener("resize", this.handleResize);
   }
 
-  public render() {
-    return (
-      <div id='AppCanvas' className="Canvas-main">
-        <MainToolbar
-          onEditCode={this.onEditCode}
-          onEditImages={this.onEditImages}
-          onEditLevel={this.onEditLevel}
-          onDownloadProject={this.onDownloadProject} />
-        <GameCanvas />
-
-        <ReactModal isOpen={this.state.showModal} contentLabel="CodeEditor">
-          {
-            this.state.editorKind === EditorKind.CodeEditor ?
-              <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} /> : null
-          }
-          {
-            this.state.editorKind === EditorKind.PaintEditor ?
-              <PaintEditorCanvas onClose={this.onCloseModal} /> : null
-          }
-        </ReactModal>
-      </div>
-    );
-  }
-
   //           <button onClick={this.onCloseModal}>Close Modal</button>
 
   private onCloseModal() {
@@ -102,6 +80,15 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   private onEditLevel() {
 
   }
+
+  private onStartGame() {
+    console.log('onStartGame');
+  }
+
+  private onStopGame() {
+    console.log('onStopGame');
+  }
+
 
   private onDownloadProject() {
 
@@ -128,5 +115,31 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   private destroyClickedElement(event) {
     // remove the link from the DOM
     document.body.removeChild(event.target);
+  }
+
+  public render() {
+    return (
+      <div id='AppCanvas' className="Canvas-main">
+        <MainToolbar
+          onEditCode={this.onEditCode}
+          onEditImages={this.onEditImages}
+          onEditLevel={this.onEditLevel}
+          onDownloadProject={this.onDownloadProject}
+          onStartGame={this.onStartGame}
+          onStopGame={this.onStopGame} />
+        <GameCanvas />
+
+        <ReactModal isOpen={this.state.showModal} contentLabel="CodeEditor">
+          {
+            this.state.editorKind === EditorKind.CodeEditor ?
+              <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} /> : null
+          }
+          {
+            this.state.editorKind === EditorKind.PaintEditor ?
+              <PaintEditorCanvas onClose={this.onCloseModal} /> : null
+          }
+        </ReactModal>
+      </div>
+    );
   }
 }

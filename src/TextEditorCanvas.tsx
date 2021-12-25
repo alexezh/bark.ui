@@ -32,22 +32,6 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
     }
   }
 
-  public render() {
-    return (
-      <div className="TextEditor-canvas">
-        <TextEditorToolbar
-          codeBlock={workspace.lastEditedCodeBlock}
-          onClose={this.props.onClose}
-          onChange={this.onToolbarChange} />
-        <textarea
-          className="TextEditor-text"
-          value={this.state.codeBlock?.code}
-          onChange={this.onCodeChange}
-        />
-      </div>
-    );
-  }
-
   private onCodeChange(event: any) {
     if (this.state.codeBlock !== undefined) {
       this.state.codeBlock.updateCode(event.target.value);
@@ -62,5 +46,21 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
       codeBlock: codeBlock,
       codeId: codeBlock?.codeId
     });
+  }
+
+  public render() {
+    return (
+      <div className="TextEditor-canvas">
+        <TextEditorToolbar
+          codeBlock={workspace.lastEditedCodeBlock}
+          onClose={this.props.onClose}
+          onChange={this.onToolbarChange} />
+        <textarea
+          className="TextEditor-text"
+          value={this.state.codeBlock?.code}
+          onChange={this.onCodeChange}
+        />
+      </div>
+    );
   }
 }

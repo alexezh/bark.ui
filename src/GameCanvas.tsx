@@ -2,7 +2,8 @@ import * as React from 'react';
 import _ from "lodash";
 
 import workspace from './Workspace';
-import { CodeFileDef, project } from './Project';
+import GameSpritePane from './GameSpritePane';
+import * as project from './Project';
 
 export interface IGameCanvasProps {
 }
@@ -23,6 +24,10 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     }
   }
 
+  private onSpriteChange(sprite: project.SpriteDef) {
+    console.log('Select sprite:' + sprite.id);
+  }
+
   public render() {
     let origin = document.location.origin;
     origin += "/bark.html";
@@ -30,6 +35,7 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     return (
       <div className="Game-canvas">
         <iframe key={this.state.iframeKey} src={origin} className="Game-iframe" />
+        <GameSpritePane onChange={this.onSpriteChange} />
       </div >
     );
   }

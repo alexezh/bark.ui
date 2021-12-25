@@ -8,12 +8,12 @@ import { IPaperEditor } from './PaperEditor';
 
 import '../App.css';
 
-export interface IPaperEditorCostumePaneProps {
+export interface IPaintEditorCostumePaneProps {
   sprite: project.SpriteDef;
   onChange: (costume: project.CostumeDef) => void;
 }
 
-export interface IPaperEditorCostumePaneState {
+export interface IPaintEditorCostumePaneState {
   sprite: project.SpriteDef;
   selectedCostumeIndex: number | null;
   /**
@@ -27,8 +27,8 @@ export interface IPaperEditorCostumePaneState {
   version: number
 }
 
-export default class PaintEditorCostumePane extends React.Component<IPaperEditorCostumePaneProps, IPaperEditorCostumePaneState> {
-  constructor(props: IPaperEditorCostumePaneProps) {
+export default class PaintEditorCostumePane extends React.Component<IPaintEditorCostumePaneProps, IPaintEditorCostumePaneState> {
+  constructor(props: IPaintEditorCostumePaneProps) {
     super(props);
 
     _.bindAll(this, [

@@ -18,7 +18,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     super(props);
 
     _.bindAll(this, [
-      'onSelectObject',
+      'onSelectFile',
       'onSelectFunction'
     ]);
 
@@ -28,28 +28,13 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     }
   }
 
-  public render() {
-    return (
-      <div className='TextEditor-toolbar'>
-        <span>Object: </span>
-        <select onChange={this.onSelectFile} value={this.state.codeFile?.id}>
-          {this.renderFileList()}
-        </select>
-        <span margin-left="20px">Functions: </span>
-        <select onChange={this.onSelectFunction} value={this.state.codeBlock?.id}>
-          {this.renderFunctionList()}
-        </select>
-        <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
-      </div>
-    );
-  }
-
   private onSelectFile(e: any) {
     let codeFile = project.findCodeFileById(e.target.value);
     if (codeFile === undefined) {
       return;
     }
 
+    console.log('TextEditor select:' + codeFile.name);
     this.setState({
       codeFile: codeFile,
       codeBlock: codeFile.firstBlock
@@ -65,6 +50,23 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
       codeFile: codeFile
     });
     this.props.onChange(codeBlock);
+  }
+
+
+  public render() {
+    return (
+      <div className='TextEditor-toolbar'>
+        <span>Object: </span>
+        <select onChange={this.onSelectFile} value={this.state.codeFile?.id}>
+          {this.renderFileList()}
+        </select>
+        <span margin-left="20px">Functions: </span>
+        <select onChange={this.onSelectFunction} value={this.state.codeBlock?.id}>
+          {this.renderFunctionList()}
+        </select>
+        <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
+      </div>
+    );
   }
 
   private renderFunctionList(): any[] {
