@@ -3,6 +3,7 @@ import _ from "lodash";
 import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaintEditor } from './PaintEditor';
+import '../App.css';
 
 export interface IPaintEditorToolbarProps {
   paintEditor: IPaintEditor;

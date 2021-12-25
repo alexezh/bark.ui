@@ -6,6 +6,8 @@ import List from './ui/list/list';
 import ListItem from './ui/list/list-item';
 import { IPaintEditor } from './PaintEditor';
 
+import '../App.css';
+
 export interface IPaintEditorCostumePaneProps {
   sprite: project.SpriteDef;
 }
@@ -84,9 +86,11 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
 
     return {
       item: (
-        <div className="contact">
-          <img src={costume.imageData?.image} />
-          <span className="name">{costume.name}</span>
+        <div className="Sidebar-button">
+          <img className='Sidebar-button-image' src={costume.imageData?.image} />
+          <div>
+            <span className='Sidebar-button-text'>{costume.name}</span>
+          </div>
         </div>
       ),
       key: costume.id

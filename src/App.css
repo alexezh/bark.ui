@@ -86,8 +86,17 @@
 }
 
 .Sidebar-button {
+	width: 94px;
+	height: 94px;
+}
+
+.Sidebar-button-image {
 	width: 64px;
 	height: 64px;
+}
+
+.Sidebar-button-text {
+  font-size: 12px;
 }
 
 .ModalEditor-close {
