@@ -7,7 +7,7 @@ import TextEditorCanvas from './TextEditorCanvas';
 import GameCanvas from './GameCanvas';
 import PaintEditorCanvas from './paint/PaintEditorCanvas';
 import workspace from './Workspace';
-import { CodeFileDef } from './Project';
+import * as project from './Project';
 
 import './App.css';
 
@@ -23,7 +23,7 @@ enum EditorKind {
 export interface IAppCanvasState {
   showModal: boolean;
   editorKind: EditorKind;
-  codeFile?: CodeFileDef;
+  codeFile?: project.CodeFileDef;
 }
 
 export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanvasState> {
@@ -34,6 +34,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
       'onEditCode',
       'onEditImages',
       'onEditLevel',
+      'onDownloadProject',
       'onCloseModal'
     ]);
 
@@ -48,8 +49,12 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   public render() {
 
     return (
-      <div className="Canvas-main">
-        <MainToolbar onEditCode={this.onEditCode} onEditImages={this.onEditImages} onEditLevel={this.onEditLevel} />
+      <div id='AppCanvas' className="Canvas-main">
+        <MainToolbar
+          onEditCode={this.onEditCode}
+          onEditImages={this.onEditImages}
+          onEditLevel={this.onEditLevel}
+          onDownloadProject={this.onDownloadProject} />
         <GameCanvas />
 
         <ReactModal isOpen={this.state.showModal} contentLabel="CodeEditor">
@@ -79,7 +84,35 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   private onEditImages() {
     this.setState({ showModal: true, editorKind: EditorKind.PaintEditor });
   }
+
   private onEditLevel() {
 
+  }
+
+  private onDownloadProject() {
+
+    let projectJson = project.project.toJson();
+    var codeBlob = new Blob([projectJson], { type: 'text/plain' });
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = 'test.json';
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null) {
+      // Chrome allows the link to be clicked without actually adding it to the DOM.
+      downloadLink.href = window.webkitURL.createObjectURL(codeBlob);
+    } else {
+      // Firefox requires the link to be added to the DOM before it can be clicked.
+      downloadLink.href = window.URL.createObjectURL(codeBlob);
+      downloadLink.onclick = this.destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+    }
+
+    downloadLink.click();
+  }
+
+  private destroyClickedElement(event) {
+    // remove the link from the DOM
+    document.body.removeChild(event.target);
   }
 }

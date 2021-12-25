@@ -148,8 +148,10 @@ export interface IPaperEditor {
   /**
    * set image to be edited
    */
-  setImage(costume: project.ImageData);
+  setImage(imageSource: string, imageData?: project.ImageData);
 
+  // called from editor logic
+  // need to move someth
   handleUpdateImage(skipSnapshot, formatOverride);
   handleSetCursor(cursorString: string);
   handleSetSelectedItems(selectedItems: [], bitmapMode: any);
@@ -176,7 +178,7 @@ export interface IPaperEditor {
  * 'model' object for paint editor. Provides set of methods and properties
  * used by PaintEditorCanvas and buttons
  */
-export class PaintEditor implements IPaperEditor {
+export class PaperEditor implements IPaperEditor {
 
   private commands: { [key: string]: any } = {};
   private stateStore: StateStore<IPaperEditorState>;
@@ -250,8 +252,9 @@ export class PaintEditor implements IPaperEditor {
     this.stateStore.unregisterStateChange(name);
   }
 
-  public setImage(imageData: project.ImageData) {
-    this.setState({ image: imageData });
+  public setImage(imageSource: string, imageData?: project.ImageData) {
+    console.log('PaperEditor.setImage:' + imageSource);
+    this.setState({ imageSource: imageSource, image: imageData });
   }
   public getCommand(key: string): any {
     return this.commands[key];

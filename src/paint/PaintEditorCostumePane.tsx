@@ -10,6 +10,7 @@ import '../App.css';
 
 export interface IPaperEditorCostumePaneProps {
   sprite: project.SpriteDef;
+  onChange: (costume: project.CostumeDef) => void;
 }
 
 export interface IPaperEditorCostumePaneState {
@@ -62,6 +63,19 @@ export default class PaintEditorCostumePane extends React.Component<IPaperEditor
     this.setState({ version: this.state.version + 1 })
   }
 
+  /**
+   * called when new costume is selected
+   */
+  private onCostumeSelected(index: number | null) {
+    let costume = (index !== null) ? this.state.sprite.costumes[index] : this.state.sprite.firstCostume;
+    this.setState({
+      selectedCostumeIndex: index,
+      costume: costume
+    });
+
+    this.props.onChange(costume);
+  }
+
   public render() {
     return (
       <div className='PaintEditor-costume'>
@@ -72,10 +86,6 @@ export default class PaintEditorCostumePane extends React.Component<IPaperEditor
           onChange={this.onCostumeSelected} />
       </div >
     );
-  }
-
-  private onCostumeSelected(index: number | null) {
-    this.setState({ selectedCostumeIndex: index })
   }
 
   renderItem(idx: number): { item: React.ReactNode, key: string } | undefined {

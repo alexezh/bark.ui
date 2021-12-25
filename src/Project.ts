@@ -50,6 +50,15 @@ export class CodeBlockDef extends ObjectDef {
     this.code = code;
     this.codeId = x64Hash64(code);
   }
+
+  public populateCommands(commands: any[]) {
+    commands.push({
+      op: 'addCodeBlock',
+      name: this.name,
+      code: this.code,
+      codeId: this.codeId
+    });
+  }
 }
 
 export class CodeFileDef extends ObjectDef {
@@ -67,6 +76,16 @@ export class CodeFileDef extends ObjectDef {
   }
 
   public get firstBlock(): CodeBlockDef | undefined { return (this.codeBlocks.length > 0) ? this.codeBlocks[0] : undefined }
+
+  public populateCommands(commands: any[]) {
+    commands.push({
+      op: 'addCodeFile',
+      name: this.name,
+      codeBlockCount: this.codeBlocks.length
+    });
+
+    this.codeBlocks.forEach((x) => x.populateCommands(commands));
+  }
 }
 
 export enum ImageFormat {
@@ -117,6 +136,16 @@ export class CostumeDef extends ObjectDef {
       sprite.onCostumeChange.invoke(this);
     }
   }
+
+  public populateCommands(commands: any[]) {
+    commands.push({
+      op: 'addCostume',
+      name: this.name,
+      image: this.imageData?.image,
+      imageFormat: this.imageData?.imageFormat,
+      imageId: this.imageData?.imageId
+    });
+  }
 }
 
 /**
@@ -155,6 +184,19 @@ export class SpriteDef extends ObjectDef {
     }
 
     return undefined;
+  }
+
+  public populateCommands(commands: any[]) {
+    commands.push({
+      op: 'addSprite',
+      name: this.name,
+      width: this.width,
+      height: this.height,
+      costumeCount: this.costumes.length
+    });
+
+    this.codeFile.populateCommands(commands);
+    this.costumes.forEach((x) => x.populateCommands(commands));
   }
 
   public static isEqual(a: SpriteDef | undefined, b: SpriteDef | undefined): boolean {
@@ -196,6 +238,16 @@ export class ProjectDef {
     this.sprites.push(new SpriteDef(undefined, 'Leia'));
     this.sprites.push(new SpriteDef(undefined, 'Floor'));
     this.sprites.push(new SpriteDef(undefined, 'Air'));
+  }
+
+  public populateCommands(commands: any[]) {
+    commands.push({
+      op: 'updateProject',
+      spriteCount: this.sprites.length
+    });
+
+    this.codeFile.populateCommands(commands);
+    this.sprites.forEach((x) => x.populateCommands(commands));
   }
 }
 
@@ -260,6 +312,12 @@ export class Project {
     }
 
     return undefined;
+  }
+
+  public toJson(): string {
+    let commands = [];
+    this.def.populateCommands(commands);
+    return JSON.stringify(commands);
   }
 }
 

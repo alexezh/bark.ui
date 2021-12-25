@@ -7,7 +7,7 @@ import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
 import workspace from '../Workspace';
 import * as project from '../Project';
-import { IPaperEditor, PaintEditor } from './PaperEditor';
+import { IPaperEditor, PaperEditor } from './PaperEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
 
 //import { addLocaleData } from 'react-intl';
@@ -40,14 +40,15 @@ export interface IPaintCanvasState {
 }
 
 export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
-  private paintEditor: PaintEditor;
+  private paintEditor: PaperEditor;
   constructor(props: IPaintCanvasProps) {
     super(props);
 
-    this.paintEditor = new PaintEditor();
+    this.paintEditor = new PaperEditor();
 
     _.bindAll(this, [
-      'onEditorStateChange'
+      'onEditorStateChange',
+      'onCostumePaneChange'
     ]);
 
     let sprite = workspace.lastEditedSprite;
@@ -64,10 +65,8 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
   componentDidMount() {
     this.paintEditor.registerStateChange('PaintEditorCanvas', this.onEditorStateChange);
   }
-  componentWillReceiveProps(newProps) {
-    this.paintEditor.unregisterStateChange('PaintEditorCanvas');
-  }
   componentWillUnmount() {
+    this.paintEditor.unregisterStateChange('PaintEditorCanvas');
   }
 
   /**
@@ -86,9 +85,20 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
   }
 
   private onToolbarChange(sprite: project.SpriteDef) {
+    console.log('select sprite:' + sprite.id);
+    this.setState({ sprite: sprite, costume: sprite.firstCostume });
+    this.paintEditor.setImage(sprite.firstCostume.id, sprite.firstCostume.imageData);
   }
 
   private onSidebarChange(costume: project.CostumeDef) {
+    console.log('select costume:' + costume.id);
+    // this.setState({ costume: costume });
+  }
+
+  private onCostumePaneChange(costume: project.CostumeDef) {
+    console.log('select costume:' + costume.id);
+    this.setState({ costume: costume });
+    this.paintEditor.setImage(costume.id, costume.imageData);
   }
 
   public render() {
@@ -112,6 +122,7 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
           />
           <PaintEditorCostumePane
             sprite={workspace.lastEditedSprite}
+            onChange={this.onCostumePaneChange}
           />
         </div>
       </div>

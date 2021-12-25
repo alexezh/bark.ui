@@ -102,6 +102,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             updateState.format = this.editor.state.format;
         }
         if (Object.keys(updateState).length > 0) {
+            console.log('PaperCanvas: update state');
             this.setState(updateState);
         }
     }
@@ -138,12 +139,14 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.editor.state.rotationCenterX, this.editor.state.rotationCenterY);
     }
     componentWillReceiveProps(newProps) {
-        if (this.editor.state.imageSource !== newProps.imageSource) {
+        if (this.state.imageSource !== newProps.imageSource) {
+            console.log('PaperCanvas: load:' + newProps.imageSource);
+
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);
         }
-        if (this.editor.state.format !== newProps.format) {
+        if (this.state.format !== newProps.format) {
             this.recalibrateSize();
             convertBackgroundGuideLayer(newProps.format);
         }
