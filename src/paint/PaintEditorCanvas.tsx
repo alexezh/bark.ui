@@ -7,7 +7,7 @@ import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
 import workspace from '../Workspace';
 import * as project from '../Project';
-import { IPaintEditor, PaintEditor } from './PaintEditor';
+import { IPaperEditor, PaintEditor } from './PaperEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
 
 //import { addLocaleData } from 'react-intl';

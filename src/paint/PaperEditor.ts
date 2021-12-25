@@ -102,7 +102,7 @@ export class ColorState {
 /**
  * observable state used by controls
  */
-export interface IPaintEditorState {
+export interface IPaperEditorState {
   get format(): string; // seems to be the same as mode
   get imageFormat(): string;
   get mode(): any; // current editing tool
@@ -136,10 +136,10 @@ export interface IPaintEditorState {
 /**
  * provides methods for managing state of editor
  */
-export interface IPaintEditor {
+export interface IPaperEditor {
   getCommand(key: string): any;
 
-  get state(): IPaintEditorState;
+  get state(): IPaperEditorState;
 
   registerStateChange(name: string, onChange: any);
   unregisterStateChange(name: string);
@@ -176,10 +176,10 @@ export interface IPaintEditor {
  * 'model' object for paint editor. Provides set of methods and properties
  * used by PaintEditorCanvas and buttons
  */
-export class PaintEditor implements IPaintEditor {
+export class PaintEditor implements IPaperEditor {
 
   private commands: { [key: string]: any } = {};
-  private stateStore: StateStore<IPaintEditorState>;
+  private stateStore: StateStore<IPaperEditorState>;
 
   /**
    * canvas used to generate snapshots of images
@@ -193,7 +193,7 @@ export class PaintEditor implements IPaintEditor {
 
   public constructor() {
 
-    this.stateStore = new StateStore<IPaintEditorState>({
+    this.stateStore = new StateStore<IPaperEditorState>({
       imageFormat: 'svg',
       format: 'svg',
       mode: Modes.SELECT,
@@ -237,7 +237,7 @@ export class PaintEditor implements IPaintEditor {
     this.reusableCanvas = document.createElement('canvas');
   }
 
-  public get state(): IPaintEditorState { return this.stateStore.state as IPaintEditorState; }
+  public get state(): IPaperEditorState { return this.stateStore.state as IPaperEditorState; }
 
   public setState(state: {}) {
     this.stateStore.setState(state);

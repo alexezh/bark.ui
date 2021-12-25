@@ -4,7 +4,7 @@ import BitLineTool from '../../tools/bit-tools/line-tool';
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { DEFAULT_COLOR } from '../../tools/colors';
 import Modes, { BitmapModes } from '../../lib/modes';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 
 import lineIcon from './line.svg';
 
@@ -12,7 +12,7 @@ import lineIcon from './line.svg';
 export const BitLineModeCommand_commandId: string = 'bit-line-mode';
 
 export default class BitLineModeCommand extends ToolSelectCommand<BitLineTool> {
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, BitLineModeCommand_commandId, Modes.BIT_LINE, lineIcon, 'hello');
     }
 

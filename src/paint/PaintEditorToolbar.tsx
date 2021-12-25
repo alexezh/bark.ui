@@ -2,22 +2,22 @@ import * as React from 'react';
 import _ from "lodash";
 import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
-import { IPaintEditor } from './PaintEditor';
+import { IPaperEditor } from './PaperEditor';
 import '../App.css';
 
-export interface IPaintEditorToolbarProps {
-  paintEditor: IPaintEditor;
+export interface IPaperEditorToolbarProps {
+  paintEditor: IPaperEditor;
   sprite: SpriteDef;
   onClose: any;
   onChange: (sprite: SpriteDef) => void;
 }
 
-export interface IPaintEditorToolbarState {
+export interface IPaperEditorToolbarState {
   sprite: SpriteDef;
 }
 
-export default class PaintEditorToolbar extends React.Component<IPaintEditorToolbarProps, IPaintEditorToolbarState> {
-  constructor(props: IPaintEditorToolbarProps) {
+export default class PaintEditorToolbar extends React.Component<IPaperEditorToolbarProps, IPaperEditorToolbarState> {
+  constructor(props: IPaperEditorToolbarProps) {
     super(props);
 
     _.bindAll(this, [

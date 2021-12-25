@@ -6,7 +6,7 @@ import { generateSecondaryColor, MIXED } from '../../tools/style-path';
 import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 
 import fillIcon from './fill.svg';
 
@@ -17,7 +17,7 @@ export default class FillModeCommand extends ToolSelectCommand<FillTool> {
     private selectedItems: [];
     private zoom: number;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, FillModeCommand_commandId, Modes.FILL, fillIcon, 'hello');
 
         this.selectedItems = this.editor.state.selectedItems;

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaperEditor } from '../PaperEditor';
 
 export interface IToolSelectCommand {
   componentDidMount(target: any);
@@ -13,7 +13,7 @@ export interface IToolSelectCommand {
 
 export class ToolSelectCommand<T> implements IToolSelectCommand {
   protected tool: T | null = null;
-  protected editor: IPaintEditor;
+  protected editor: IPaperEditor;
   private target: WeakRef<any> | null = null;
   private version: number = 1;
   private readonly _commandId: string;
@@ -28,7 +28,7 @@ export class ToolSelectCommand<T> implements IToolSelectCommand {
     return this._text;
   }
 
-  public constructor(editor: IPaintEditor, commandId: string, mode: any, imgSrc: string, text: string) {
+  public constructor(editor: IPaperEditor, commandId: string, mode: any, imgSrc: string, text: string) {
     this.editor = editor;
     this._commandId = commandId;
     this._imgSrc = imgSrc;

@@ -1,7 +1,7 @@
 import Modes from '../../lib/modes';
 
 import BitSelectTool from '../../tools/bit-tools/select-tool';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 import { ToolSelectCommand } from '../ToolSelectCommand';
 
 import selectIcon from './marquee.svg';
@@ -9,7 +9,7 @@ import selectIcon from './marquee.svg';
 export const BitSelectModeCommand_commandId: string = 'bit-select-mode';
 
 export default class BitSelectModeCommand extends ToolSelectCommand<BitSelectTool> {
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, BitSelectModeCommand_commandId, Modes.BIT_SELECT, selectIcon, 'hello');
     }
 

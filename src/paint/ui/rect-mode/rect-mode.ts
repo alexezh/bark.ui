@@ -4,7 +4,7 @@ import RectTool from '../../tools/vector-tools/rect-tool';
 import Modes from '../../lib/modes';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 
 import rectIcon from './rectangle.svg';
 
@@ -14,7 +14,7 @@ export default class RectModeCommand extends ToolSelectCommand<RectTool> {
     private selectedItems: [];
     private zoom: number;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, RectModeCommand_commandId, Modes.RECT, rectIcon, 'hello');
 
         this.selectedItems = this.editor.state.selectedItems;

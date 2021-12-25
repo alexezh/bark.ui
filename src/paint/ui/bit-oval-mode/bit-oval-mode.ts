@@ -4,7 +4,7 @@ import BitLineTool from '../../tools/bit-tools/line-tool';
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { DEFAULT_COLOR } from '../../tools/colors';
 import Modes, { BitmapModes } from '../../lib/modes';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 import OvalTool from '../../tools/bit-tools/oval-tool';
 
 import BitOvalTool from '../../tools/bit-tools/oval-tool';
@@ -17,7 +17,7 @@ export default class BitOvalModeCommand extends ToolSelectCommand<BitOvalTool> {
     private selectedItems: [];
     private zoom: number;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, BitOvalModeCommand_commandId, Modes.BIT_OVAL, ovalIcon, 'hello');
 
         this.selectedItems = this.editor.state.selectedItems;

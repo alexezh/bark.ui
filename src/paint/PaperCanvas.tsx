@@ -14,12 +14,12 @@ import {
 } from './tools/view';
 import { ensureClockwise, scaleWithStrokes } from './tools/math';
 import * as project from '../Project';
-import { IPaintEditor } from './PaintEditor';
+import { IPaperEditor } from './PaperEditor';
 
 var paperScope: any = null;
 
 export interface IPaperCanvasProps {
-    editor: IPaintEditor;
+    editor: IPaperEditor;
     imageSource: string | undefined;
     format: string;
 
@@ -58,7 +58,7 @@ export interface IPaperCanvasState {
 
 export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPaperCanvasState> {
     public canvas: any;
-    private editor: IPaintEditor;
+    private editor: IPaperEditor;
     private shouldZoomToFit: boolean | paper.Matrix = false;
 
     // is set if we are loading image

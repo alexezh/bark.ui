@@ -4,7 +4,7 @@ import { clearSelection, getSelectedLeafItems } from '../../tools/selection';
 import OvalTool from '../../tools/vector-tools/oval-tool';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 
 import ovalIcon from './oval.svg';
 
@@ -15,7 +15,7 @@ export default class OvalModeCommand extends ToolSelectCommand<OvalTool> {
     private selectedItems: [];
     private zoom: number;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, OvalModeCommand_commandId, Modes.OVAL, ovalIcon, 'hello');
 
         this.selectedItems = this.editor.state.selectedItems;

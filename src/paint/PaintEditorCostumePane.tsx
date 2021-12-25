@@ -4,15 +4,15 @@ import * as project from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import List from './ui/list/list';
 import ListItem from './ui/list/list-item';
-import { IPaintEditor } from './PaintEditor';
+import { IPaperEditor } from './PaperEditor';
 
 import '../App.css';
 
-export interface IPaintEditorCostumePaneProps {
+export interface IPaperEditorCostumePaneProps {
   sprite: project.SpriteDef;
 }
 
-export interface IPaintEditorCostumePaneState {
+export interface IPaperEditorCostumePaneState {
   sprite: project.SpriteDef;
   selectedCostumeIndex: number | null;
   /**
@@ -26,8 +26,8 @@ export interface IPaintEditorCostumePaneState {
   version: number
 }
 
-export default class PaintEditorCostumePane extends React.Component<IPaintEditorCostumePaneProps, IPaintEditorCostumePaneState> {
-  constructor(props: IPaintEditorCostumePaneProps) {
+export default class PaintEditorCostumePane extends React.Component<IPaperEditorCostumePaneProps, IPaperEditorCostumePaneState> {
+  constructor(props: IPaperEditorCostumePaneProps) {
     super(props);
 
     _.bindAll(this, [

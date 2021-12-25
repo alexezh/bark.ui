@@ -3,7 +3,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 
 import Button from './button';
-import { IPaintEditor } from '../PaintEditor';
+import { IPaperEditor } from '../PaperEditor';
 import { IToolSelectCommand } from './ToolSelectCommand'
 
 import './ToolSelectButton.css';

@@ -2,22 +2,22 @@ import * as React from 'react';
 import _ from "lodash";
 import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
-import { IPaintEditor } from './PaintEditor';
+import { IPaperEditor } from './PaperEditor';
 
-export interface IPaintEditorSidebarProps {
-  paintEditor: IPaintEditor;
+export interface IPaperEditorSidebarProps {
+  paintEditor: IPaperEditor;
   sprite: SpriteDef;
   onClose: any;
   onChange: (costume: CostumeDef) => void;
 }
 
-export interface IPaintEditorSidebarState {
+export interface IPaperEditorSidebarState {
   sprite: SpriteDef;
   costume: CostumeDef;
 }
 
-export default class PaintEditorSidebar extends React.Component<IPaintEditorSidebarProps, IPaintEditorSidebarState> {
-  constructor(props: IPaintEditorSidebarProps) {
+export default class PaintEditorSidebar extends React.Component<IPaperEditorSidebarProps, IPaperEditorSidebarState> {
+  constructor(props: IPaperEditorSidebarProps) {
     super(props);
 
     _.bindAll(this, [

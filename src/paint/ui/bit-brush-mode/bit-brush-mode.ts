@@ -4,7 +4,7 @@ import BitBrushTool from '../../tools/bit-tools/brush-tool';
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { DEFAULT_COLOR } from '../../tools/colors';
 import Modes, { BitmapModes } from '../../lib/modes';
-import { Color, IPaintEditor } from '../../PaintEditor';
+import { Color, IPaperEditor } from '../../PaperEditor';
 
 import brushIcon from './brush.svg';
 
@@ -30,7 +30,7 @@ export default class BitBrushModeCommand extends ToolSelectCommand<BitBrushTool>
     private bitBrushSize: any;
     private color: Color;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, BitBrushModeCommand_commandId, Modes.BIT_BRUSH, brushIcon, 'hello');
         this.bitBrushSize = editor.state.bitBrushSize;
         this.color = editor.state.color;

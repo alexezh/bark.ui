@@ -6,7 +6,7 @@ import Blobbiness from '../../tools/blob-tools/blob';
 import { clearSelection } from '../../tools/selection';
 
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
-import { IPaintEditor } from '../../PaintEditor';
+import { IPaperEditor } from '../../PaperEditor';
 
 import brushIcon from './brush.svg';
 
@@ -17,7 +17,7 @@ export default class BrushModeCommand extends ToolSelectCommand<paper.Tool> {
     private zoom: number;
     private blob: Blobbiness;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, BrushModeCommand_commandId, Modes.BRUSH, brushIcon, 'hello');
 
         this.selectedItems = this.editor.state.selectedItems;

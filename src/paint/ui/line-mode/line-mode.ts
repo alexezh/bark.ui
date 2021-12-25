@@ -10,7 +10,7 @@ import { snapDeltaToAngle } from '../../tools/math';
 import { IToolSelectCommand, ToolSelectCommand } from '../ToolSelectCommand';
 import { DEFAULT_COLOR } from '../../tools/colors';
 import Modes, { BitmapModes } from '../../lib/modes';
-import { ColorState, IPaintEditor } from '../../PaintEditor';
+import { ColorState, IPaperEditor } from '../../PaperEditor';
 
 import lineIcon from './line.svg';
 
@@ -225,7 +225,7 @@ export default class LineModeCommand extends ToolSelectCommand<LineTool> {
     private selectedItems: [];
     private zoom: number;
 
-    public constructor(editor: IPaintEditor) {
+    public constructor(editor: IPaperEditor) {
         super(editor, LineModeCommand_commandId, Modes.LINE, lineIcon, 'hello');
         this.zoom = 1.0;
     }
