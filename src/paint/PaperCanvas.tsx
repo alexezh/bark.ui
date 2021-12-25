@@ -21,7 +21,7 @@ var paperScope: any = null;
 export interface IPaperCanvasProps {
     editor: IPaperEditor;
     imageSource: string | undefined;
-    format: string;
+    imageFormat: string;
 
     /*
         canvasRef: PropTypes.func,
@@ -49,7 +49,7 @@ export interface IPaperCanvasProps {
 }
 
 export interface IPaperCanvasState {
-    format: string; // Formats;
+    imageFormat: string; // Formats;
     imageSource: string | undefined;
     rotationCenterX?: number;
     rotationCenterY?: number;
@@ -82,7 +82,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
 
         this.editor = props.editor;
         this.state = {
-            format: this.props.format,
+            imageFormat: this.props.imageFormat,
             imageSource: this.props.imageSource,
             rotationCenterX: this.editor.state.rotationCenterX,
             rotationCenterY: this.editor.state.rotationCenterY,
@@ -97,12 +97,13 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             // @ts-ignore
             updateState.imageSource = this.editor.state.imageSource;
         }
-        if (this.editor.state.format !== this.state.format) {
+        if (this.editor.state.imageFormat !== this.state.imageFormat) {
             // @ts-ignore
-            updateState.format = this.editor.state.format;
+            updateState.imageFormat = this.editor.state.imageFormat;
         }
         if (Object.keys(updateState).length > 0) {
-            console.log('PaperCanvas: update state');
+            // @ts-ignore
+            console.log('PaperCanvas: update state:' + updateState.imageFormat);
             this.setState(updateState);
         }
     }
@@ -133,22 +134,24 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         // Don't show handles by default
         paper.settings.handleSize = 0;
         // Make layers.
-        setupLayers(this.props.editor.state.format);
+        setupLayers(this.props.editor.state.imageFormat);
         this.importImage(
-            this.editor.state.imageFormat, this.editor.state.image,
-            this.editor.state.rotationCenterX, this.editor.state.rotationCenterY);
+            this.editor.state.imageFormat,
+            this.editor.state.image,
+            this.editor.state.rotationCenterX,
+            this.editor.state.rotationCenterY);
     }
     componentWillReceiveProps(newProps) {
         if (this.state.imageSource !== newProps.imageSource) {
             console.log('PaperCanvas: load:' + newProps.imageSource);
 
-            this.switchCostume(newProps.imageFormat, newProps.image,
+            this.switchCostume(newProps.imageFormat, this.editor.state.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);
         }
-        if (this.state.format !== newProps.format) {
+        if (this.state.imageFormat !== newProps.imageFormat) {
             this.recalibrateSize();
-            convertBackgroundGuideLayer(newProps.format);
+            convertBackgroundGuideLayer(newProps.imageFormat);
         }
     }
     componentWillUnmount() {
@@ -173,7 +176,12 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.queuedImageToLoad = null;
         }
     }
-    switchCostume(format, image, rotationCenterX, rotationCenterY, oldZoomLevelId, newZoomLevelId) {
+    switchCostume(
+        format: string,
+        image: project.ImageData | undefined,
+        rotationCenterX: number,
+        rotationCenterY: number,
+        oldZoomLevelId, newZoomLevelId) {
         if (oldZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
             this.editor.saveZoomLevel();
         }
@@ -200,7 +208,11 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         //this.props.clearPasteOffset();
         this.importImage(format, image, rotationCenterX, rotationCenterY);
     }
-    importImage(format, image, rotationCenterX, rotationCenterY) {
+    importImage(
+        format: string,
+        image: project.ImageData | undefined,
+        rotationCenterX: number | undefined,
+        rotationCenterY: number | undefined) {
         // Stop any in-progress imports
         this.clearQueuedImport();
 
@@ -252,7 +264,8 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
                 //performSnapshot(this.props.undoSnapshot, Formats.BITMAP_SKIP_CONVERT);
                 this.recalibrateSize();
             };
-            imgElement.src = image;
+            // @ts-ignore
+            imgElement.src = image.image;
         } else if (format === 'svg') {
             //this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
             this.importSvg(image, rotationCenterX, rotationCenterY);

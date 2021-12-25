@@ -33,16 +33,6 @@ ul {
 	margin: 0;
 }
 
-body {
-	padding: 3em;
-}
-
-.demo > div {
-	display: inline-block;
-	vertical-align: top;
-	margin-right: 1.5em;
-}
-
 /* Add some style to the list */
 
 .react-list-select {

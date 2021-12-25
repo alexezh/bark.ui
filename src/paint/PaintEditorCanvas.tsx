@@ -117,7 +117,7 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
             paintEditor={this.paintEditor} />
           <PaperCanvas
             editor={this.paintEditor}
-            format={this.paintEditor.state.format}
+            imageFormat={this.paintEditor.state.imageFormat}
             imageSource={this.paintEditor.state.imageSource}
           />
           <PaintEditorCostumePane

@@ -24,6 +24,7 @@ export interface IAppCanvasState {
   showModal: boolean;
   editorKind: EditorKind;
   codeFile?: project.CodeFileDef;
+  windowWidth: number;
 }
 
 export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanvasState> {
@@ -35,6 +36,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
       'onEditImages',
       'onEditLevel',
       'onDownloadProject',
+      'handleResize',
       'onCloseModal'
     ]);
 
@@ -42,12 +44,24 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
 
     this.state = {
       showModal: false,
-      editorKind: EditorKind.Unknown
+      editorKind: EditorKind.Unknown,
+      windowWidth: window.innerWidth
     }
   }
 
-  public render() {
+  handleResize(e) {
+    this.setState({ windowWidth: window.innerWidth });
+  };
 
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  componentWillUnmount() {
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  public render() {
     return (
       <div id='AppCanvas' className="Canvas-main">
         <MainToolbar
