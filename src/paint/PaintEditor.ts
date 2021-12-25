@@ -118,6 +118,14 @@ export interface IPaintEditorState {
   get zoom(): number;
   get selectedItems(): [];
 
+  /**
+   * string representing source of image. when source changes, we consider image different
+   */
+  get imageSource(): string | undefined;
+
+  /**
+   * latest image content edited
+   */
   get image(): project.ImageData | undefined;
 
   get zoomLevelId(): number;
@@ -200,6 +208,7 @@ export class PaintEditor implements IPaintEditor {
       zoom: 1.0,
       bitBrushSize: null,
       selectedItems: [],
+      imageSource: undefined,
       image: undefined,
 
       zoomLevelId: 0,

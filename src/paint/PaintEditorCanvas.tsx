@@ -52,6 +52,8 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
 
     let sprite = workspace.lastEditedSprite;
 
+    this.paintEditor.setState({ imageSource: sprite.firstCostume.id });
+
     this.state = {
       sprite: sprite,
       costume: sprite.firstCostume,
@@ -105,6 +107,8 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
             paintEditor={this.paintEditor} />
           <PaperCanvas
             editor={this.paintEditor}
+            format={this.paintEditor.state.format}
+            imageSource={this.paintEditor.state.imageSource}
           />
           <PaintEditorCostumePane
             sprite={workspace.lastEditedSprite}

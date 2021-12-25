@@ -20,6 +20,8 @@ var paperScope: any = null;
 
 export interface IPaperCanvasProps {
     editor: IPaintEditor;
+    imageSource: string | undefined;
+    format: string;
 
     /*
         canvasRef: PropTypes.func,
@@ -48,7 +50,7 @@ export interface IPaperCanvasProps {
 
 export interface IPaperCanvasState {
     format: string; // Formats;
-    image: project.ImageData | undefined;
+    imageSource: string | undefined;
     rotationCenterX?: number;
     rotationCenterY?: number;
     cursor: string;
@@ -80,8 +82,8 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
 
         this.editor = props.editor;
         this.state = {
-            format: this.editor.state.format,
-            image: this.editor.state.image,
+            format: this.props.format,
+            imageSource: this.props.imageSource,
             rotationCenterX: this.editor.state.rotationCenterX,
             rotationCenterY: this.editor.state.rotationCenterY,
             cursor: this.editor.state.cursor
@@ -91,9 +93,9 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
 
     onEditorStateChange() {
         let updateState = {};
-        if (!project.ImageData.isEqual(this.editor.state.image, this.state.image)) {
+        if (this.editor.state.imageSource !== this.state.imageSource) {
             // @ts-ignore
-            updateState.imageId = this.editor.state.image?.imageId;
+            updateState.imageSource = this.editor.state.imageSource;
         }
         if (this.editor.state.format !== this.state.format) {
             // @ts-ignore
@@ -136,7 +138,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.editor.state.rotationCenterX, this.editor.state.rotationCenterY);
     }
     componentWillReceiveProps(newProps) {
-        if (!project.ImageData.isEqual(this.editor.state.image, newProps.image)) {
+        if (this.editor.state.imageSource !== newProps.imageSource) {
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);
