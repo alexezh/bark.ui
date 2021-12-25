@@ -78,9 +78,9 @@ export enum ImageFormat {
  */
 export class CostumeDef extends ObjectDef {
   public name: string = 'No name';
-  public image: string | null = null;
+  public image: string | undefined = undefined;
   public imageFormat: ImageFormat = ImageFormat.svg;
-  public imageId: string | null = null;
+  public imageId: string | undefined = undefined;
 
   public constructor(parent: IObjectDef) {
     super(parent);
@@ -96,9 +96,7 @@ export class CostumeDef extends ObjectDef {
   public static isEqual(a: CostumeDef | undefined, b: CostumeDef | undefined): boolean {
     if (a === undefined && b === undefined) {
       return true;
-    } else if (a !== undefined && b === undefined) {
-      return false;
-    } else if (a === undefined && b !== undefined) {
+    } else if (a === undefined || b === undefined) {
       return false;
     } else {
       // @ts-ignore
@@ -138,6 +136,16 @@ export class SpriteDef extends ObjectDef {
     }
 
     return undefined;
+  }
+
+  public static isEqual(a: SpriteDef | undefined, b: SpriteDef | undefined): boolean {
+    if (a === undefined && b === undefined) {
+      return true;
+    } else if (a === undefined || b === undefined) {
+      return false;
+    } else {
+      return a === b;
+    }
   }
 }
 

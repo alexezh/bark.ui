@@ -22,7 +22,7 @@ import OvalModeCommand, { OvalModeCommand_commandId } from './ui/oval-mode/oval-
 import LineModeCommand, { LineModeCommand_commandId } from './ui/line-mode/line-mode';
 import FillModeCommand, { FillModeCommand_commandId } from './ui/fill-mode/fill-mode';
 import BrushModeCommand, { BrushModeCommand_commandId } from './ui/brush-mode/brush-mode';
-import { CostumeDef } from '../Project';
+import { CostumeDef, ImageFormat } from '../Project';
 
 export class BrushMode {
   public brushSize: any = 1;
@@ -343,10 +343,9 @@ export class PaintEditor implements IPaintEditor {
       rect.width = rect.height = 1;
     }
 
-    const imageData = plasteredRaster.getImageData(rect);
+    const imageData: ImageData = plasteredRaster.getImageData(rect);
 
-    this.updateImageBits(
-      false /* isVector */,
+    this.updateBitmapImageBits(
       imageData,
       (ART_BOARD_WIDTH / 2) - rect.x,
       (ART_BOARD_HEIGHT / 2) - rect.y);
@@ -390,8 +389,7 @@ export class PaintEditor implements IPaintEditor {
     const centerX = bounds.width === 0 ? 0 : (SVG_ART_BOARD_WIDTH / 2) - bounds.x;
     const centerY = bounds.height === 0 ? 0 : (SVG_ART_BOARD_HEIGHT / 2) - bounds.y;
 
-    this.updateImageBits(
-      true /* isVector */,
+    this.updateVectorImageBits(
       // @ts-ignore
       paper.project.exportSVG({
         asString: true,
@@ -420,29 +418,34 @@ export class PaintEditor implements IPaintEditor {
     }
   }
 
-  private updateImageBits(isVector, image, rotationCenterX, rotationCenterY) {
+  private updateVectorImageBits(image: SVGElement | string, rotationCenterX: number, rotationCenterY: number) {
     this.setState({
-      imageFormat: isVector ? 'svg' : 'png'
+      imageFormat: 'svg',
+      image: image,
+      rotationCenterX: rotationCenterX,
+      rotationCenterY: rotationCenterY
     });
-    if (!isVector) {
-      console.log(`Image width: ${image.width}    Image height: ${image.height}`);
-    }
-    console.log(`rotationCenterX: ${rotationCenterX}    rotationCenterY: ${rotationCenterY}`);
-    if (isVector) {
-      this.setState({ image, rotationCenterX, rotationCenterY });
-    } else { // is Bitmap
-      // image parameter has type ImageData
-      // paint editor takes dataURI as input
-      this.reusableCanvas.width = image.width;
-      this.reusableCanvas.height = image.height;
-      const context = this.reusableCanvas.getContext('2d');
-      context.putImageData(image, 0, 0);
-      this.setState({
-        image: this.reusableCanvas.toDataURL('image/png'),
-        rotationCenterX: rotationCenterX,
-        rotationCenterY: rotationCenterY
-      });
-    }
+  }
+
+  private updateBitmapImageBits(imageData: ImageData, rotationCenterX: number, rotationCenterY: number) {
+    // image parameter has type ImageData
+    // paint editor takes dataURI as input
+    this.reusableCanvas.width = imageData.width;
+    this.reusableCanvas.height = imageData.height;
+    const context = this.reusableCanvas.getContext('2d');
+    context.putImageData(imageData, 0, 0);
+
+    let imageDataUrl = this.reusableCanvas.toDataURL('image/png');
+
+    // we should not be editing object and instead creating new one
+    // but then somebody should translate the change? 
+    this.state.image?.updateImage(ImageFormat.png, imageDataUrl);
+
+    this.setState({
+      imageFormat: 'png',
+      rotationCenterX: rotationCenterX,
+      rotationCenterY: rotationCenterY
+    });
   }
 }
 
