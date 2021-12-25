@@ -13,7 +13,7 @@ import {
     clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
 } from './tools/view';
 import { ensureClockwise, scaleWithStrokes } from './tools/math';
-import { CostumeDef } from '../Project';
+import * as project from '../Project';
 import { IPaintEditor } from './PaintEditor';
 
 var paperScope: any = null;
@@ -48,7 +48,7 @@ export interface IPaperCanvasProps {
 
 export interface IPaperCanvasState {
     format: string; // Formats;
-    image: CostumeDef | undefined;
+    image: project.ImageData | undefined;
     rotationCenterX?: number;
     rotationCenterY?: number;
     cursor: string;
@@ -91,7 +91,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
 
     onEditorStateChange() {
         let updateState = {};
-        if (!CostumeDef.isEqual(this.editor.state.image, this.state.image)) {
+        if (!project.ImageData.isEqual(this.editor.state.image, this.state.image)) {
             // @ts-ignore
             updateState.imageId = this.editor.state.image?.imageId;
         }
@@ -136,7 +136,7 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.editor.state.rotationCenterX, this.editor.state.rotationCenterY);
     }
     componentWillReceiveProps(newProps) {
-        if (!CostumeDef.isEqual(this.editor.state.image, newProps.image)) {
+        if (!project.ImageData.isEqual(this.editor.state.image, newProps.image)) {
             this.switchCostume(newProps.imageFormat, newProps.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);

@@ -6,7 +6,7 @@ import PaperCanvas from './PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
 import workspace from '../Workspace';
-import { CodeFileDef, project, SpriteDef } from '../Project';
+import * as project from '../Project';
 import { IPaintEditor, PaintEditor } from './PaintEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
 
@@ -34,8 +34,9 @@ export interface IPaintCanvasProps {
 }
 
 export interface IPaintCanvasState {
-  sprite: SpriteDef;
-  imageId: string;
+  sprite: project.SpriteDef;
+  costume: project.CostumeDef;
+  imageId?: string;
 }
 
 export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps, IPaintCanvasState> {
@@ -53,24 +54,39 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
 
     this.state = {
       sprite: sprite,
-      imageId: sprite.costumes[0].id,
+      costume: sprite.firstCostume,
+      imageId: sprite.firstCostume.id,
     }
   }
 
   componentDidMount() {
-    this.paintEditor.registerStateChange('PaintEditorCanvas', this.onEditorStateChange)
+    this.paintEditor.registerStateChange('PaintEditorCanvas', this.onEditorStateChange);
   }
   componentWillReceiveProps(newProps) {
+    this.paintEditor.unregisterStateChange('PaintEditorCanvas');
   }
   componentWillUnmount() {
   }
 
   /**
    * canvas is the object which knows that we are editing particular sprite / costume
-   * when image changes, it updates  
+   * when image changes, it updates the image. Technically, this can be done by a separate component 'ProjectEditor'
+   * but for now it is fine to have on canvas
    */
   public onEditorStateChange() {
+    if (this.state.imageId !== this.paintEditor.state.image?.imageId) {
+      if (this.paintEditor.state.image !== undefined) {
+        this.state.costume.updateImage(this.paintEditor.state.image);
+      }
 
+      this.setState({ imageId: this.paintEditor.state.image?.imageId })
+    }
+  }
+
+  private onToolbarChange(sprite: project.SpriteDef) {
+  }
+
+  private onSidebarChange(costume: project.CostumeDef) {
   }
 
   public render() {
@@ -92,36 +108,10 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
           />
           <PaintEditorCostumePane
             sprite={workspace.lastEditedSprite}
-            paintEditor={this.paintEditor}
           />
         </div>
       </div>
     );
-  }
-
-  private onToolbarChange(sprite: SpriteDef) {
-  }
-
-  private onSidebarChange() {
-  }
-  /*
-  
-        <Provider store={store}>
-          <IntlProvider>
-            <PaintEditor
-              {...this.state}
-              onUpdateName={this.handleUpdateName as any}
-              onUpdateImage={this.handleUpdateImage as any}
-            />
-          </IntlProvider>
-        </Provider>
-
-  */
-  private handleUpdateName(name) {
-    // this.setState({ name });
-  }
-
-  private handleUpdateImage(isVector, image, rotationCenterX, rotationCenterY) {
   }
 }
 

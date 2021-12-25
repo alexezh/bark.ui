@@ -8,7 +8,7 @@ import Formats, { isBitmap, isVector } from './lib/format';
 import { commitOvalToBitmap, commitRectToBitmap, commitSelectionToBitmap, getHitBounds } from './tools/bitmap';
 import { scaleWithStrokes } from './tools/math';
 import Cursors from './lib/cursors';
-import { StateStore } from './StateStore';
+import { StateStore } from '../StateStore';
 import { ART_BOARD_HEIGHT, ART_BOARD_WIDTH, setWorkspaceBounds, SVG_ART_BOARD_HEIGHT, SVG_ART_BOARD_WIDTH } from './tools/view';
 import GradientTypes from './lib/gradient-types';
 import { DEFAULT_COLOR } from './tools/colors';
@@ -22,7 +22,7 @@ import OvalModeCommand, { OvalModeCommand_commandId } from './ui/oval-mode/oval-
 import LineModeCommand, { LineModeCommand_commandId } from './ui/line-mode/line-mode';
 import FillModeCommand, { FillModeCommand_commandId } from './ui/fill-mode/fill-mode';
 import BrushModeCommand, { BrushModeCommand_commandId } from './ui/brush-mode/brush-mode';
-import { CostumeDef, ImageFormat } from '../Project';
+import * as project from '../Project';
 
 export class BrushMode {
   public brushSize: any = 1;
@@ -118,7 +118,7 @@ export interface IPaintEditorState {
   get zoom(): number;
   get selectedItems(): [];
 
-  get image(): CostumeDef | undefined;
+  get image(): project.ImageData | undefined;
 
   get zoomLevelId(): number;
   get shouldZoomToFit(): boolean;
@@ -140,7 +140,7 @@ export interface IPaintEditor {
   /**
    * set image to be edited
    */
-  setImage(costume: CostumeDef);
+  setImage(costume: project.ImageData);
 
   handleUpdateImage(skipSnapshot, formatOverride);
   handleSetCursor(cursorString: string);
@@ -241,8 +241,8 @@ export class PaintEditor implements IPaintEditor {
     this.stateStore.unregisterStateChange(name);
   }
 
-  public setImage(costume: CostumeDef) {
-    this.setState({ image: costume });
+  public setImage(imageData: project.ImageData) {
+    this.setState({ image: imageData });
   }
   public getCommand(key: string): any {
     return this.commands[key];
@@ -437,12 +437,9 @@ export class PaintEditor implements IPaintEditor {
 
     let imageDataUrl = this.reusableCanvas.toDataURL('image/png');
 
-    // we should not be editing object and instead creating new one
-    // but then somebody should translate the change? 
-    this.state.image?.updateImage(ImageFormat.png, imageDataUrl);
-
     this.setState({
       imageFormat: 'png',
+      image: new project.ImageData(project.ImageFormat.png, imageDataUrl),
       rotationCenterX: rotationCenterX,
       rotationCenterY: rotationCenterY
     });

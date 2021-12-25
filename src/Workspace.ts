@@ -15,6 +15,9 @@ export class Workspace {
     return project.def.codeFile.firstBlock;
   }
 
+  /**
+   * returns last sprite which was edited or first sprite
+   */
   public get lastEditedSprite(): SpriteDef {
     if (this._lastEditedSprite !== undefined) {
       return this._lastEditedSprite;

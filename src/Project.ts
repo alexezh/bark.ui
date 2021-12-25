@@ -1,6 +1,7 @@
 import { BlockList } from "net";
 import { v4 as uuidv4 } from 'uuid';
 import { x64Hash64 } from './hash/murmurhash3';
+import AsyncEventSource from './AsyncEventSource';
 
 export interface IMessageChannel {
   updateSnapshot(json: string);
@@ -73,27 +74,18 @@ export enum ImageFormat {
   png
 }
 
-/**
- * ATT: all methods should be static. We will deserialize JS into this class without casting
- */
-export class CostumeDef extends ObjectDef {
-  public name: string = 'No name';
-  public image: string | undefined = undefined;
-  public imageFormat: ImageFormat = ImageFormat.svg;
-  public imageId: string | undefined = undefined;
+export class ImageData {
+  public readonly image: string | undefined = undefined;
+  public readonly imageFormat: ImageFormat = ImageFormat.svg;
+  public readonly imageId: string | undefined = undefined;
 
-  public constructor(parent: IObjectDef) {
-    super(parent);
-    this.id = uuidv4();
-  }
-
-  public updateImage(imageFormat: ImageFormat, image: string) {
+  public constructor(imageFormat: ImageFormat, image: string) {
     this.imageFormat = imageFormat;
     this.image = image;
     this.imageId = x64Hash64(image);
   }
 
-  public static isEqual(a: CostumeDef | undefined, b: CostumeDef | undefined): boolean {
+  public static isEqual(a: ImageData | undefined, b: ImageData | undefined): boolean {
     if (a === undefined && b === undefined) {
       return true;
     } else if (a === undefined || b === undefined) {
@@ -108,6 +100,28 @@ export class CostumeDef extends ObjectDef {
 /**
  * ATT: all methods should be static. We will deserialize JS into this class without casting
  */
+export class CostumeDef extends ObjectDef {
+  public name: string = 'No name';
+  public imageData: ImageData | undefined;
+
+  public constructor(parent: IObjectDef) {
+    super(parent);
+    this.id = uuidv4();
+  }
+
+  public updateImage(imageData: ImageData) {
+    this.imageData = imageData;
+
+    let sprite = this.parent as SpriteDef;
+    if (sprite !== undefined) {
+      sprite.onCostumeChange.invoke(this);
+    }
+  }
+}
+
+/**
+ * ATT: all methods should be static. We will deserialize JS into this class without casting
+ */
 export class SpriteDef extends ObjectDef {
   // user defined name of the sprite
   public name: string = 'No name';
@@ -115,6 +129,11 @@ export class SpriteDef extends ObjectDef {
   public height: number = 0;
   public codeFile: CodeFileDef;
   public costumes: CostumeDef[] = [];
+
+  /**
+   * called when costume changes
+   */
+  public onCostumeChange = new AsyncEventSource<(costume: CostumeDef) => void>();
 
   public constructor(parent: IObjectDef | undefined, name: string) {
     super(parent);
@@ -201,18 +220,6 @@ export class Project {
     return new Project(def);
   }
 
-  public createSprite(name: string) {
-    let sprite = new SpriteDef(undefined, name);
-
-    sprite.codeFile['timer'] = '// add animation code here';
-    this.def.sprites.push(sprite);
-  }
-
-  // update model by applying function
-  public update(func: () => void) {
-    func();
-  }
-
   public forEachSprite(func: (file: SpriteDef) => void) {
     this.def.sprites.forEach((x) => func(x));
   }
@@ -253,20 +260,6 @@ export class Project {
     }
 
     return undefined;
-  }
-
-  /**
-   * updates costume on sprite; sends updates over protocols
-   */
-  public updateCostume(sprite: SpriteDef, costumeId: string, imageId: string, image: string) {
-    let costume = sprite.findCostume(costumeId);
-    if (costume === undefined) {
-      console.log('cannot find costume:' + costumeId);
-      return;
-    }
-
-    costume.image = image;
-    costume.imageId = imageId;
   }
 }
 

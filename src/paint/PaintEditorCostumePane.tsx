@@ -1,64 +1,63 @@
 import * as React from 'react';
 import _ from "lodash";
-import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
+import * as project from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import List from './ui/list/list';
 import ListItem from './ui/list/list-item';
 import { IPaintEditor } from './PaintEditor';
 
 export interface IPaintEditorCostumePaneProps {
-  paintEditor: IPaintEditor;
-  sprite: SpriteDef;
+  sprite: project.SpriteDef;
 }
 
 export interface IPaintEditorCostumePaneState {
-  sprite: SpriteDef;
+  sprite: project.SpriteDef;
   selectedCostumeIndex: number | null;
   /**
    * selected costume
    */
-  costume: CostumeDef;
+  costume: project.CostumeDef;
+
   /**
-   * image id in the costume. if it changes, editing happened
+   * fake property for updating list
    */
-  imageId: string | undefined;
+  version: number
 }
 
 export default class PaintEditorCostumePane extends React.Component<IPaintEditorCostumePaneProps, IPaintEditorCostumePaneState> {
-  private editor: IPaintEditor;
-
   constructor(props: IPaintEditorCostumePaneProps) {
     super(props);
 
     _.bindAll(this, [
-      'onEditorStateChange',
       'onCostumeSelected',
+      'onCostumeChange',
       'renderItem'
     ]);
 
-    this.editor = props.paintEditor;
     this.state = {
       sprite: props.sprite,
       selectedCostumeIndex: 0,
       costume: props.sprite.costumes[0],
-      imageId: props.sprite.costumes[0].imageId
+      version: 0
     }
   }
 
   componentDidMount() {
-    this.editor.registerStateChange('PaintEditorCostumePane', this.onEditorStateChange);
+    this.state.sprite.onCostumeChange.add(this.onCostumeChange);
   }
 
   componentWillUnmount() {
+    this.state.sprite.onCostumeChange.remove(this.onCostumeChange);
   }
 
   componentWillReceiveProps(newProps) {
   }
 
-  private onEditorStateChange() {
-    if (this.state.imageId !== this.editor.state.image?.imageId) {
-      this.setState({ imageId: this.editor.state.image?.imageId })
-    }
+  /**
+   * called when image on any costume changes
+   */
+  private onCostumeChange(costume: project.CostumeDef) {
+    this.setState({ version: this.state.version + 1 })
   }
 
   public render() {
@@ -86,7 +85,7 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
     return {
       item: (
         <div className="contact">
-          <img src={costume.image} />
+          <img src={costume.imageData?.image} />
           <span className="name">{costume.name}</span>
         </div>
       ),
