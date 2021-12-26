@@ -14,11 +14,13 @@ export interface ITextEditorToolbarState {
   codeBlock?: CodeBlockDef;
 }
 
-const ToolbarSelectValue: React.FC = ({ children }) => (
+interface FileValueProps {
+  name?: string;
+};
+
+const FileValue: React.FC<FileValueProps> = (props) => (
   <div className='Toolbar-select-value'>
-    <span>
-      {children}
-    </span>
+    <span>{props.name}</span>
   </div>
 );
 
@@ -69,9 +71,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
         <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
         <div className='Toolbar-big-button'>
           <Dropdown onChange={this.onSelectFile} key={this.state.codeFile?.id} as={ButtonGroup} align='end'>
-            <ToolbarSelectValue>
-              <span>{this.state.codeFile?.name}</span>
-            </ToolbarSelectValue>
+            <FileValue name={this.state.codeFile?.name} />
             <Dropdown.Toggle split variant="success" id="dropdown-basic" />
             <Dropdown.Menu>
               {this.renderFileList()}
@@ -98,7 +98,9 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     let files: any[] = [];
     project.forEachCodeFile((file) => {
       files.push((
-        <Dropdown.Item key={file.path}>{file.name}</Dropdown.Item>
+        <Dropdown.Item key={file.path}>
+          <FileValue name={file.name} />
+        </Dropdown.Item>
       ));
     })
 
