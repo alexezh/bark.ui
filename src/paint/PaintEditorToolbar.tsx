@@ -3,6 +3,8 @@ import _ from "lodash";
 import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaperEditor } from './PaperEditor';
+import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
+import { BigButton } from '../BigButton'
 import '../App.css';
 
 export interface IPaperEditorToolbarProps {
@@ -31,12 +33,13 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
 
   public render() {
     return (
-      <div className='PaintEditor-toolbar'>
-        <span>Sprites: </span>
-        <select onChange={this.onSelectSprite} value={this.state.sprite.id}>
-          {this.renderSpriteList()}
-        </select>
-        <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
+      <div className='Toolbar'>
+        <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
+        <BigButton title='Sprites'>
+          <select onChange={this.onSelectSprite} value={this.state.sprite.id}>
+            {this.renderSpriteList()}
+          </select>
+        </BigButton>
       </div >
     );
   }

@@ -23,7 +23,7 @@ export default class GameEditorToolbar extends React.Component<IGameEditorToolba
 
   public render() {
     return (
-      <div className="Canvas-toolbar">
+      <div className="Toolbar">
         <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onEditCode}>Code</Button>
         <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onEditImages}>Images</Button>
         <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onEditLevel}>Level</Button>

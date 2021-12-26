@@ -35,6 +35,16 @@ html {
   color: #61dafb;
 }
 
+.Toolbar {
+	width: 100%;
+	height: 4em;
+	display: flex;
+	flex-direction: row;
+	background-color: var(--ui-gray);
+	border: var(--ui-border);
+	margin-top: 0.2em;
+}
+
 .Toolbar-button {
 	margin-left: 0.2em;
 }
@@ -47,10 +57,10 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-	width: 20em;
+	margin-left: 0.5em;
 }
 
-.Toolbar-small-label {
+.Toolbar-big-button-label {
 	font-size: 12px;
 }
 
@@ -68,28 +78,11 @@ html {
 	flex-direction: column;
 }
 
-.Canvas-toolbar {
-	width: 100%;
-	height: 4em;
-	display: flex;
-	flex-direction: row;
-	background-color: var(--ui-gray);
-	border: var(--ui-border);
-}
-
 .TextEditor-canvas {
 	width: 100%;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	background-color: var(--ui-gray);
-}
-
-.TextEditor-toolbar {
-	width: 100%;
-	height: 64px;
-	display: flex;
-	flex-direction: row;
 	background-color: var(--ui-gray);
 }
 
@@ -108,12 +101,6 @@ html {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	flex-direction: column;
-	background-color: var(--ui-gray);
-}
-
-.PaintEditor-toolbar {
-	width: 100%;
 	flex-direction: column;
 	background-color: var(--ui-gray);
 }

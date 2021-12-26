@@ -2,6 +2,7 @@ import * as React from 'react';
 import { CodeBlockDef, CodeFileDef, project } from './Project';
 import _ from "lodash";
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
+import { BigButton } from './BigButton'
 
 export interface ITextEditorToolbarProps {
   codeBlock: CodeBlockDef;
@@ -40,9 +41,9 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     }
   }
 
-  private onSelectFile(e: Object) {
-    // @ts-ignore
-    let codeFile = project.findCodeFileById(e.target.value);
+  //private onSelectFile(eventKey: string | null, e: React.SyntheticEvent<unknown>) {
+  private onSelectFile(id: string) {
+    let codeFile = project.findCodeFileById(id);
     if (codeFile === undefined) {
       return;
     }
@@ -55,8 +56,8 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     this.props.onChange(codeFile.firstBlock);
   }
 
-  private onSelectFunction(e: any) {
-    let codeFile = project.findCodeFileById(e.target.value);
+  private onSelectFunction(id: string) {
+    let codeFile = project.findCodeFileById(id);
     let codeBlock = codeFile?.firstBlock;
     this.setState({
       codeBlock: codeFile?.firstBlock,
@@ -67,38 +68,35 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
 
   public render() {
     return (
-      <div className='TextEditor-toolbar'>
+      <div className='Toolbar'>
         <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
-        <div className='Toolbar-big-button'>
-          <Dropdown onChange={this.onSelectFile} key={this.state.codeFile?.id} as={ButtonGroup} align='end'>
+        <BigButton title='Object'>
+          <Dropdown key={this.state.codeFile?.id} as={ButtonGroup} align='end'>
             <FileValue name={this.state.codeFile?.name} />
             <Dropdown.Toggle split variant="success" id="dropdown-basic" />
             <Dropdown.Menu>
-              {this.renderFileList()}
+              {this.renderFileList(this.onSelectFile)}
             </Dropdown.Menu>
           </Dropdown>
-          <div><span className='Toolbar-small-label'>Object: </span></div>
-        </div>
-        <div className='Toolbar-big-button'>
-          <Dropdown onClick={this.onSelectFunction} key={this.state.codeBlock?.id}>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              Dropdown Button
-            </Dropdown.Toggle>
+        </BigButton>
+        <BigButton title='Functions'>
+          <Dropdown key={this.state.codeBlock?.id} as={ButtonGroup} align='end'>
+            <FileValue name={this.state.codeBlock?.name} />
+            <Dropdown.Toggle split variant="success" id="dropdown-basic" />
             <Dropdown.Menu>
-              {this.renderFunctionList()}
+              {this.renderFunctionList(this.onSelectFunction)}
             </Dropdown.Menu>
           </Dropdown>
-          <div><span className='Toolbar-small-label'>Functions: </span></div>
-        </div>
+        </BigButton>
       </div >
     );
   }
 
-  private renderFileList(): any[] {
+  private renderFileList(onClick: (id: string) => void): any[] {
     let files: any[] = [];
     project.forEachCodeFile((file) => {
       files.push((
-        <Dropdown.Item key={file.path}>
+        <Dropdown.Item key={file.path} onClick={() => onClick(file.id)}>
           <FileValue name={file.name} />
         </Dropdown.Item>
       ));
@@ -107,7 +105,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     return files;
   }
 
-  private renderFunctionList(): any[] {
+  private renderFunctionList(onClick: (id: string) => void): any[] {
     if (this.state.codeFile === undefined) {
       return [];
     }
@@ -116,7 +114,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     for (let idx in this.state.codeFile.codeBlocks) {
       let item = this.state.codeFile.codeBlocks[idx];
       funcs.push((
-        <Dropdown.Item key={item.id}>{item.name}</Dropdown.Item>
+        <Dropdown.Item key={item.id} onClick={() => onClick(item.id)}>{item.name}</Dropdown.Item >
       ));
     }
 
