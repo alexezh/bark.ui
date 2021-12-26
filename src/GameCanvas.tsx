@@ -3,9 +3,17 @@ import _ from "lodash";
 
 import workspace from './Workspace';
 import GameSpritePane from './GameSpritePane';
+import GameEditorToolbar from './GameEditorToolbar';
 import * as project from './Project';
 
+export enum EditorMode {
+  GameEditor,
+  CodeEditor,
+  PaintEditor,
+}
+
 export interface IGameCanvasProps {
+  onChange: (mode: EditorMode) => void;
 }
 
 export interface IGameCanvasState {
@@ -17,6 +25,13 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     super(props);
 
     _.bindAll(this, [
+      'onEditCode',
+      'onEditImages',
+      'onEditLevel',
+      'onDownloadProject',
+      'handleResize',
+      'onStartGame',
+      'onStopGame',
     ]);
 
     this.state = {
@@ -28,12 +43,68 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     console.log('Select sprite:' + sprite.id);
   }
 
+  private onEditCode() {
+    this.props.onChange(EditorMode.CodeEditor);
+  }
+
+  private onEditImages() {
+    this.props.onChange(EditorMode.PaintEditor);
+  }
+
+  private onEditLevel() {
+
+  }
+
+  private onStartGame() {
+    console.log('onStartGame');
+  }
+
+  private onStopGame() {
+    console.log('onStopGame');
+  }
+
+
+  private onDownloadProject() {
+
+    let projectJson = project.project.toJson();
+    var codeBlob = new Blob([projectJson], { type: 'text/plain' });
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = 'test.json';
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null) {
+      // Chrome allows the link to be clicked without actually adding it to the DOM.
+      downloadLink.href = window.webkitURL.createObjectURL(codeBlob);
+    } else {
+      // Firefox requires the link to be added to the DOM before it can be clicked.
+      downloadLink.href = window.URL.createObjectURL(codeBlob);
+      downloadLink.onclick = this.destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+    }
+
+    downloadLink.click();
+  }
+
+  private destroyClickedElement(event) {
+    // remove the link from the DOM
+    document.body.removeChild(event.target);
+  }
+
   public render() {
     let origin = document.location.origin;
     origin += "/bark.html";
 
     return (
       <div className="Game-canvas">
+        <GameEditorToolbar
+          onEditCode={this.onEditCode}
+          onEditImages={this.onEditImages}
+          onEditLevel={this.onEditLevel}
+          onDownloadProject={this.onDownloadProject}
+          onStartGame={this.onStartGame}
+          onStopGame={this.onStopGame} />
+
         <iframe key={this.state.iframeKey} src={origin} className="Game-iframe" />
         <GameSpritePane onChange={this.onSpriteChange} />
       </div >

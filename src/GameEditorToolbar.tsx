@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export interface IMainToolbarProps {
+export interface IGameEditorToolbarProps {
   onEditCode: () => void;
   onEditImages: () => void;
   onEditLevel: () => void;
@@ -9,11 +9,11 @@ export interface IMainToolbarProps {
   onStopGame: () => void;
 }
 
-export interface IMainToolbarState {
+export interface IGameEditorToolbarState {
 }
 
-export default class MainToolbar extends React.Component<IMainToolbarProps, IMainToolbarState> {
-  constructor(props: IMainToolbarProps) {
+export default class GameEditorToolbar extends React.Component<IGameEditorToolbarProps, IGameEditorToolbarState> {
+  constructor(props: IGameEditorToolbarProps) {
     super(props);
 
     this.state = {
