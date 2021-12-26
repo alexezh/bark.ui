@@ -1,7 +1,8 @@
 html {
-	--ui-gray: #b4b4b4;
+	--ui-gray: #cecece;
 	--ui-white: #ffffff;
 	--ui-border: 1px solid #969696;
+	--ui-dark: #1a1a1a;
 }
 
 .App {
@@ -32,6 +33,32 @@ html {
 
 .App-link {
   color: #61dafb;
+}
+
+.Toolbar-button {
+	margin-left: 0.2em;
+}
+
+.Toolbar-button-startgroup {
+	margin-left: 10em;
+}
+
+.Toolbar-big-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+	width: 20em;
+}
+
+.Toolbar-small-label {
+	font-size: 12px;
+}
+
+.Toolbar-select-value {
+	background-color: var(--ui-white);
+	color: var(--ui-dark);
+	--ui-border: 1px solid #969696;
+	width: 10em;
 }
 
 .Canvas-main {
@@ -126,6 +153,14 @@ html {
 }
 
 .Game-canvas {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--ui-white);
+}
+
+.Game-workarea {
 	width: 100%;
 	height: 100%;
 	display: flex;

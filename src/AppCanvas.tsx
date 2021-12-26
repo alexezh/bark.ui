@@ -24,6 +24,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
     super(props);
 
     _.bindAll(this, [
+      'handleResize',
       'onModeChange',
       'onCloseModal'
     ]);

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Button } from 'react-bootstrap';
 
 export interface IGameEditorToolbarProps {
   onEditCode: () => void;
@@ -23,12 +24,12 @@ export default class GameEditorToolbar extends React.Component<IGameEditorToolba
   public render() {
     return (
       <div className="Canvas-toolbar">
-        <button onClick={this.props.onEditCode}>Code</button>
-        <button onClick={this.props.onEditImages}>Images</button>
-        <button onClick={this.props.onEditLevel}>Level</button>
-        <button onClick={this.props.onDownloadProject}>Download</button>
-        <button onClick={this.props.onStartGame}>Run</button>
-        <button onClick={this.props.onStopGame}>Stop</button>
+        <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onEditCode}>Code</Button>
+        <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onEditImages}>Images</Button>
+        <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onEditLevel}>Level</Button>
+        <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onDownloadProject}>Download</Button>
+        <Button className='Toolbar-button-startgroup' variant='outline-primary' onClick={this.props.onStartGame}>Run</Button>
+        <Button className='Toolbar-button' variant='outline-primary' onClick={this.props.onStopGame}>Stop</Button>
       </div>
     );
   }

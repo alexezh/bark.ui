@@ -29,7 +29,6 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
       'onEditImages',
       'onEditLevel',
       'onDownloadProject',
-      'handleResize',
       'onStartGame',
       'onStopGame',
     ]);
@@ -105,8 +104,10 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
           onStartGame={this.onStartGame}
           onStopGame={this.onStopGame} />
 
-        <iframe key={this.state.iframeKey} src={origin} className="Game-iframe" />
-        <GameSpritePane onChange={this.onSpriteChange} />
+        <div className="Game-workarea">
+          <iframe key={this.state.iframeKey} src={origin} className="Game-iframe" />
+          <GameSpritePane onChange={this.onSpriteChange} />
+        </div>
       </div >
     );
   }

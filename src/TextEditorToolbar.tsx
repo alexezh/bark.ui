@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CodeBlockDef, CodeFileDef, project } from './Project';
 import _ from "lodash";
-import { Dropdown } from 'react-bootstrap';
+import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 
 export interface ITextEditorToolbarProps {
   codeBlock: CodeBlockDef;
@@ -13,6 +13,14 @@ export interface ITextEditorToolbarState {
   codeFile?: CodeFileDef;
   codeBlock?: CodeBlockDef;
 }
+
+const ToolbarSelectValue: React.FC = ({ children }) => (
+  <div className='Toolbar-select-value'>
+    <span>
+      {children}
+    </span>
+  </div>
+);
 
 export default class TextEditorToolbar extends React.Component<ITextEditorToolbarProps, ITextEditorToolbarState> {
   constructor(props: ITextEditorToolbarProps) {
@@ -30,7 +38,8 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     }
   }
 
-  private onSelectFile(e: any) {
+  private onSelectFile(e: Object) {
+    // @ts-ignore
     let codeFile = project.findCodeFileById(e.target.value);
     if (codeFile === undefined) {
       return;
@@ -57,21 +66,31 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
   public render() {
     return (
       <div className='TextEditor-toolbar'>
-        <span>Object: </span>
-        <Dropdown onClick={this.onSelectFile} key={this.state.codeFile?.id}>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Dropdown Button
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {this.renderFileList()}
-          </Dropdown.Menu>
-        </Dropdown>
-        <span margin-left="20px">Functions: </span>
-        <select onChange={this.onSelectFunction} value={this.state.codeBlock?.id}>
-          {this.renderFunctionList()}
-        </select>
-        <button className='ModalEditor-close' onClick={this.props.onClose}>Close</button>
-      </div>
+        <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
+        <div className='Toolbar-big-button'>
+          <Dropdown onChange={this.onSelectFile} key={this.state.codeFile?.id} as={ButtonGroup} align='end'>
+            <ToolbarSelectValue>
+              <span>{this.state.codeFile?.name}</span>
+            </ToolbarSelectValue>
+            <Dropdown.Toggle split variant="success" id="dropdown-basic" />
+            <Dropdown.Menu>
+              {this.renderFileList()}
+            </Dropdown.Menu>
+          </Dropdown>
+          <div><span className='Toolbar-small-label'>Object: </span></div>
+        </div>
+        <div className='Toolbar-big-button'>
+          <Dropdown onClick={this.onSelectFunction} key={this.state.codeBlock?.id}>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              Dropdown Button
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {this.renderFunctionList()}
+            </Dropdown.Menu>
+          </Dropdown>
+          <div><span className='Toolbar-small-label'>Functions: </span></div>
+        </div>
+      </div >
     );
   }
 
@@ -79,7 +98,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     let files: any[] = [];
     project.forEachCodeFile((file) => {
       files.push((
-        <Dropdown.Item key={file.path}>file.name</Dropdown.Item>
+        <Dropdown.Item key={file.path}>{file.name}</Dropdown.Item>
       ));
     })
 
@@ -91,17 +110,15 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
       return [];
     }
 
-    return [];
-    /*
-        let funcs: any[] = [];
-        for (let idx in this.state.codeFile.codeBlocks) {
-          let item = this.state.codeFile.codeBlocks[idx];
-          funcs.push((
-            <Dropdown.Item key={item.id}>item.name</Dropdown.Item>
-          ));
-        }
-    
-        return funcs;*/
+    let funcs: any[] = [];
+    for (let idx in this.state.codeFile.codeBlocks) {
+      let item = this.state.codeFile.codeBlocks[idx];
+      funcs.push((
+        <Dropdown.Item key={item.id}>{item.name}</Dropdown.Item>
+      ));
+    }
+
+    return funcs;
   }
 
   /**
