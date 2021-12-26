@@ -10,19 +10,20 @@ import workspace from './Workspace';
 import * as project from './Project';
 
 import './App.css';
+import { Modal } from 'react-bootstrap';
 
 export interface IAppCanvasProps {
 }
 
-enum EditorKind {
-  Unknown,
+enum EditorMode {
+  GameEditor,
   CodeEditor,
   PaintEditor,
 }
 
 export interface IAppCanvasState {
   showModal: boolean;
-  editorKind: EditorKind;
+  editorMode: EditorMode;
   codeFile?: project.CodeFileDef;
   windowWidth: number;
 }
@@ -46,7 +47,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
 
     this.state = {
       showModal: false,
-      editorKind: EditorKind.Unknown,
+      editorMode: EditorMode.GameEditor,
       windowWidth: window.innerWidth
     }
   }
@@ -70,11 +71,11 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   }
 
   private onEditCode() {
-    this.setState({ showModal: true, editorKind: EditorKind.CodeEditor });
+    this.setState({ showModal: true, editorMode: EditorMode.CodeEditor });
   }
 
   private onEditImages() {
-    this.setState({ showModal: true, editorKind: EditorKind.PaintEditor });
+    this.setState({ showModal: true, editorMode: EditorMode.PaintEditor });
   }
 
   private onEditLevel() {
@@ -117,6 +118,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
     document.body.removeChild(event.target);
   }
 
+  //  <ReactModal isOpen={this.state.showModal} contentLabel="CodeEditor">
   public render() {
     return (
       <div id='AppCanvas' className="Canvas-main">
@@ -127,19 +129,57 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
           onDownloadProject={this.onDownloadProject}
           onStartGame={this.onStartGame}
           onStopGame={this.onStopGame} />
-        <GameCanvas />
 
-        <ReactModal isOpen={this.state.showModal} contentLabel="CodeEditor">
+        {
+          this.state.editorMode === EditorMode.GameEditor ?
+            <GameCanvas /> : null
+        }
+
+        {
+          this.state.editorMode === EditorMode.CodeEditor ?
+            <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} /> : null
+        }
+        {
+          this.state.editorMode === EditorMode.PaintEditor ?
+            <PaintEditorCanvas onClose={this.onCloseModal} /> : null
+        }
+      </div >
+    );
+  }
+  /*
+    public render() {
+      return (
+        <div id='AppCanvas' className="Canvas-main">
+          <MainToolbar
+            onEditCode={this.onEditCode}
+            onEditImages={this.onEditImages}
+            onEditLevel={this.onEditLevel}
+            onDownloadProject={this.onDownloadProject}
+            onStartGame={this.onStartGame}
+            onStopGame={this.onStopGame} />
+          <GameCanvas />
+  
           {
             this.state.editorKind === EditorKind.CodeEditor ?
-              <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} /> : null
+              <Modal show={true} fullscreen={true}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Modal</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} />
+                </Modal.Body>
+              </Modal> : null
           }
           {
             this.state.editorKind === EditorKind.PaintEditor ?
-              <PaintEditorCanvas onClose={this.onCloseModal} /> : null
+              <Modal.Dialog fullscreen={true}>
+                <Modal.Body>
+                  <PaintEditorCanvas onClose={this.onCloseModal} />
+                </Modal.Body>
+              </Modal.Dialog > : null
           }
-        </ReactModal>
-      </div>
-    );
-  }
+        </div >
+      );
+    }
+    */
 }

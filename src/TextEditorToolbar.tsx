@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { CodeBlockDef, CodeFileDef, project } from './Project';
 import _ from "lodash";
+import { Dropdown } from 'react-bootstrap';
 
 export interface ITextEditorToolbarProps {
   codeBlock: CodeBlockDef;
@@ -19,7 +20,8 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
 
     _.bindAll(this, [
       'onSelectFile',
-      'onSelectFunction'
+      'onSelectFunction',
+      'renderFileList',
     ]);
 
     this.state = {
@@ -52,14 +54,18 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     this.props.onChange(codeBlock);
   }
 
-
   public render() {
     return (
       <div className='TextEditor-toolbar'>
         <span>Object: </span>
-        <select onChange={this.onSelectFile} value={this.state.codeFile?.id}>
-          {this.renderFileList()}
-        </select>
+        <Dropdown onClick={this.onSelectFile} key={this.state.codeFile?.id}>
+          <Dropdown.Toggle variant="success" id="dropdown-basic">
+            Dropdown Button
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {this.renderFileList()}
+          </Dropdown.Menu>
+        </Dropdown>
         <span margin-left="20px">Functions: </span>
         <select onChange={this.onSelectFunction} value={this.state.codeBlock?.id}>
           {this.renderFunctionList()}
@@ -69,30 +75,46 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
     );
   }
 
-  private renderFunctionList(): any[] {
-    if (this.state.codeFile === undefined) {
-      return [];
-    }
-
-    let funcs: any[] = [];
-    for (let idx in this.state.codeFile.codeBlocks) {
-      let item = this.state.codeFile.codeBlocks[idx];
-      funcs.push((
-        <option key={item.id}>{item.name}</option>
-      ));
-    }
-
-    return funcs;
-  }
-
   private renderFileList(): any[] {
     let files: any[] = [];
     project.forEachCodeFile((file) => {
       files.push((
-        <option key={file.path}>{file.name}</option>
+        <Dropdown.Item key={file.path}>file.name</Dropdown.Item>
       ));
     })
 
     return files;
   }
+
+  private renderFunctionList(): any[] {
+    if (this.state.codeFile === undefined) {
+      return [];
+    }
+
+    return [];
+    /*
+        let funcs: any[] = [];
+        for (let idx in this.state.codeFile.codeBlocks) {
+          let item = this.state.codeFile.codeBlocks[idx];
+          funcs.push((
+            <Dropdown.Item key={item.id}>item.name</Dropdown.Item>
+          ));
+        }
+    
+        return funcs;*/
+  }
+
+  /**
+   * 
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' }
+]
+
+const MyComponent = () => (
+  <Select options={options} />
+)
+
+  */
 }

@@ -60,7 +60,9 @@ html {
 
 .TextEditor-toolbar {
 	width: 100%;
-	flex-direction: column;
+	height: 64px;
+	display: flex;
+	flex-direction: row;
 	background-color: var(--ui-gray);
 }
 
