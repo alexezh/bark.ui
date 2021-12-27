@@ -18,6 +18,16 @@ export interface IPaperEditorToolbarState {
   sprite: SpriteDef;
 }
 
+interface SpriteValueProps {
+  name?: string;
+};
+
+const SpriteValue: React.FC<SpriteValueProps> = (props) => (
+  <div className='Toolbar-select-value'>
+    <span>{props.name}</span>
+  </div>
+);
+
 export default class PaintEditorToolbar extends React.Component<IPaperEditorToolbarProps, IPaperEditorToolbarState> {
   constructor(props: IPaperEditorToolbarProps) {
     super(props);
@@ -31,21 +41,8 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
     }
   }
 
-  public render() {
-    return (
-      <div className='Toolbar'>
-        <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
-        <BigButton title='Sprites'>
-          <select onChange={this.onSelectSprite} value={this.state.sprite.id}>
-            {this.renderSpriteList()}
-          </select>
-        </BigButton>
-      </div >
-    );
-  }
-
-  private onSelectSprite(e: any) {
-    let sprite = project.findSpriteById(e.target.value);
+  private onSelectSprite(id: string) {
+    let sprite = project.findSpriteById(id);
     if (sprite === undefined) {
       return;
     }
@@ -56,11 +53,31 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
     this.props.onChange(sprite);
   }
 
-  private renderSpriteList(): any[] {
+
+  public render() {
+    return (
+      <div className='Toolbar'>
+        <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
+        <BigButton title='Sprites'>
+          <Dropdown variant='outline-primary' as={ButtonGroup} align='end'>
+            <SpriteValue name={this.state.sprite.name} />
+            <Dropdown.Toggle split variant="success" id="dropdown-basic" />
+            <Dropdown.Menu>
+              {this.renderSpriteList(this.onSelectSprite)}
+            </Dropdown.Menu>
+          </Dropdown>
+        </BigButton>
+      </div >
+    );
+  }
+
+  private renderSpriteList(onClick: (id: string) => void): any[] {
     let files: any[] = [];
     project.forEachSprite((sprite) => {
       files.push((
-        <option key={sprite.id}>{sprite.name}</option>
+        <Dropdown.Item key={sprite.id} onClick={() => onClick(sprite.id)}>
+          <SpriteValue name={sprite.name} />
+        </Dropdown.Item>
       ));
     })
 

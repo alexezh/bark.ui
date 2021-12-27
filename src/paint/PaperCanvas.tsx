@@ -76,8 +76,8 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             'maybeZoomToFit',
             'switchCostume',
             'onViewResize',
-            'recalibrateSize',
-            'onEditorStateChange'
+            'recalibrateSize'
+            //            'onEditorStateChange'
         ]);
 
         this.editor = props.editor;
@@ -88,12 +88,15 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             rotationCenterY: this.editor.state.rotationCenterY,
             cursor: this.editor.state.cursor
         }
-        this.editor.registerStateChange('PaperCanvas', this.onEditorStateChange)
+        //this.editor.registerStateChange('PaperCanvas', this.onEditorStateChange)
     }
 
+    /*
     onEditorStateChange() {
         let updateState = {};
+        console.log('PaperCanvas: onEditorStateChange');
         if (this.editor.state.imageSource !== this.state.imageSource) {
+            console.log('PaperCanvas: update state:' + this.editor.state.imageSource);
             // @ts-ignore
             updateState.imageSource = this.editor.state.imageSource;
         }
@@ -103,11 +106,10 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         }
         if (Object.keys(updateState).length > 0) {
             // @ts-ignore
-            console.log('PaperCanvas: update state:' + updateState.imageFormat);
             this.setState(updateState);
         }
     }
-
+*/
     componentDidMount() {
         paper.setup(this.canvas);
         paper.view.on('resize', this.onViewResize);
@@ -141,17 +143,30 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
             this.editor.state.rotationCenterX,
             this.editor.state.rotationCenterY);
     }
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
+        let updateState = {};
+
         if (this.state.imageSource !== newProps.imageSource) {
             console.log('PaperCanvas: load:' + newProps.imageSource);
 
             this.switchCostume(newProps.imageFormat, this.editor.state.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);
+
+            // @ts-ignore
+            updateState.imageSource = this.editor.state.imageSource;
         }
         if (this.state.imageFormat !== newProps.imageFormat) {
             this.recalibrateSize();
             convertBackgroundGuideLayer(newProps.imageFormat);
+
+            // @ts-ignore
+            updateState.imageFormat = this.editor.state.imageFormat;
+        }
+
+        if (Object.keys(updateState).length > 0) {
+            // @ts-ignore
+            this.setState(updateState);
         }
     }
     componentWillUnmount() {

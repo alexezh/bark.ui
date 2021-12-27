@@ -37,6 +37,8 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
       'renderItem'
     ]);
 
+    console.log('CostumePane: sprite:' + props.sprite.id);
+
     this.state = {
       sprite: props.sprite,
       selectedCostumeIndex: 0,
@@ -53,7 +55,16 @@ export default class PaintEditorCostumePane extends React.Component<IPaintEditor
     this.state.sprite.onCostumeChange.remove(this.onCostumeChange);
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
+    if (this.state.sprite !== newProps.sprite) {
+      console.log('CostumePane: update');
+      this.setState({
+        sprite: newProps.sprite,
+        selectedCostumeIndex: 0,
+        costume: newProps.sprite.costumes[0],
+        version: this.state.version + 1
+      });
+    }
   }
 
   /**

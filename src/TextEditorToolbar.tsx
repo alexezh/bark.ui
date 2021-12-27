@@ -69,9 +69,9 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
   public render() {
     return (
       <div className='Toolbar'>
-        <Button className='ModalEditor-close' onClick={this.props.onClose}>Home</Button>
+        <Button className='ModalEditor-close' variant='outline-primary' onClick={this.props.onClose}>Home</Button>
         <BigButton title='Object'>
-          <Dropdown key={this.state.codeFile?.id} as={ButtonGroup} align='end'>
+          <Dropdown key={this.state.codeFile?.id} variant='outline-primary' as={ButtonGroup} align='end'>
             <FileValue name={this.state.codeFile?.name} />
             <Dropdown.Toggle split variant="success" id="dropdown-basic" />
             <Dropdown.Menu>
@@ -80,7 +80,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
           </Dropdown>
         </BigButton>
         <BigButton title='Functions'>
-          <Dropdown key={this.state.codeBlock?.id} as={ButtonGroup} align='end'>
+          <Dropdown key={this.state.codeBlock?.id} variant='outline-primary' as={ButtonGroup} align='end'>
             <FileValue name={this.state.codeBlock?.name} />
             <Dropdown.Toggle split variant="success" id="dropdown-basic" />
             <Dropdown.Menu>

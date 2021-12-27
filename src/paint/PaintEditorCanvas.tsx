@@ -48,7 +48,8 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
 
     _.bindAll(this, [
       'onEditorStateChange',
-      'onCostumePaneChange'
+      'onCostumePaneChange',
+      'onSpriteSelected',
     ]);
 
     let sprite = workspace.lastEditedSprite;
@@ -84,9 +85,10 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
     }
   }
 
-  private onToolbarChange(sprite: project.SpriteDef) {
+  private onSpriteSelected(sprite: project.SpriteDef) {
     console.log('select sprite:' + sprite.id);
     this.setState({ sprite: sprite, costume: sprite.firstCostume });
+    workspace.lastEditedSprite = sprite;
     this.paintEditor.setImage(sprite.firstCostume.id, sprite.firstCostume.imageData);
   }
 
@@ -105,13 +107,13 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
     return (
       <div className="PaintEditor-canvas">
         <PaintEditorToolbar
-          sprite={workspace.lastEditedSprite}
+          sprite={this.state.sprite}
           onClose={this.props.onClose}
-          onChange={this.onToolbarChange}
+          onChange={this.onSpriteSelected}
           paintEditor={this.paintEditor} />
         <div className="PaintEditor-workarea">
           <PaintEditorSidebar
-            sprite={workspace.lastEditedSprite}
+            sprite={this.state.sprite}
             onClose={this.props.onClose}
             onChange={this.onSidebarChange}
             paintEditor={this.paintEditor} />
@@ -121,7 +123,7 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
             imageSource={this.paintEditor.state.imageSource}
           />
           <PaintEditorCostumePane
-            sprite={workspace.lastEditedSprite}
+            sprite={this.state.sprite}
             onChange={this.onCostumePaneChange}
           />
         </div>

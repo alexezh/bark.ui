@@ -25,6 +25,10 @@ export class Workspace {
 
     return project.def.sprites[0];
   }
+
+  public set lastEditedSprite(sprite: SpriteDef) {
+    this._lastEditedSprite = sprite;
+  }
 }
 
 let workspace = new Workspace();
