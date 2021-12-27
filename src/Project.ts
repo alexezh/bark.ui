@@ -1,16 +1,7 @@
-import { BlockList } from "net";
 import { v4 as uuidv4 } from 'uuid';
 import { x64Hash64 } from './hash/murmurhash3';
 import AsyncEventSource from './AsyncEventSource';
-
-export interface IMessageChannel {
-  updateSnapshot(json: string);
-  updateSprite(id: string, SpriteDef: any);
-  removeSprite(id: string, obj: any);
-  updateCostume(id: string, SpriteDef: any);
-  removeCostume(id: string, SpriteDef: any);
-  updateLevel(id: string, SpriteDef: any);
-}
+import { IProjectStorage, ProjectLocalStorage } from './ProjectStorage';
 
 export interface IObjectDef {
   get path(): string;
@@ -19,10 +10,12 @@ export interface IObjectDef {
 export class ObjectDef implements IObjectDef {
   public id: string;
   public parent: IObjectDef | undefined;
+  protected _storage: IProjectStorage;
 
-  public constructor(parent: IObjectDef | undefined) {
+  public constructor(storage: IProjectStorage, parent: IObjectDef | undefined) {
     this.id = uuidv4();
     this.parent = parent;
+    this._storage = storage;
   }
 
   public get path(): string {
@@ -39,25 +32,32 @@ export class CodeBlockDef extends ObjectDef {
   public code: string;
   public codeId: string;
 
-  public constructor(parent: IObjectDef, name: string, code: string) {
-    super(parent);
+  public constructor(storage: IProjectStorage, parent: IObjectDef, name: string, code: string) {
+    super(storage, parent);
     this.name = name;
     this.code = code;
     this.codeId = x64Hash64(code);
+    storage.updateItem(this.path, this.createUpdateOp());
   }
 
   public updateCode(code: string) {
     this.code = code;
     this.codeId = x64Hash64(code);
+
+    this._storage.updateItem(this.path, this.createUpdateOp());
   }
 
-  public populateCommands(commands: any[]) {
-    commands.push({
-      op: 'addCodeBlock',
+  private createUpdateOp() {
+    return {
+      kind: 'CodeBlock',
       name: this.name,
       code: this.code,
       codeId: this.codeId
-    });
+    }
+  }
+
+  public populateCommands(commands: any[]) {
+    commands.push(this.createUpdateOp());
   }
 }
 
@@ -66,23 +66,27 @@ export class CodeFileDef extends ObjectDef {
   public name: string = 'No name';
   public codeBlocks: CodeBlockDef[] = [];
 
-  public constructor(parent: IObjectDef | undefined, name: string) {
-    super(parent);
+  public constructor(storage: IProjectStorage, parent: IObjectDef | undefined, name: string) {
+    super(storage, parent);
     this.name = name;
+    storage.updateItem(this.path, this.createUpdateOp());
   }
 
   public createBlock(name: string, code: string) {
-    this.codeBlocks.push(new CodeBlockDef(this, name, code));
+    this.codeBlocks.push(new CodeBlockDef(this._storage, this, name, code));
   }
 
   public get firstBlock(): CodeBlockDef | undefined { return (this.codeBlocks.length > 0) ? this.codeBlocks[0] : undefined }
 
-  public populateCommands(commands: any[]) {
-    commands.push({
-      op: 'addCodeFile',
+  private createUpdateOp(): any {
+    return {
+      kind: 'CodeFile',
       name: this.name,
       codeBlockCount: this.codeBlocks.length
-    });
+    }
+  }
+  public populateCommands(commands: any[]) {
+    commands.push(this.createUpdateOp());
 
     this.codeBlocks.forEach((x) => x.populateCommands(commands));
   }
@@ -123,9 +127,10 @@ export class CostumeDef extends ObjectDef {
   public name: string = 'No name';
   public imageData: ImageData | undefined;
 
-  public constructor(parent: IObjectDef) {
-    super(parent);
+  public constructor(storage: IProjectStorage, parent: IObjectDef) {
+    super(storage, parent);
     this.id = uuidv4();
+    storage.updateItem(this.path, this.createUpdateOp());
   }
 
   public updateImage(imageData: ImageData) {
@@ -135,16 +140,21 @@ export class CostumeDef extends ObjectDef {
     if (sprite !== undefined) {
       sprite.onCostumeChange.invoke(this);
     }
+
+    this._storage.updateItem(this.path, this.createUpdateOp());
   }
 
-  public populateCommands(commands: any[]) {
-    commands.push({
-      op: 'addCostume',
+  private createUpdateOp() {
+    return {
+      kind: 'Costume',
       name: this.name,
       image: this.imageData?.image,
       imageFormat: this.imageData?.imageFormat,
       imageId: this.imageData?.imageId
-    });
+    }
+  }
+  public populateCommands(commands: any[]) {
+    commands.push(this.createUpdateOp());
   }
 }
 
@@ -164,14 +174,16 @@ export class SpriteDef extends ObjectDef {
    */
   public onCostumeChange = new AsyncEventSource<(costume: CostumeDef) => void>();
 
-  public constructor(parent: IObjectDef | undefined, name: string) {
-    super(parent);
+  public constructor(storage: IProjectStorage, parent: IObjectDef | undefined, name: string) {
+    super(storage, parent);
     this.name = name;
-    this.codeFile = new CodeFileDef(this, name);
+    this.codeFile = new CodeFileDef(storage, this, name);
+
+    storage.updateItem(this.path, this.createUpdateOp());
 
     // add one costume by default
-    this.costumes.push(new CostumeDef(this));
-    this.costumes.push(new CostumeDef(this));
+    this.costumes.push(new CostumeDef(storage, this));
+    this.costumes.push(new CostumeDef(storage, this));
   }
 
   public get firstCostume(): CostumeDef { return this.costumes[0] }
@@ -186,14 +198,18 @@ export class SpriteDef extends ObjectDef {
     return undefined;
   }
 
-  public populateCommands(commands: any[]) {
-    commands.push({
-      op: 'addSprite',
+  private createUpdateOp() {
+    return {
+      op: 'Sprite',
       name: this.name,
       width: this.width,
       height: this.height,
       costumeCount: this.costumes.length
-    });
+    }
+  }
+
+  public populateCommands(commands: any[]) {
+    commands.push(this.createUpdateOp());
 
     this.codeFile.populateCommands(commands);
     this.costumes.forEach((x) => x.populateCommands(commands));
@@ -219,9 +235,9 @@ export class TileLevelDef extends ObjectDef {
   public cells: any[] = [];
   public codeFile: CodeFileDef;
 
-  public constructor() {
-    super(undefined)
-    this.codeFile = new CodeFileDef(this, 'level');
+  public constructor(storage: IProjectStorage) {
+    super(storage, undefined)
+    this.codeFile = new CodeFileDef(storage, this, 'level');
   }
 }
 
@@ -231,45 +247,64 @@ export class TileLevelDef extends ObjectDef {
 export class ProjectDef {
   public sprites: SpriteDef[] = [];
   public level?: TileLevelDef;
-  public codeFile: CodeFileDef = new CodeFileDef(undefined, 'game');
+  public codeFile: CodeFileDef;
+  private _storage: IProjectStorage;
 
-  public constructor() {
+  public constructor(storage: IProjectStorage) {
+    this._storage = storage;
+
+    storage.updateItem('project', this.createUpdateOp());
+
+    this.codeFile = new CodeFileDef(this._storage, undefined, 'game');
+
     // create a default sprite
-    this.sprites.push(new SpriteDef(undefined, 'Leia'));
-    this.sprites.push(new SpriteDef(undefined, 'Floor'));
-    this.sprites.push(new SpriteDef(undefined, 'Air'));
+    this.sprites.push(new SpriteDef(storage, undefined, 'Leia'));
+    this.sprites.push(new SpriteDef(storage, undefined, 'Floor'));
+    this.sprites.push(new SpriteDef(storage, undefined, 'Air'));
+  }
+
+  private createUpdateOp() {
+    return {
+      op: 'Project',
+      spriteCount: this.sprites.length
+    }
   }
 
   public populateCommands(commands: any[]) {
-    commands.push({
-      op: 'updateProject',
-      spriteCount: this.sprites.length
-    });
+    commands.push(this.createUpdateOp());
 
     this.codeFile.populateCommands(commands);
     this.sprites.forEach((x) => x.populateCommands(commands));
   }
 }
 
+
+
 /**
  * utility method for managing project
  */
 export class Project {
   public readonly def: ProjectDef;
+  public readonly _storage: ProjectLocalStorage;
 
-  public constructor(def: ProjectDef) {
+  public get storage(): IProjectStorage { return this._storage; }
+
+  public constructor(storage: ProjectLocalStorage, def: ProjectDef) {
+    this._storage = storage;
     this.def = def;
   }
 
   public static createEmptyProject(): Project {
-    let def = new ProjectDef();
+    let storage = new ProjectLocalStorage();
+
+    let def = new ProjectDef(storage);
     def.codeFile.createBlock('updateScene', '// put code to update scene here');
 
-    def.level = new TileLevelDef();
+    def.level = new TileLevelDef(storage);
     def.level.gridWidth = 48;
     def.level.gridHeight = 8;
 
-    return new Project(def);
+    return new Project(storage, def);
   }
 
   public forEachSprite(func: (file: SpriteDef) => void) {

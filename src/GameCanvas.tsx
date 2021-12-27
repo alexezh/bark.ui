@@ -4,6 +4,7 @@ import _ from "lodash";
 import workspace from './Workspace';
 import GameSpritePane from './GameSpritePane';
 import GameEditorToolbar from './GameEditorToolbar';
+import GameIFrame, { GameRuntimeClient } from './GameIFrame';
 import * as project from './Project';
 
 export enum EditorMode {
@@ -17,7 +18,7 @@ export interface IGameCanvasProps {
 }
 
 export interface IGameCanvasState {
-  iframeKey: number
+  runtimeClient: GameRuntimeClient;
 }
 
 export default class GameCanvas extends React.Component<IGameCanvasProps, IGameCanvasState> {
@@ -34,8 +35,10 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     ]);
 
     this.state = {
-      iframeKey: 1,
+      runtimeClient: new GameRuntimeClient()
     }
+
+    project.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
   }
 
   private onSpriteChange(sprite: project.SpriteDef) {
@@ -105,7 +108,7 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
           onStopGame={this.onStopGame} />
 
         <div className="Game-workarea">
-          <iframe key={this.state.iframeKey} src={origin} className="Game-iframe" />
+          <GameIFrame runtimeClient={this.state.runtimeClient} />
           <GameSpritePane onChange={this.onSpriteChange} />
         </div>
       </div >

@@ -44,16 +44,30 @@ export default class AsyncEventSource<T> {
     }
   }
 
+  private invokeWorker(...args: any[]) {
+    for (let i = 0; i < this._callbacks.length; i++) {
+      let weakOnChange = this._callbacks[i] as WeakRef<any>;
+      let func = weakOnChange.deref() as any;
+      if (func) {
+        func(...args);
+      } else {
+        console.log('missing func');
+      }
+    }
+  }
+
   public invoke(...args: any[]) {
     // run outside current callstack
     setTimeout(() => {
-      for (let i = 0; i < this._callbacks.length; i++) {
-        let weakOnChange = this._callbacks[i] as WeakRef<any>;
-        let func = weakOnChange.deref() as any;
-        if (func) {
-          func(...args);
-        }
-      }
+      this.invokeWorker(...args);
+    }, 0);
+  }
+
+  public invokeWithCompletion(onInvoke: () => void, ...args: any[]) {
+    // run outside current callstack
+    setTimeout(() => {
+      this.invokeWorker(...args);
+      onInvoke();
     }, 0);
   }
 }

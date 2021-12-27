@@ -149,12 +149,14 @@ export default class PaperCanvas extends React.Component<IPaperCanvasProps, IPap
         if (this.state.imageSource !== newProps.imageSource) {
             console.log('PaperCanvas: load:' + newProps.imageSource);
 
-            this.switchCostume(newProps.imageFormat, this.editor.state.image,
+            this.switchCostume(this.editor.state.imageFormat, this.editor.state.image,
                 newProps.rotationCenterX, newProps.rotationCenterY,
                 this.editor.state.zoomLevelId, newProps.zoomLevelId);
 
             // @ts-ignore
             updateState.imageSource = this.editor.state.imageSource;
+            // @ts-ignore
+            updateState.imageFormat = this.editor.state.imageFormat;
         }
         if (this.state.imageFormat !== newProps.imageFormat) {
             this.recalibrateSize();

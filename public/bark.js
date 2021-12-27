@@ -609,32 +609,6 @@ var bark;
         return Game;
     }());
     bark.Game = Game;
-    bark.game = new Game();
-    bark.screen = new bark.Screen();
-    bark.input = new bark.Input();
-    var gameCode = '';
-    var isGameLoaded = false;
-    window.addEventListener("message", function (event) {
-        gameCode = event.data;
-        tryLoadGameCode();
-    }, false);
-    function tryLoadGameCode() {
-        if (gameCode !== null) {
-            eval(gameCode);
-            bark.game.run(bark.screen);
-        }
-    }
-    bark.tryLoadGameCode = tryLoadGameCode;
-    function loadGameFrame(body) {
-        body.innerHtml = '<canvas id="canvas"></canvas>';
-        var canvas = document.createElement('canvas');
-        canvas.id = 'canvas';
-        body.appendChild(canvas);
-        bark.game.loadCanvas(canvas);
-        isGameLoaded = true;
-        tryLoadGameCode();
-    }
-    bark.loadGameFrame = loadGameFrame;
 })(bark || (bark = {}));
 var bark;
 (function (bark) {
@@ -648,6 +622,44 @@ var bark;
         return Help;
     }());
     bark.Help = Help;
+})(bark || (bark = {}));
+var bark;
+(function (bark) {
+    bark.game = new bark.Game();
+    bark.screen = new bark.Screen();
+    bark.input = new bark.Input();
+    bark.project = {};
+    function loadCodeBlock(name, code) {
+    }
+    function processOp(op) {
+        if (op.op === 'update') {
+            bark.project[op.id] = op.data;
+            console.log('process ' + op.kind);
+            if (op.kind === 'CodeBlock') {
+                loadCodeBlock(op.name, op.code);
+            }
+        }
+        else if (op.op == 'remove') {
+            delete bark.project[op.id];
+        }
+    }
+    function processEvent(opsJson) {
+        try {
+            var ops = JSON.parse(opsJson);
+            ops.forEach(function (x) { return processOp(x); });
+        }
+        catch (error) {
+            console.log('cannot parse ops');
+            throw (error);
+        }
+    }
+    function onLoadFrame(canvas) {
+        window.addEventListener("message", function (event) {
+            processEvent(event.data);
+        }, false);
+        bark.game.loadCanvas(canvas);
+    }
+    bark.onLoadFrame = onLoadFrame;
 })(bark || (bark = {}));
 var bark;
 (function (bark) {
