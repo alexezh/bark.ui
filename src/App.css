@@ -40,7 +40,7 @@ html {
 
 .Toolbar {
 	width: 100%;
-	height: 4em;
+	height: 3em;
 	display: flex;
 	flex-direction: row;
 	background-color: var(--ui-gray);
@@ -64,14 +64,13 @@ html {
 }
 
 .Toolbar-big-button-label {
-	font-size: 12px;
+	font-size: 0.5em;
 }
 
 .Toolbar-select-value {
 	background-color: var(--ui-white);
 	color: var(--ui-dark);
 	--ui-border: 1px solid #969696;
-	width: 10em;
 }
 
 .Canvas-main {

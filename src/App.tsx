@@ -1,13 +1,14 @@
 import React from 'react';
 import logo from './logo.svg';
 import AppCanvas from './AppCanvas'
+import GameScreen from './GameScreen'
 import Paper from 'paper';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-function App() {
+export function App() {
   return (
-    <AppCanvas />
+    { window.self === window.top ? <AppCanvas /> : <GameScreen /> }
   );
 }
 
