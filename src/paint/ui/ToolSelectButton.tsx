@@ -7,16 +7,15 @@ import { IPaperEditor } from '../PaperEditor';
 import { IToolSelectCommand } from './ToolSelectCommand'
 
 import './ToolSelectButton.css';
+import { EditorMode } from '../../GameCanvas';
 
 export interface IToolSelectButtonProps {
     className: string;
-    disabled: boolean;
-    isSelected: boolean;
     command: IToolSelectCommand;
 }
 
 export interface IToolSelectButtonState {
-    version: number;
+    isSelected: boolean;
 }
 
 export default class ToolSelectButton extends React.Component<IToolSelectButtonProps, IToolSelectButtonState> {
@@ -25,19 +24,18 @@ export default class ToolSelectButton extends React.Component<IToolSelectButtonP
         _.bindAll(this, [
             'componentDidMount',
             'componentWillUnmount',
-            'shouldComponentUpdate',
             'onClick'
         ]);
 
         this.state = {
-            version: 1.0,
+            isSelected: this.props.command.isSelected,
         }
     }
     componentDidMount() {
         this.props.command.componentDidMount(this);
     }
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.state.version !== nextState.version;
+    UNSAFE_componentWillReceiveProps(newProps) {
+        return this.state.isSelected !== newProps.command.isSelected;
     }
     componentWillUnmount() {
         return this.props.command.componentWillUnmount();
@@ -45,18 +43,19 @@ export default class ToolSelectButton extends React.Component<IToolSelectButtonP
 
     private onClick() {
         this.props.command.onCommand();
+        this.setState({ isSelected: this.props.command.isSelected })
     }
 
     render() {
         return (
             <Button
                 className={
-                    classNames('mod-tool-select')
-                    //                    classNames(this.props.className, styles.modToolSelect, {
-                    //                        [styles.isSelected]: props.isSelected
-                    //                    })
+                    classNames('mod-tool-select',
+                        {
+                            ['is-selected']: this.state.isSelected
+                        })
                 }
-                disabled={this.props.disabled}
+                disabled={false}
                 title={this.props.command.text}
                 highlighted={false}
                 onClick={this.onClick}

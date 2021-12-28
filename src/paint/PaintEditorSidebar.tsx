@@ -34,21 +34,31 @@ export default class PaintEditorSidebar extends React.Component<IPaperEditorSide
       <div className='PaintEditor-sidebar'>
         <ToolSelectComponent
           className='Sidebar-button'
-          disabled={false}
-          isSelected={false}
+          command={this.props.paintEditor.getCommand('bit-select-mode')}
+        />
+        <ToolSelectComponent
+          className='Sidebar-button'
           command={this.props.paintEditor.getCommand('bit-brush-mode')}
         />
         <ToolSelectComponent
           className='Sidebar-button'
-          disabled={false}
-          isSelected={false}
           command={this.props.paintEditor.getCommand('bit-line-mode')}
         />
         <ToolSelectComponent
           className='Sidebar-button'
-          disabled={false}
-          isSelected={false}
           command={this.props.paintEditor.getCommand('bit-oval-mode')}
+        />
+        <ToolSelectComponent
+          className='Sidebar-button'
+          command={this.props.paintEditor.getCommand('bit-rect-mode')}
+        />
+        <ToolSelectComponent
+          className='Sidebar-button'
+          command={this.props.paintEditor.getCommand('bit-eraser-mode')}
+        />
+        <ToolSelectComponent
+          className='Sidebar-button'
+          command={this.props.paintEditor.getCommand('bit-text-mode')}
         />
       </div >
     );

@@ -14,7 +14,7 @@ export const BitTextModeCommand_commandId: string = 'bit-text-mode';
 export default class BitTextModeCommand extends ToolSelectCommand<RectTool> {
     private zoom: number;
     public constructor(editor: IPaperEditor) {
-        super(editor, BitTextModeCommand_commandId, Modes.BIT_RECT, textIcon, 'hello');
+        super(editor, BitTextModeCommand_commandId, Modes.BIT_TEXT, textIcon, 'text');
         this.zoom = this.editor.state.zoom;
     }
 

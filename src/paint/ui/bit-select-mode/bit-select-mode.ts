@@ -10,7 +10,7 @@ export const BitSelectModeCommand_commandId: string = 'bit-select-mode';
 
 export default class BitSelectModeCommand extends ToolSelectCommand<BitSelectTool> {
     public constructor(editor: IPaperEditor) {
-        super(editor, BitSelectModeCommand_commandId, Modes.BIT_SELECT, selectIcon, 'hello');
+        super(editor, BitSelectModeCommand_commandId, Modes.BIT_SELECT, selectIcon, 'select');
     }
 
     updateState(): boolean {

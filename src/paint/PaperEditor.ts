@@ -14,6 +14,8 @@ import GradientTypes from './lib/gradient-types';
 import { DEFAULT_COLOR } from './tools/colors';
 import BitBrushModeCommand, { BitBrushModeCommand_commandId } from './ui/bit-brush-mode/bit-brush-mode';
 import BitLineModeCommand, { BitLineModeCommand_commandId } from './ui/bit-line-mode/bit-line-mode';
+import BitRectModeCommand, { BitRectModeCommand_commandId } from './ui/bit-rect-mode/bit-rect-mode';
+import BitEraserModeCommand, { BitEraserModeCommand_commandId } from './ui/bit-eraser-mode/bit-eraser-mode';
 import BitOvalModeCommand, { BitOvalModeCommand_commandId } from './ui/bit-oval-mode/bit-oval-mode';
 import BitSelectModeCommand, { BitSelectModeCommand_commandId } from './ui/bit-select-mode/bit-select-mode';
 import BitTextModeCommand, { BitTextModeCommand_commandId } from './ui/bit-text-mode/bit-text-mode';
@@ -109,7 +111,8 @@ export interface IPaperEditorState {
   get color(): Color;
   get colorState(): ColorState;
   get brushMode(): BrushMode;
-  get bitBrushSize(): any;
+  get bitBrushSize(): number;
+  get bitEraserSize(): number;
   get filled(): boolean;
   get thickness(): number;
   get rotationCenterY(): number | undefined;
@@ -208,7 +211,8 @@ export class PaperEditor implements IPaperEditor {
       thickness: 1.0,
       cursor: Cursors.DEFAULT,
       zoom: 1.0,
-      bitBrushSize: null,
+      bitBrushSize: 1.0,
+      bitEraserSize: 1.0,
       selectedItems: [],
       imageSource: undefined,
       image: undefined,
@@ -221,7 +225,9 @@ export class PaperEditor implements IPaperEditor {
     this.commands[BitBrushModeCommand_commandId] = new BitBrushModeCommand(this);
     this.commands[BitLineModeCommand_commandId] = new BitLineModeCommand(this);
     this.commands[BitOvalModeCommand_commandId] = new BitOvalModeCommand(this);
+    this.commands[BitRectModeCommand_commandId] = new BitRectModeCommand(this);
     this.commands[BitSelectModeCommand_commandId] = new BitSelectModeCommand(this);
+    this.commands[BitEraserModeCommand_commandId] = new BitEraserModeCommand(this);
     this.commands[BitTextModeCommand_commandId] = new BitTextModeCommand(this);
     this.commands[OvalModeCommand_commandId] = new OvalModeCommand(this);
     this.commands[RectModeCommand_commandId] = new RectModeCommand(this);
@@ -257,7 +263,11 @@ export class PaperEditor implements IPaperEditor {
     this.setState({ imageSource: imageSource, image: imageData });
   }
   public getCommand(key: string): any {
-    return this.commands[key];
+    let command = this.commands[key];
+    if (command === undefined) {
+      throw 'unknown command: ' + key;
+    }
+    return command;
   }
 
   public saveZoomLevel() {

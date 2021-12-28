@@ -6,6 +6,7 @@ export interface IToolSelectCommand {
   componentWillUnmount();
 
   onCommand();
+  get isSelected();
 
   get imgSrc(): string;
   get text(): string;
@@ -40,8 +41,12 @@ export class ToolSelectCommand<T> implements IToolSelectCommand {
     ]);
   }
 
-  onCommand() {
+  public onCommand() {
     this.editor.setState({ mode: this._toolMode });
+  }
+
+  public get isSelected() {
+    return this.editor.state.mode === this._toolMode;
   }
 
   componentDidMount(target: any) {
@@ -72,7 +77,7 @@ export class ToolSelectCommand<T> implements IToolSelectCommand {
       this.version++;
       let target = this.target.deref();
       if (target) {
-        target.setState({ version: this.version })
+        target.setState({ isSelected: this.isSelected })
       }
     }
   }

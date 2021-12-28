@@ -18,7 +18,7 @@ export default class BitOvalModeCommand extends ToolSelectCommand<BitOvalTool> {
     private zoom: number;
 
     public constructor(editor: IPaperEditor) {
-        super(editor, BitOvalModeCommand_commandId, Modes.BIT_OVAL, ovalIcon, 'hello');
+        super(editor, BitOvalModeCommand_commandId, Modes.BIT_OVAL, ovalIcon, 'oval');
 
         this.selectedItems = this.editor.state.selectedItems;
         this.zoom = 1.0;

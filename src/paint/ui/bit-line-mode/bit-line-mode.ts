@@ -13,7 +13,7 @@ export const BitLineModeCommand_commandId: string = 'bit-line-mode';
 
 export default class BitLineModeCommand extends ToolSelectCommand<BitLineTool> {
     public constructor(editor: IPaperEditor) {
-        super(editor, BitLineModeCommand_commandId, Modes.BIT_LINE, lineIcon, 'hello');
+        super(editor, BitLineModeCommand_commandId, Modes.BIT_LINE, lineIcon, 'line');
     }
 
     updateState(): boolean {
