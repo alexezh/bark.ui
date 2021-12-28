@@ -110,7 +110,7 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
           sprite={this.state.sprite}
           onClose={this.props.onClose}
           onChange={this.onSpriteSelected}
-          paintEditor={this.paintEditor} />
+          editor={this.paintEditor} />
         <div className="PaintEditor-workarea">
           <PaintEditorSidebar
             sprite={this.state.sprite}

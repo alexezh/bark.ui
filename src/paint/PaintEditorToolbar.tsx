@@ -1,5 +1,6 @@
 import * as React from 'react';
 import _ from "lodash";
+import NumericInput from 'react-numeric-input';
 import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaperEditor } from './PaperEditor';
@@ -8,7 +9,7 @@ import { BigButton } from '../BigButton'
 import '../App.css';
 
 export interface IPaperEditorToolbarProps {
-  paintEditor: IPaperEditor;
+  editor: IPaperEditor;
   sprite: SpriteDef;
   onClose: any;
   onChange: (sprite: SpriteDef) => void;
@@ -16,6 +17,7 @@ export interface IPaperEditorToolbarProps {
 
 export interface IPaperEditorToolbarState {
   sprite: SpriteDef;
+  bitBrushSize: number;
 }
 
 interface SpriteValueProps {
@@ -33,11 +35,13 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
     super(props);
 
     _.bindAll(this, [
-      'onSelectSprite'
+      'onSelectSprite',
+      'onBrushSizeChange'
     ]);
 
     this.state = {
       sprite: props.sprite,
+      bitBrushSize: this.props.editor.state.bitBrushSize
     }
   }
 
@@ -53,6 +57,10 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
     this.props.onChange(sprite);
   }
 
+  private onBrushSizeChange(valueAsNumber: number) {
+    this.props.editor.setState({ bitBrushSize: valueAsNumber });
+    this.setState({ bitBrushSize: valueAsNumber });
+  }
 
   public render() {
     return (
@@ -66,6 +74,14 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
               {this.renderSpriteList(this.onSelectSprite)}
             </Dropdown.Menu>
           </Dropdown>
+        </BigButton>
+
+        <BigButton title='Brush size'>
+          <NumericInput
+            min={1}
+            max={100}
+            value={this.state.bitBrushSize}
+            onChange={this.onBrushSizeChange} />
         </BigButton>
       </div >
     );
