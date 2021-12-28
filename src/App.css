@@ -139,10 +139,17 @@ html {
   float: right;
 }
 
+.Game-hide {
+	display: none
+}
+
+.Game-show {
+	display: flex;
+}
+
 .Game-canvas {
 	width: 100%;
 	height: 100%;
-	display: flex;
 	flex-direction: column;
 	background-color: var(--ui-white);
 }

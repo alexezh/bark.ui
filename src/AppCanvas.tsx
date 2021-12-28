@@ -62,10 +62,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   public render() {
     return (
       <div id='AppCanvas' className="Canvas-main">
-        {
-          this.state.editorMode === EditorMode.GameEditor ?
-            <GameCanvas onChange={this.onModeChange} /> : null
-        }
+        <GameCanvas onChange={this.onModeChange} editorMode={this.state.editorMode} />
 
         {
           this.state.editorMode === EditorMode.CodeEditor ?

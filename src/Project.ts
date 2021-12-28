@@ -49,7 +49,7 @@ export class CodeBlockDef extends ObjectDef {
 
   private createUpdateOp() {
     return {
-      kind: 'CodeBlock',
+      target: 'CodeBlock',
       name: this.name,
       code: this.code,
       codeId: this.codeId
@@ -80,7 +80,7 @@ export class CodeFileDef extends ObjectDef {
 
   private createUpdateOp(): any {
     return {
-      kind: 'CodeFile',
+      target: 'CodeFile',
       name: this.name,
       codeBlockCount: this.codeBlocks.length
     }
@@ -146,7 +146,7 @@ export class CostumeDef extends ObjectDef {
 
   private createUpdateOp() {
     return {
-      kind: 'Costume',
+      target: 'Costume',
       name: this.name,
       image: this.imageData?.image,
       imageFormat: this.imageData?.imageFormat,
@@ -200,7 +200,7 @@ export class SpriteDef extends ObjectDef {
 
   private createUpdateOp() {
     return {
-      op: 'Sprite',
+      target: 'Sprite',
       name: this.name,
       width: this.width,
       height: this.height,
@@ -265,7 +265,7 @@ export class ProjectDef {
 
   private createUpdateOp() {
     return {
-      op: 'Project',
+      target: 'Project',
       spriteCount: this.sprites.length
     }
   }

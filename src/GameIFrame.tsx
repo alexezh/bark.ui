@@ -23,8 +23,8 @@ export class GameRuntimeClient {
   }
 
   public onStorageUpdate(ops: StorageOp[]) {
-    console.log('onStorageUpdate:' + ops[0].id);
     if (this._frame !== null) {
+      console.log('onStorageUpdate:' + ops[0].id + ' ' + ops[0].kind);
       let opsJson = JSON.stringify(ops);
       this._frame.contentWindow.postMessage(opsJson, '*');
     }

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import _ from "lodash";
+import classNames from 'classnames';
 
 import workspace from './Workspace';
 import GameSpritePane from './GameSpritePane';
@@ -14,10 +15,12 @@ export enum EditorMode {
 }
 
 export interface IGameCanvasProps {
+  editorMode: EditorMode;
   onChange: (mode: EditorMode) => void;
 }
 
 export interface IGameCanvasState {
+  editorMode: EditorMode;
   runtimeClient: GameRuntimeClient;
 }
 
@@ -35,6 +38,7 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     ]);
 
     this.state = {
+      editorMode: props.editorMode,
       runtimeClient: new GameRuntimeClient()
     }
 
@@ -45,12 +49,17 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     console.log('Select sprite:' + sprite.id);
   }
 
+  private changeMode(editorMode: EditorMode) {
+    this.props.onChange(editorMode);
+    this.setState({ editorMode: editorMode });
+  }
+
   private onEditCode() {
-    this.props.onChange(EditorMode.CodeEditor);
+    this.changeMode(EditorMode.CodeEditor);
   }
 
   private onEditImages() {
-    this.props.onChange(EditorMode.PaintEditor);
+    this.changeMode(EditorMode.PaintEditor);
   }
 
   private onEditLevel() {
@@ -98,7 +107,9 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     origin += "/bark.html";
 
     return (
-      <div className="Game-canvas">
+      <div className={classNames(
+        'Game-canvas',
+        (this.state.editorMode !== EditorMode.GameEditor) ? 'Game-hide' : 'Game-show')}>
         <GameEditorToolbar
           onEditCode={this.onEditCode}
           onEditImages={this.onEditImages}

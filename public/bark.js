@@ -632,10 +632,10 @@ var bark;
     function loadCodeBlock(name, code) {
     }
     function processOp(op) {
-        if (op.op === 'update') {
+        if (op.kind === 'update') {
             bark.project[op.id] = op.data;
-            console.log('process ' + op.kind);
-            if (op.kind === 'CodeBlock') {
+            console.log('process ' + op.target);
+            if (op.target === 'CodeBlock') {
                 loadCodeBlock(op.name, op.code);
             }
         }
