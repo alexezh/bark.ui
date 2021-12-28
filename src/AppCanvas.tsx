@@ -66,11 +66,15 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
 
         {
           this.state.editorMode === EditorMode.CodeEditor ?
-            <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} /> : null
+            <div className='Canvas-overlay'>
+              <TextEditorCanvas onClose={this.onCloseModal} codeBlock={workspace.lastEditedCodeBlock} />
+            </div> : null
         }
         {
           this.state.editorMode === EditorMode.PaintEditor ?
-            <PaintEditorCanvas onClose={this.onCloseModal} /> : null
+            <div className='Canvas-overlay'>
+              <PaintEditorCanvas onClose={this.onCloseModal} />
+            </div> : null
         }
       </div >
     );

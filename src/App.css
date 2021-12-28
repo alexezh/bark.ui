@@ -78,7 +78,15 @@ html {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	flex-direction: column;
+}
+
+.Canvas-overlay {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	position: absolute;
+	left: 0;
+	right: 0;
 }
 
 .TextEditor-canvas {

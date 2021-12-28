@@ -107,9 +107,7 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
     origin += "/bark.html";
 
     return (
-      <div className={classNames(
-        'Game-canvas',
-        (this.state.editorMode !== EditorMode.GameEditor) ? 'Game-hide' : 'Game-show')}>
+      <div className={'Game-canvas'}>
         <GameEditorToolbar
           onEditCode={this.onEditCode}
           onEditImages={this.onEditImages}
