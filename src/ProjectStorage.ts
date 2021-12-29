@@ -1,8 +1,8 @@
 import AsyncEventSource from './AsyncEventSource';
 
 export enum StorageOpKind {
-  update,
-  remove,
+  update = 'update',
+  remove = 'remove',
 }
 
 export class StorageOp {

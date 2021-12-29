@@ -64,7 +64,7 @@ export default class GameIFrame extends React.Component<IGameIFrameProps, IGameI
       <iframe
         className="Game-iframe"
         key={this.state.key}
-        src={document.location.href}
+        src={document.location.href + '?gamescreen'}
         ref={e => { this.container = e; }} />
     );
   }

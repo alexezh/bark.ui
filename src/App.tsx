@@ -7,9 +7,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 export function App() {
-  return (
-    { window.self === window.top ? <AppCanvas /> : <GameScreen /> }
-  );
+  if (window.self === window.top) {
+    return (<AppCanvas />);
+  } else {
+    return (<GameScreen />);
+  }
 }
 
 export default App;
