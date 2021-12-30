@@ -14,7 +14,8 @@ import { stringify } from 'querystring';
 // globals used by rest of code
 //export var game = new bark.Game();
 let bark: any = window['bark'];
-export var screen = new bark.Screen();
+export let screen = new bark.Screen();
+export let level = null;
 //export var input = new bark.Input();
 
 class GameLoader {
@@ -25,15 +26,22 @@ class GameLoader {
   }
 
   private setProject(project: any) {
-    console.log("width:" + project.props.screenWidth + " height:" + project.props.screenHeight);
+    console.log("Screen: width:" + project.props.screenWidth + " height:" + project.props.screenHeight);
 
+    // @ts-ignore
     screen.resize(project.props.screenWidth, project.props.screenHeight);
   }
 
-  private setLevel(level: any) {
-    console.log("width:" + level.props.gridWidth + " height:" + level.props.gridHeight);
+  private setLevel(levelOp: any) {
+    console.log("Level: width:" + levelOp.props.gridWidth + " height:" + levelOp.props.gridHeight);
 
-    // screen.resize(project.level.screenWidth, level.props.screenHeight);
+    if (level === null) {
+      level = new bark.TileLevel(levelOp.props);
+      screen.setLevel(level);
+    } else {
+      // @ts-ignore
+      level.resize(levelOp.props.gridWidth, levelOp.props.gridHeight);
+    }
   }
 
   public processSet(value: any) {
@@ -41,7 +49,7 @@ class GameLoader {
       case 'Project':
         this.setProject(value);
         break;
-      case 'Level':
+      case 'TileLevel':
         this.setLevel(value);
         break;
       case 'Sprite':

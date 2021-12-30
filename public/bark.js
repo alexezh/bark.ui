@@ -370,11 +370,16 @@ var bark;
             this._tileSprites = {};
             this._rows = [];
             this._sprites = [];
-            this._editMode = false;
-            this._tileW = args.tileW;
-            this._tileH = args.tileH;
-            this._gridW = args.gridW;
-            this._gridH = args.gridH;
+            this._tileW = 0;
+            this._tileH = 0;
+            this._gridW = 0;
+            this._gridH = 0;
+            this._editMode = true;
+            this._tileW = args.tileWidth;
+            this._tileH = args.tileHeight;
+            this._gridW = args.gridWidth;
+            this._gridH = args.gridHeight;
+            this.updateTiles();
         }
         Object.defineProperty(TileLevel.prototype, "pixelWidth", {
             get: function () { return this._tileW * this._rows[0].length; },
@@ -409,35 +414,31 @@ var bark;
         TileLevel.prototype.setEditMode = function (edit) {
             this._editMode = edit;
         };
-        TileLevel.prototype.createEmptyMap = function (w, h) {
-            for (var i = 0; i < h; i++) {
-                var row = [];
-                for (var j = 0; j < w; j++) {
-                    row.push(null);
-                }
-                this._rows.push(row);
-            }
+        TileLevel.prototype.resize = function (gridWidth, gridHeight) {
+            this._gridW = gridWidth;
+            this._gridH = gridHeight;
+            this.updateTiles();
         };
-        TileLevel.prototype.loadMap = function (rows) {
-            var _this = this;
-            var rowY = 0;
-            rows.forEach(function (inputRow) {
-                var spriteRow = [];
-                for (var i = 0; i < inputRow.length; i++) {
-                    var c = inputRow[i];
-                    var sprite = _this._sprites[c];
-                    if (sprite !== undefined) {
-                        sprite = sprite.clone(i * _this._tileW, rowY);
-                        spriteRow.push(sprite);
-                    }
-                    else {
-                        spriteRow.push(null);
+        TileLevel.prototype.updateTiles = function () {
+            if (this._rows.length < this._tileH) {
+                for (var i = this._rows.length; i < this._tileH; i++) {
+                    this._rows.push([]);
+                }
+            }
+            else {
+                this._rows.length = this._tileH;
+            }
+            for (var i = this._rows.length; i < this._tileH; i++) {
+                var row = this._rows[i];
+                if (row.length < this._tileW) {
+                    for (var j = row.length; j < this._tileW; j++) {
+                        row.push(null);
                     }
                 }
-                ;
-                _this._rows.push(spriteRow);
-                rowY += _this._tileH;
-            });
+                else {
+                    row.length = this._tileW;
+                }
+            }
         };
         TileLevel.prototype.draw = function (ctx, x, y) {
             var _this = this;
@@ -532,7 +533,7 @@ var bark;
             this._cameraX = 0;
             this._cameraY = 0;
             this._scrollX = 0;
-            this._editMode = false;
+            this._editMode = true;
         }
         Object.defineProperty(Screen.prototype, "scrollX", {
             get: function () { return this._scrollX; },
