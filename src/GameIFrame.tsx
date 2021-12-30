@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import * as project from './Project';
 import workspace from './Workspace';
-import { StorageOp } from './ProjectStorage';
+import { StorageOp, StorageOpKind } from './ProjectStorage';
 
 
 export class GameRuntimeClient {
@@ -54,11 +54,25 @@ export default class GameIFrame extends React.Component<IGameIFrameProps, IGameI
   }
 
   public componentDidMount() {
-    // run later to let all components to bind
-    setTimeout(() => {
-      this.state.runtimeClient.setFrame(this.container);
-      project.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
-    }, 0);
+    window.addEventListener("message", (event) => {
+      if (typeof event.data === 'string' || event.data instanceof String) {
+        this.processEvent(event.data as string);
+      }
+    }, false);
+  }
+
+  private processEvent(opJson: string) {
+    try {
+      let op = JSON.parse(opJson);
+      if (op.op === StorageOpKind.screenReady) {
+        console.log('Initialize screen frame');
+        this.state.runtimeClient.setFrame(this.container);
+        project.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
   public render() {

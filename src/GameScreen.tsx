@@ -8,7 +8,7 @@ import * as project from './Project';
 import workspace from './Workspace';
 import GameSpritePane from './GameSpritePane';
 import GameEditorToolbar from './GameEditorToolbar';
-import { StorageOp } from './ProjectStorage';
+import { StorageOp, StorageOpKind } from './ProjectStorage';
 import { stringify } from 'querystring';
 
 // globals used by rest of code
@@ -114,6 +114,11 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
     }, false);
 
     screen.setCanvas(this.canvasRef);
+
+    let readyOp = {
+      op: StorageOpKind.screenReady
+    }
+    window.parent.postMessage(JSON.stringify(readyOp), '*');
   }
 
   public render() {

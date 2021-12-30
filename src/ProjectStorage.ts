@@ -3,7 +3,8 @@ import AsyncEventSource from './AsyncEventSource';
 export enum StorageOpKind {
   set = 'set',
   remove = 'remove',
-  append = 'append'
+  append = 'append',
+  screenReady = 'screenReady'
 }
 
 export class StorageOp {
