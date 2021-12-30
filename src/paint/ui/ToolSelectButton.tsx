@@ -7,7 +7,7 @@ import { IPaperEditor } from '../PaperEditor';
 import { IToolSelectCommand } from './ToolSelectCommand'
 
 import './ToolSelectButton.css';
-import { EditorMode } from '../../GameCanvas';
+import { EditorMode } from '../../GameEditorCanvas';
 
 export interface IToolSelectButtonProps {
     className: string;

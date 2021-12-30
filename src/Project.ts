@@ -261,8 +261,8 @@ export class TileLevelDef extends ObjectDef {
     this.props = {
       gridWidth: gridWidth,
       gridHeight: gridHeight,
-      tileWidth: 16,
-      tileHeight: 16
+      tileWidth: 32,
+      tileHeight: 32
     }
 
     this._storage.setItem('level', this.createUpdateOp());

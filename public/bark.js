@@ -504,7 +504,8 @@ var bark;
             return null;
         };
         TileLevel.prototype.drawGrid = function (ctx) {
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = '#969696';
             for (var i = 0; i < this._gridW; i++) {
                 ctx.beginPath();
                 ctx.moveTo(i * this._tileW, 0);

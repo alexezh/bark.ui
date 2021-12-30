@@ -24,7 +24,7 @@ export interface IGameCanvasState {
   runtimeClient: GameRuntimeClient;
 }
 
-export default class GameCanvas extends React.Component<IGameCanvasProps, IGameCanvasState> {
+export default class GameEditorCanvas extends React.Component<IGameCanvasProps, IGameCanvasState> {
   constructor(props: IGameCanvasProps) {
     super(props);
 

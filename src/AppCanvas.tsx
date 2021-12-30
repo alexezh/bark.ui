@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from "lodash";
 
 import TextEditorCanvas from './TextEditorCanvas';
-import GameCanvas, { EditorMode } from './GameCanvas';
+import GameEditorCanvas, { EditorMode } from './GameEditorCanvas';
 import PaintEditorCanvas from './paint/PaintEditorCanvas';
 import workspace from './Workspace';
 import * as project from './Project';
@@ -62,7 +62,7 @@ export default class AppCanvas extends React.Component<IAppCanvasProps, IAppCanv
   public render() {
     return (
       <div id='AppCanvas' className="Canvas-main">
-        <GameCanvas onChange={this.onModeChange} editorMode={this.state.editorMode} />
+        <GameEditorCanvas onChange={this.onModeChange} editorMode={this.state.editorMode} />
 
         {
           this.state.editorMode === EditorMode.CodeEditor ?

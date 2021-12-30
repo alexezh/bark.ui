@@ -131,7 +131,9 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
 
   public render() {
     return (
-      <canvas ref={e => { this.canvasRef = e }} />
+      <div className='Game-screen'>
+        <canvas ref={e => { this.canvasRef = e }} />
+      </div>
     );
   }
 }
