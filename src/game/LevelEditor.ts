@@ -7,6 +7,10 @@ export class LevelEditor {
   public selectSprite(id: string) {
     this._sprite = project.project.findSpriteById(id);
   }
+
+  public setTile() {
+
+  }
 }
 
 export let levelEditor = new LevelEditor();

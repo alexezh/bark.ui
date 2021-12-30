@@ -8,6 +8,7 @@ import { level, screen } from './GameLoader';
 import { StorageOp, StorageOpKind } from '../ProjectStorage';
 import * as project from '../Project';
 import workspace from '../Workspace';
+import { levelEditor } from './LevelEditor';
 
 export interface IGameScreenProps {
 }
@@ -22,6 +23,8 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
     super(props);
 
     _.bindAll(this, [
+      'onMouseDown',
+      'onMouseUp'
     ]);
 
     this.state = {
@@ -44,7 +47,7 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
   }
 
   private onMouseDown(event: any): void {
-
+    levelEditor.setTile();
   }
 
   private onMouseUp(event: any) {
