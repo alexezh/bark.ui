@@ -78,6 +78,9 @@ class GameLoader {
       case 'run':
         screen.setEditMode(false);
         break;
+      case 'selectSprite':
+        screen.selectSprite(op.id);
+        break;
     }
   }
 

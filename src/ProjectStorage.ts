@@ -4,7 +4,8 @@ export enum StorageOpKind {
   set = 'set',
   remove = 'remove',
   append = 'append',
-  screenReady = 'screenReady'
+  screenReady = 'screenReady',
+  selectSprite = 'selectSprite'
 }
 
 export class StorageOp {

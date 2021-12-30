@@ -27,6 +27,10 @@ export class GameRuntimeClient {
       this._frame.contentWindow.postMessage(opsJson, '*');
     }
   }
+
+  public selectSprite(id: string) {
+    this.onStorageUpdate([new StorageOp(StorageOpKind.selectSprite, id)])
+  }
 }
 
 export interface IGameIFrameProps {

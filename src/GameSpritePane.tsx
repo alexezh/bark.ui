@@ -1,19 +1,19 @@
 import * as React from 'react';
 import _ from "lodash";
-import List from './paint/ui/list/list';
-import ListItem from './paint/ui/list/list-item';
+//import List from './paint/ui/list/list';
+//import ListItem from './paint/ui/list/list-item';
 import * as project from './Project';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
 
 import './App.css';
 
 export interface IGameSpritePaneProps {
-  sprite?: project.SpriteDef;
   onChange: (sprite: project.SpriteDef) => void;
 }
 
 export interface IGameSpritePaneState {
-  sprite: project.SpriteDef;
-  selectedSpriteIndex: number | null;
+  selectedSpriteId: string | null;
 
   /**
    * fake property for updating list
@@ -28,13 +28,12 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
     _.bindAll(this, [
       'onSpriteSelected',
       'onCostumeChange',
-      'renderItem'
+      //      'onClick'
     ]);
 
-    let sprite = (props.sprite !== undefined) ? props.sprite : project.project.def.sprites[0];
+    // let sprite = (props.sprite !== undefined) ? props.sprite : project.project.def.sprites[0];
     this.state = {
-      sprite: sprite,
-      selectedSpriteIndex: 0,
+      selectedSpriteId: null,
       version: 0
     }
   }
@@ -58,33 +57,51 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
   /**
    * called when new costume is selected
    */
-  private onSpriteSelected(index: number | null) {
-    let sprite = (index !== null) ? project.project.def.sprites[index] : project.project.def.sprites[0];
+  private onSpriteSelected(id: string) {
+    console.log('Select sprite:' + id);
+    //    let sprite = (index !== null) ? project.project.def.sprites[index] : project.project.def.sprites[0];
+    let sprite = project.project.findSpriteById(id);
+    if (sprite === undefined) {
+      return;
+    }
+
     this.setState({
-      selectedSpriteIndex: index,
-      sprite: sprite
+      selectedSpriteId: id,
     });
 
     this.props.onChange(sprite);
   }
 
+  //</div>          onChange={this.onSpriteSelected} >
+
   public render() {
     return (
       <div className='Game-spritepane'>
-        <List
-          itemCount={this.state.sprite.costumes.length}
-          render={(index) => this.renderItem(index)}
-          selectedItem={this.state.selectedSpriteIndex}
-          onChange={this.onSpriteSelected} />
-      </div >
+        <List>
+          {project.project.def.sprites.map((sprite) => {
+            if (sprite.costumes.length > 0 && sprite.costumes[0].imageData !== undefined) {
+              return (
+                <ListItemButton key={sprite.id} selected={sprite.id === this.state.selectedSpriteId} onClick={() => this.onSpriteSelected(sprite.id)}>
+                  <div className="Game-spritepane-button">
+                    <img className='Game-spritepane-button-image' src={sprite.costumes[0].imageData.image} />
+                    <div>
+                      <span className='Game-spritepane-button-text'>{sprite.name}</span>
+                    </div>
+                  </div>
+                </ListItemButton>
+              )
+            } else {
+              return null;
+            }
+          })
+          }
+        </List>
+      </div>
     );
   }
 
-  renderItem(idx: number): { item: React.ReactNode, key: string } | undefined {
-    if (idx >= this.state.sprite.costumes.length) {
-      return undefined;
-    }
-    let costume = this.state.sprite.costumes[idx];
+  /*
+  renderItems() {
 
     return {
       item: (
@@ -98,4 +115,24 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
       key: costume.id
     };
   }
+
+  public render() {
+    return (
+      <ImageList variant="masonry" cols={3} gap={8} style={{ width: 64 * 3 + 8 * 2 }}>
+        {project.project.def.sprites.map((sprite) => (
+          (sprite.costumes.length > 0) ?
+            <ImageListItem key={sprite.id} onClick={this.onClick}>
+              <img
+                // @ts-ignore
+                src={sprite.costumes[0].imageData?.image}
+                loading="lazy"
+                style={{ width: 64, height: 64 }}
+              />
+              <ImageListItemBar position="below" title={sprite.name} />
+            </ImageListItem> : null
+        ))}
+      </ImageList>
+    );
+  }
+  */
 }

@@ -187,6 +187,7 @@ html {
 .Game-spritepane-button {
 	width: 94px;
 	height: 94px;
+	flex-direction: row;
 }
 
 .Game-spritepane-button-image {
@@ -196,11 +197,6 @@ html {
 
 .Game-spritepane-button-text {
   font-size: 12px;
-}
-
-.Game-spritepane-button-image {
-	width: 64px;
-	height: 64px;
 }
 
 .Game-screen {

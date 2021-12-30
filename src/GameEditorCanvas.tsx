@@ -35,6 +35,7 @@ export default class GameEditorCanvas extends React.Component<IGameCanvasProps, 
       'onDownloadProject',
       'onStartGame',
       'onStopGame',
+      'onSpriteChange'
     ]);
 
     this.state = {
@@ -45,6 +46,7 @@ export default class GameEditorCanvas extends React.Component<IGameCanvasProps, 
 
   private onSpriteChange(sprite: project.SpriteDef) {
     console.log('Select sprite:' + sprite.id);
+    this.state.runtimeClient.selectSprite(sprite.id);
   }
 
   private changeMode(editorMode: EditorMode) {
