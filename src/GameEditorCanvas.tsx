@@ -75,7 +75,7 @@ export default class GameEditorCanvas extends React.Component<IGameCanvasProps, 
 
   private onDownloadProject() {
 
-    let projectJson = project.project.toJson();
+    let projectJson = project.project.storage.toJson();
     var codeBlob = new Blob([projectJson], { type: 'text/plain' });
 
     var downloadLink = document.createElement("a");

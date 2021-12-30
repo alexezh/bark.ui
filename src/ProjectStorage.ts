@@ -30,6 +30,7 @@ export interface IProjectStorage {
 
   registerOnChange(func: (op: StorageOp[]) => void);
   unregisterOnChange(func: (op: StorageOp[]) => void);
+  toJson(): string;
 }
 
 export class ProjectLocalStorage implements IProjectStorage {
@@ -100,5 +101,13 @@ export class ProjectLocalStorage implements IProjectStorage {
 
   public unregisterOnChange(func: (op: StorageOp[]) => void) {
     this._onChange.remove(func);
+  }
+
+  public toJson(): string {
+    let ops: any[] = [];
+    for (let id in this._data) {
+      ops.push(new StorageOp(StorageOpKind.set, id, this._data[id]));
+    }
+    return JSON.stringify(ops);
   }
 }

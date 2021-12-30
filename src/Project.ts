@@ -55,10 +55,6 @@ export class CodeBlockDef extends ObjectDef {
       codeId: this.codeId
     }
   }
-
-  public populateCommands(commands: any[]) {
-    commands.push(this.createUpdateOp());
-  }
 }
 
 export class CodeFileDef extends ObjectDef {
@@ -84,11 +80,6 @@ export class CodeFileDef extends ObjectDef {
       name: this.name,
       codeBlockCount: this.codeBlocks.length
     }
-  }
-  public populateCommands(commands: any[]) {
-    commands.push(this.createUpdateOp());
-
-    this.codeBlocks.forEach((x) => x.populateCommands(commands));
   }
 }
 
@@ -153,9 +144,6 @@ export class CostumeDef extends ObjectDef {
       imageId: this.imageData?.imageId
     }
   }
-  public populateCommands(commands: any[]) {
-    commands.push(this.createUpdateOp());
-  }
 }
 
 /**
@@ -206,13 +194,6 @@ export class SpriteDef extends ObjectDef {
       height: this.height,
       costumeCount: this.costumes.length
     }
-  }
-
-  public populateCommands(commands: any[]) {
-    commands.push(this.createUpdateOp());
-
-    this.codeFile.populateCommands(commands);
-    this.costumes.forEach((x) => x.populateCommands(commands));
   }
 
   public static isEqual(a: SpriteDef | undefined, b: SpriteDef | undefined): boolean {
@@ -285,6 +266,13 @@ export class TileLevelDef extends ObjectDef {
     });
 
     this._storage.appendItem('tiles', updateTiles);
+
+    tiles.forEach(tile => {
+      let row: any[] = this.rows[tile.y];
+      let spriteDef = this.createSpriteRef(tile.sprite.id, tile.x * this.props.tileWidth, tile.y * this.props.tileHeight);
+      row[tile.x] = spriteDef;
+      updateTiles.push(spriteDef);
+    });
   }
 
   private updateTiles() {
@@ -389,13 +377,6 @@ export class ProjectDef {
       spriteCount: this.sprites.length
     }
   }
-
-  public populateCommands(commands: any[]) {
-    commands.push(this.createUpdateOp());
-
-    this.codeFile.populateCommands(commands);
-    this.sprites.forEach((x) => x.populateCommands(commands));
-  }
 }
 
 /**
@@ -467,12 +448,6 @@ export class Project {
     }
 
     return undefined;
-  }
-
-  public toJson(): string {
-    let commands = [];
-    this.def.populateCommands(commands);
-    return JSON.stringify(commands);
   }
 }
 

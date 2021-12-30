@@ -89,7 +89,7 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
     return {
       item: (
         <div className="Game-spritepane-button">
-          <img className='Game-spritepane-button-button-image' src={costume.imageData?.image} />
+          <img className='Game-spritepane-button-image' src={costume.imageData?.image} />
           <div>
             <span className='Game-spritepane-button-text'>{costume.name}</span>
           </div>

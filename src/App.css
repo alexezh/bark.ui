@@ -198,6 +198,11 @@ html {
   font-size: 12px;
 }
 
+.Game-spritepane-button-image {
+	width: 64px;
+	height: 64px;
+}
+
 .Game-screen {
 	display: flex;
 	align-items: center;
