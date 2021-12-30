@@ -21,7 +21,11 @@ export class StorageOp {
 export interface IProjectStorage {
   updateSnapshot(json: string);
   setItem(id: string, value: any);
-  removeItem(id: string)
+  removeItem(id: string);
+  /**
+   * treats items as array of values
+   */
+  appendItem(id: string, value: any);
 
   registerOnChange(func: (op: StorageOp[]) => void);
   unregisterOnChange(func: (op: StorageOp[]) => void);
@@ -40,13 +44,25 @@ export class ProjectLocalStorage implements IProjectStorage {
   public updateSnapshot(json: string) {
     throw new Error("Method not implemented.");
   }
-  public queueOp(op: StorageOpKind, id: string, value: any) {
-    if (op !== StorageOpKind.remove) {
-      this._data[id] = value;
-    } else {
-      delete this._data[id];
+  public setItem(id: string, value: any) {
+    this._data[id] = value;
+    this.queueChange(new StorageOp(StorageOpKind.set, id, value));
+  }
+
+  public removeItem(id: string) {
+    delete this._data[id];
+    this.queueChange(new StorageOp(StorageOpKind.remove, id));
+  }
+
+  public appendItem(id: string, value: any) {
+    let item = this._data[id];
+    if (item === undefined) {
+      item = [];
+      this._data[id] = item;
     }
-    this.queueChange(new StorageOp(op, id, value));
+
+    item.push(value);
+    this.queueChange(new StorageOp(StorageOpKind.append, id, value));
   }
 
   private queueChange(op: StorageOp) {
@@ -71,7 +87,13 @@ export class ProjectLocalStorage implements IProjectStorage {
 
   public registerOnChange(func: (op: StorageOp[]) => void) {
     // send current state to sink
+    let ops: any[] = [];
+    for (let id in this._data) {
+      ops.push(new StorageOp(StorageOpKind.set, id, this._data[id]));
+    }
+    func(ops);
 
+    // register to receive notifications
     this._onChange.add(func);
   }
 

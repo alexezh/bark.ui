@@ -41,8 +41,6 @@ export default class GameCanvas extends React.Component<IGameCanvasProps, IGameC
       editorMode: props.editorMode,
       runtimeClient: new GameRuntimeClient()
     }
-
-    project.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
   }
 
   private onSpriteChange(sprite: project.SpriteDef) {

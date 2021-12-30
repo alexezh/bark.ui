@@ -24,29 +24,42 @@ class GameLoader {
 
   }
 
-  private loadProject(project: any) {
+  private setProject(project: any) {
     console.log("width:" + project.props.screenWidth + " height:" + project.props.screenHeight);
 
     screen.resize(project.props.screenWidth, project.props.screenHeight);
   }
 
+  private setLevel(level: any) {
+    console.log("width:" + level.props.gridWidth + " height:" + level.props.gridHeight);
+
+    // screen.resize(project.level.screenWidth, level.props.screenHeight);
+  }
+
+  public processSet(value: any) {
+    switch (value.target) {
+      case 'Project':
+        this.setProject(value);
+        break;
+      case 'Level':
+        this.setLevel(value);
+        break;
+      case 'Sprite':
+        break;
+      case 'CodeFile':
+        break;
+      case 'CodeBlock':
+        this.loadCodeBlock(value.name, value.code);
+        break;
+      case 'Costume':
+        break;
+    }
+  }
+
   public processOp(op: any) {
     switch (op.kind) {
-      case 'updateProject':
-        this.loadProject(op.value);
-        break;
-      case 'updateLevel':
-        break;
-      case 'updateTiles':
-        break;
-      case 'updateSprite':
-        break;
-      case 'updateCodeFile':
-        break;
-      case 'updateCodeBlock':
-        this.loadCodeBlock(op.value.name, op.code);
-        break;
-      case 'updateCostume':
+      case 'set':
+        this.processSet(op.value);
         break;
       case 'remove':
         delete project[op.id];

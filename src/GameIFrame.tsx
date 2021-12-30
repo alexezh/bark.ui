@@ -3,8 +3,6 @@ import _ from "lodash";
 
 import * as project from './Project';
 import workspace from './Workspace';
-import GameSpritePane from './GameSpritePane';
-import GameEditorToolbar from './GameEditorToolbar';
 import { StorageOp } from './ProjectStorage';
 
 
@@ -56,7 +54,11 @@ export default class GameIFrame extends React.Component<IGameIFrameProps, IGameI
   }
 
   public componentDidMount() {
-    this.state.runtimeClient.setFrame(this.container);
+    // run later to let all components to bind
+    setTimeout(() => {
+      this.state.runtimeClient.setFrame(this.container);
+      project.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
+    }, 0);
   }
 
   public render() {

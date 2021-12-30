@@ -37,14 +37,14 @@ export class CodeBlockDef extends ObjectDef {
     this.name = name;
     this.code = code;
     this.codeId = x64Hash64(code);
-    storage.queueOp(StorageOpKind.updateCodeBlock, this.path, this.createUpdateOp());
+    storage.setItem(this.path, this.createUpdateOp());
   }
 
   public updateCode(code: string) {
     this.code = code;
     this.codeId = x64Hash64(code);
 
-    this._storage.queueOp(StorageOpKind.updateCodeBlock, this.path, this.createUpdateOp());
+    this._storage.setItem(this.path, this.createUpdateOp());
   }
 
   private createUpdateOp() {
@@ -69,7 +69,7 @@ export class CodeFileDef extends ObjectDef {
   public constructor(storage: IProjectStorage, parent: IObjectDef | undefined, name: string) {
     super(storage, parent);
     this.name = name;
-    storage.queueOp(StorageOpKind.updateFileDef, this.path, this.createUpdateOp());
+    storage.setItem(this.path, this.createUpdateOp());
   }
 
   public createBlock(name: string, code: string) {
@@ -130,7 +130,7 @@ export class CostumeDef extends ObjectDef {
   public constructor(storage: IProjectStorage, parent: IObjectDef) {
     super(storage, parent);
     this.id = uuidv4();
-    storage.queueOp(StorageOpKind.updateCostume, this.path, this.createUpdateOp());
+    storage.setItem(this.path, this.createUpdateOp());
   }
 
   public updateImage(imageData: ImageData) {
@@ -141,7 +141,7 @@ export class CostumeDef extends ObjectDef {
       sprite.onCostumeChange.invoke(this);
     }
 
-    this._storage.queueOp(StorageOpKind.updateCostume, this.path, this.createUpdateOp());
+    this._storage.setItem(this.path, this.createUpdateOp());
   }
 
   private createUpdateOp() {
@@ -179,7 +179,7 @@ export class SpriteDef extends ObjectDef {
     this.name = name;
     this.codeFile = new CodeFileDef(storage, this, name);
 
-    storage.queueOp(StorageOpKind.updateSprite, this.path, this.createUpdateOp());
+    storage.setItem(this.path, this.createUpdateOp());
 
     // add one costume by default
     this.costumes.push(new CostumeDef(storage, this));
@@ -265,14 +265,14 @@ export class TileLevelDef extends ObjectDef {
       tileHeight: 16
     }
 
-    this._storage.queueOp(StorageOpKind.updateLevel, 'level', this.createUpdateOp());
+    this._storage.setItem('level', this.createUpdateOp());
     this.updateTiles();
   }
 
   public setSize(gridWidth: number, gridHeight: number) {
     this.props.gridWidth = gridWidth;
     this.props.gridHeight = gridHeight;
-    this._storage.queueOp(StorageOpKind.updateLevel, this.path, this.createUpdateOp());
+    this._storage.setItem(this.path, this.createUpdateOp());
   }
 
   public setTiles(tiles: { sprite: SpriteDef, x: number, y: number }[]) {
@@ -284,7 +284,7 @@ export class TileLevelDef extends ObjectDef {
       updateTiles.push(spriteDef);
     });
 
-    this._storage.queueOp(StorageOpKind.updatesTiles, 'updateTiles', updateTiles);
+    this._storage.appendItem('tiles', updateTiles);
   }
 
   private updateTiles() {
@@ -353,7 +353,7 @@ export class ProjectDef {
       screenWidth: screenWidth,
       screenHeight: screenHeight
     }
-    storage.queueOp(StorageOpKind.updateProject, 'project', this.createUpdateOp());
+    storage.setItem('project', this.createUpdateOp());
 
     this.level = level;
     this.codeFile = new CodeFileDef(this._storage, undefined, 'game');
@@ -373,7 +373,7 @@ export class ProjectDef {
     this.props.screenWidth = screenWidth;
     this.props.screenHeight = screenHeight;
 
-    this._storage.queueOp(StorageOpKind.updateProject, 'project', this.createUpdateOp());
+    this._storage.setItem('project', this.createUpdateOp());
   }
 
   public createSprite(name: string): SpriteDef {
