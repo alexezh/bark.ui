@@ -1,5 +1,5 @@
-/// <reference path="../node_modules/bark-core/src/screen.ts" />
-/// <reference path="../node_modules/bark-core/src/game.ts" />
+//-- <reference path="../node_modules/bark-core/src/screen.ts" />
+//-- <reference path="../node_modules/bark-core/src/game.ts" />
 
 import * as React from 'react';
 import _ from "lodash";
@@ -12,7 +12,8 @@ import { StorageOp } from './ProjectStorage';
 import { stringify } from 'querystring';
 
 // globals used by rest of code
-export var game = new bark.Game();
+//export var game = new bark.Game();
+let bark: any = window['bark'];
 export var screen = new bark.Screen();
 //export var input = new bark.Input();
 
@@ -24,27 +25,38 @@ class GameLoader {
   }
 
   private loadProject(project: any) {
-    console.log("width:" + project.props.gridWidth + " height:" + project.props.gridHeight);
+    console.log("width:" + project.props.screenWidth + " height:" + project.props.screenHeight);
 
-    screen.resize(project.props.gridWidth, project.props.gridHeight);
+    screen.resize(project.props.screenWidth, project.props.screenHeight);
   }
 
   public processOp(op: any) {
-    if (op.kind === 'update') {
-      project[op.id] = op.value;
-      console.log('process ' + op.value.target);
-      if (op.value.target === 'Project') {
+    switch (op.kind) {
+      case 'updateProject':
         this.loadProject(op.value);
-      }
-      else if (op.value.target === 'CodeBlock') {
+        break;
+      case 'updateLevel':
+        break;
+      case 'updateTiles':
+        break;
+      case 'updateSprite':
+        break;
+      case 'updateCodeFile':
+        break;
+      case 'updateCodeBlock':
         this.loadCodeBlock(op.value.name, op.code);
-      }
-    } else if (op.op == 'edit') {
-      screen.setEditMode(true);
-    } else if (op.op == 'run') {
-      screen.setEditMode(false);
-    } else if (op.op == 'remove') {
-      delete project[op.id];
+        break;
+      case 'updateCostume':
+        break;
+      case 'remove':
+        delete project[op.id];
+        break;
+      case 'edit':
+        screen.setEditMode(true);
+        break;
+      case 'run':
+        screen.setEditMode(false);
+        break;
     }
   }
 
@@ -69,7 +81,7 @@ export interface IGameScreenState {
 }
 
 export default class GameScreen extends React.Component<IGameScreenProps, IGameScreenState> {
-  private container: any;
+  private canvasRef: any;
 
   constructor(props: IGameScreenProps) {
     super(props);
@@ -87,11 +99,13 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
         loader.processEvent(event.data as string);
       }
     }, false);
+
+    screen.setCanvas(this.canvasRef);
   }
 
   public render() {
     return (
-      <div />
+      <canvas ref={e => { this.canvasRef = e }} />
     );
   }
 }

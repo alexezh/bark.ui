@@ -284,14 +284,13 @@ export class TileLevelDef extends ObjectDef {
       updateTiles.push(spriteDef);
     });
 
-    this._storage.queueOp(StorageOpKind.updateLevel, 'updateTiles', updateTiles);
+    this._storage.queueOp(StorageOpKind.updatesTiles, 'updateTiles', updateTiles);
   }
 
   private updateTiles() {
     if (this.props.gridHeight > this.rows.length) {
-      this.rows.length = this.props.gridHeight;
       for (let i = this.rows.length; i < this.props.gridHeight; i++) {
-        this.rows[i] = [];
+        this.rows.push([]);
       }
     } else {
       this.rows.length = this.props.gridHeight;

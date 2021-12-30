@@ -1,14 +1,9 @@
 import AsyncEventSource from './AsyncEventSource';
 
 export enum StorageOpKind {
+  set = 'set',
   remove = 'remove',
-  updateProject = 'updateProject',
-  updateLevel = 'updateLevel',
-  updatesTiles = 'updateTiles',
-  updateSprite = 'updateSprite',
-  updateCodeBlock = 'updateCodeBlock',
-  updateFileDef = 'updateFileDef',
-  updateCostume = 'updateCostume'
+  append = 'append'
 }
 
 export class StorageOp {
@@ -25,7 +20,8 @@ export class StorageOp {
 
 export interface IProjectStorage {
   updateSnapshot(json: string);
-  queueOp(op: string, id: string, value: any);
+  setItem(id: string, value: any);
+  removeItem(id: string)
 
   registerOnChange(func: (op: StorageOp[]) => void);
   unregisterOnChange(func: (op: StorageOp[]) => void);
@@ -74,6 +70,8 @@ export class ProjectLocalStorage implements IProjectStorage {
   }
 
   public registerOnChange(func: (op: StorageOp[]) => void) {
+    // send current state to sink
+
     this._onChange.add(func);
   }
 
