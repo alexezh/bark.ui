@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CodeBlockDef, CodeFileDef, project } from './Project';
+import { CodeBlockDef, CodeFileDef, project } from 'bark-core';
 import _ from "lodash";
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import { BigButton } from './BigButton'

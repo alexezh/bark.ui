@@ -1,9 +1,8 @@
 import * as React from 'react';
 import _ from "lodash";
 
-import * as project from './Project';
-import workspace from './Workspace';
-import { StorageOp, StorageOpKind } from './ProjectStorage';
+import * as project from 'bark-core';
+import { StorageOp, StorageOpKind } from 'bark-core';
 
 
 export class GameRuntimeClient {

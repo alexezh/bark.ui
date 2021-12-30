@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import workspace from './Workspace';
 import TextEditorToolbar from './TextEditorToolbar';
-import { CodeBlockDef, CodeFileDef, project } from './Project';
+import { CodeBlockDef, CodeFileDef, project } from 'bark-core';
 
 export interface ITextEditorCanvasProps {
   onClose: any;

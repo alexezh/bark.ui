@@ -13,7 +13,7 @@ import {
     clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
 } from './tools/view';
 import { ensureClockwise, scaleWithStrokes } from './tools/math';
-import * as project from '../Project';
+import * as project from 'bark-core';
 import { IPaperEditor } from './PaperEditor';
 
 var paperScope: any = null;

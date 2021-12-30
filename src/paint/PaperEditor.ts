@@ -24,7 +24,7 @@ import OvalModeCommand, { OvalModeCommand_commandId } from './ui/oval-mode/oval-
 import LineModeCommand, { LineModeCommand_commandId } from './ui/line-mode/line-mode';
 import FillModeCommand, { FillModeCommand_commandId } from './ui/fill-mode/fill-mode';
 import BrushModeCommand, { BrushModeCommand_commandId } from './ui/brush-mode/brush-mode';
-import * as project from '../Project';
+import * as project from 'bark-core';
 
 export class BrushMode {
   public brushSize: any = 1;

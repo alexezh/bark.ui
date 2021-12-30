@@ -2,11 +2,11 @@ import * as React from 'react';
 import _ from "lodash";
 //import List from './paint/ui/list/list';
 //import ListItem from './paint/ui/list/list-item';
-import * as project from './Project';
+import * as project from 'bark-core';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 
-import './App.css';
+import '../App.css';
 
 export interface IGameSpritePaneProps {
   onChange: (sprite: project.SpriteDef) => void;

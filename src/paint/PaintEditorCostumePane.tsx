@@ -1,6 +1,6 @@
 import * as React from 'react';
 import _ from "lodash";
-import * as project from '../Project';
+import * as project from 'bark-core';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import List from './ui/list/list';
 import ListItem from './ui/list/list-item';

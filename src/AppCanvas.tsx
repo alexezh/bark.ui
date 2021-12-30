@@ -2,10 +2,10 @@ import * as React from 'react';
 import _ from "lodash";
 
 import TextEditorCanvas from './TextEditorCanvas';
-import GameEditorCanvas, { EditorMode } from './GameEditorCanvas';
+import GameEditorCanvas, { EditorMode } from './game/GameEditorCanvas';
 import PaintEditorCanvas from './paint/PaintEditorCanvas';
 import workspace from './Workspace';
-import * as project from './Project';
+import * as project from 'bark-core';
 
 import './App.css';
 

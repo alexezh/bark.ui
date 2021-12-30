@@ -1,12 +1,9 @@
-//-- <reference path="../node_modules/bark-core/src/screen.ts" />
-//-- <reference path="../node_modules/bark-core/src/game.ts" />
 
 import * as React from 'react';
 import _ from "lodash";
 
-import * as project from '../Project';
 import workspace from '../Workspace';
-import { StorageOp, StorageOpKind } from '../ProjectStorage';
+import * as project from 'bark-core';
 import { levelEditor } from './LevelEditor';
 
 // globals used by rest of code

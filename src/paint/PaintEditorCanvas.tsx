@@ -6,7 +6,7 @@ import PaperCanvas from './PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
 import workspace from '../Workspace';
-import * as project from '../Project';
+import * as project from 'bark-core';
 import { IPaperEditor, PaperEditor } from './PaperEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
 

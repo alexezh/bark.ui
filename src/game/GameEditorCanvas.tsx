@@ -1,12 +1,10 @@
 import * as React from 'react';
 import _ from "lodash";
-import classNames from 'classnames';
 
-import workspace from './Workspace';
 import GameSpritePane from './GameSpritePane';
 import GameEditorToolbar from './GameEditorToolbar';
 import GameIFrame, { GameRuntimeClient } from './GameIFrame';
-import * as project from './Project';
+import * as project from 'bark-core';
 
 export enum EditorMode {
   GameEditor,

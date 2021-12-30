@@ -1,4 +1,4 @@
-import { CodeBlockDef, CodeFileDef, project, SpriteDef } from "./Project";
+import { CodeBlockDef, CodeFileDef, project, SpriteDef } from "bark-core";
 
 /**
  * keeps track of project wide properties

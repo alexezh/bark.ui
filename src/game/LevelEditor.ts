@@ -1,5 +1,5 @@
 import { screen, level } from './GameLoader';
-import * as project from '../Project';
+import * as project from 'bark-core';
 
 export class LevelEditor {
   private _sprite: project.SpriteDef;

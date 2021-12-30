@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from "lodash";
 import NumericInput from 'react-numeric-input';
 import { HexColorPicker } from "react-colorful";
-import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
+import { CodeFileDef, CostumeDef, project, SpriteDef } from 'bark-core';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaperEditor } from './PaperEditor';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';

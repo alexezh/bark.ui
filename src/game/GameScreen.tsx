@@ -5,8 +5,8 @@ import * as React from 'react';
 import _ from "lodash";
 
 import { level, screen } from './GameLoader';
-import { StorageOp, StorageOpKind } from '../ProjectStorage';
-import * as project from '../Project';
+import { StorageOp, StorageOpKind } from 'bark-core';
+import * as project from 'bark-core';
 import workspace from '../Workspace';
 import { levelEditor } from './LevelEditor';
 
