@@ -1,8 +1,14 @@
 import AsyncEventSource from './AsyncEventSource';
 
 export enum StorageOpKind {
-  update = 'update',
   remove = 'remove',
+  updateProject = 'updateProject',
+  updateLevel = 'updateLevel',
+  updatesTiles = 'updateTiles',
+  updateSprite = 'updateSprite',
+  updateCodeBlock = 'updateCodeBlock',
+  updateFileDef = 'updateFileDef',
+  updateCostume = 'updateCostume'
 }
 
 export class StorageOp {
@@ -19,8 +25,7 @@ export class StorageOp {
 
 export interface IProjectStorage {
   updateSnapshot(json: string);
-  updateItem(id: string, value: any);
-  removeItem(id: string);
+  queueOp(op: string, id: string, value: any);
 
   registerOnChange(func: (op: StorageOp[]) => void);
   unregisterOnChange(func: (op: StorageOp[]) => void);
@@ -39,13 +44,13 @@ export class ProjectLocalStorage implements IProjectStorage {
   public updateSnapshot(json: string) {
     throw new Error("Method not implemented.");
   }
-  public updateItem(id: string, value: any) {
-    this._data[id] = value;
-    this.queueChange(new StorageOp(StorageOpKind.update, id, value));
-  }
-  public removeItem(id: string) {
-    delete this._data[id];
-    this.queueChange(new StorageOp(StorageOpKind.remove, id));
+  public queueOp(op: StorageOpKind, id: string, value: any) {
+    if (op !== StorageOpKind.remove) {
+      this._data[id] = value;
+    } else {
+      delete this._data[id];
+    }
+    this.queueChange(new StorageOp(op, id, value));
   }
 
   private queueChange(op: StorageOp) {
