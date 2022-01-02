@@ -1,6 +1,5 @@
 
 import * as React from 'react';
-import _ from "lodash";
 import * as bark from 'bark-core';
 
 // globals used by rest of code
@@ -27,8 +26,13 @@ class GameLoader {
   public processOp(op: any) {
     switch (op.kind) {
       case 'set':
+        storage.processRemoteOp(op);
         break;
       case 'remove':
+        storage.processRemoteOp(op);
+        break;
+      case 'append':
+        storage.processRemoteOp(op);
         break;
       case 'edit':
         screen.setEditMode(true);
