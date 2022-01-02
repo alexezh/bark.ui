@@ -4,8 +4,7 @@
 import * as React from 'react';
 import _ from "lodash";
 
-import { level, screen } from './GameLoader';
-import { StorageOp, StorageOpKind } from 'bark-core';
+import { level, screen, loader } from './GameLoader';
 import * as project from 'bark-core';
 import workspace from '../Workspace';
 import { levelEditor } from './LevelEditor';
@@ -41,7 +40,7 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
     screen.setCanvas(this.canvasRef);
 
     let readyOp = {
-      op: StorageOpKind.screenReady
+      op: project.StorageOpKind.screenReady
     }
     window.parent.postMessage(JSON.stringify(readyOp), '*');
   }

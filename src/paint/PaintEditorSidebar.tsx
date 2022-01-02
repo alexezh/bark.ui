@@ -1,19 +1,19 @@
 import * as React from 'react';
 import _ from "lodash";
-import { CodeFileDef, CostumeDef, project, SpriteDef } from '../Project';
+import * as project from 'bark-core';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaperEditor } from './PaperEditor';
 
 export interface IPaperEditorSidebarProps {
   paintEditor: IPaperEditor;
-  sprite: SpriteDef;
+  sprite: project.SpriteDef;
   onClose: any;
-  onChange: (costume: CostumeDef) => void;
+  onChange: (costume: project.CostumeDef) => void;
 }
 
 export interface IPaperEditorSidebarState {
-  sprite: SpriteDef;
-  costume: CostumeDef;
+  sprite: project.SpriteDef;
+  costume: project.CostumeDef;
 }
 
 export default class PaintEditorSidebar extends React.Component<IPaperEditorSidebarProps, IPaperEditorSidebarState> {
