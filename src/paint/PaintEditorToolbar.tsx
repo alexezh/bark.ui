@@ -2,22 +2,23 @@ import * as React from 'react';
 import _ from "lodash";
 import NumericInput from 'react-numeric-input';
 import { HexColorPicker } from "react-colorful";
-import { CodeFileDef, CostumeDef, project, SpriteDef } from 'bark-core';
+import * as bark from 'bark-core';
 import ToolSelectComponent from './ui/ToolSelectButton';
 import { IPaperEditor } from './PaperEditor';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import { BigButton } from '../BigButton'
 import '../App.css';
+import workspace from '../Workspace';
 
 export interface IPaperEditorToolbarProps {
   editor: IPaperEditor;
-  sprite: SpriteDef;
+  sprite: bark.SpriteDef;
   onClose: any;
-  onChange: (sprite: SpriteDef) => void;
+  onChange: (sprite: bark.SpriteDef) => void;
 }
 
 export interface IPaperEditorToolbarState {
-  sprite: SpriteDef;
+  sprite: bark.SpriteDef;
   bitBrushSize: number;
   bitEraserSize: number;
 }
@@ -62,7 +63,7 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
   }
 
   private onSelectSprite(id: string) {
-    let sprite = project.findSpriteById(id);
+    let sprite = workspace.project.findSpriteById(id);
     if (sprite === undefined) {
       return;
     }
@@ -128,7 +129,7 @@ export default class PaintEditorToolbar extends React.Component<IPaperEditorTool
 
   private renderSpriteList(onClick: (id: string) => void): any[] {
     let files: any[] = [];
-    project.forEachSprite((sprite) => {
+    workspace.project.forEachSprite((sprite) => {
       files.push((
         <Dropdown.Item key={sprite.id} onClick={() => onClick(sprite.id)}>
           <SpriteValue name={sprite.name} />

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import _ from "lodash";
 
-import * as project from 'bark-core';
-import { StorageOp, StorageOpKind } from 'bark-core';
+import * as bark from 'bark-core';
+import workspace from './Workspace';
 
 
 export class GameRuntimeClient {
@@ -19,7 +19,7 @@ export class GameRuntimeClient {
     this._frame = frame;
   }
 
-  public onStorageUpdate(ops: StorageOp[]) {
+  public onStorageUpdate(ops: bark.StorageOp[]) {
     if (this._frame !== null) {
       console.log('onStorageUpdate:' + ops[0].id + ' ' + ops[0].kind);
       let opsJson = JSON.stringify(ops);
@@ -28,7 +28,7 @@ export class GameRuntimeClient {
   }
 
   public selectSprite(id: string) {
-    this.onStorageUpdate([new StorageOp(StorageOpKind.selectSprite, id)])
+    this.onStorageUpdate([new bark.StorageOp(bark.StorageOpKind.selectSprite, id)])
   }
 }
 
@@ -67,10 +67,10 @@ export default class GameIFrame extends React.Component<IGameIFrameProps, IGameI
   private processEvent(opJson: string) {
     try {
       let op = JSON.parse(opJson);
-      if (op.op === StorageOpKind.screenReady) {
+      if (op.op === bark.StorageOpKind.screenReady) {
         console.log('Initialize screen frame');
         this.state.runtimeClient.setFrame(this.container);
-        project.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
+        workspace.project.storage.registerOnChange(this.state.runtimeClient.onStorageUpdate);
       }
     }
     catch (e) {

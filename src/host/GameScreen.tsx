@@ -7,7 +7,6 @@ import _ from "lodash";
 import { level, screen, loader } from './GameLoader';
 import * as project from 'bark-core';
 import workspace from '../Workspace';
-import { levelEditor } from './LevelEditor';
 
 export interface IGameScreenProps {
 }
@@ -46,7 +45,7 @@ export default class GameScreen extends React.Component<IGameScreenProps, IGameS
   }
 
   private onMouseDown(event: any): void {
-    levelEditor.setTile();
+    //    levelEditor.setTile();
   }
 
   private onMouseUp(event: any) {

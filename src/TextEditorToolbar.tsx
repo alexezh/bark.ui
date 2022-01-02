@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { CodeBlockDef, CodeFileDef, project } from 'bark-core';
 import _ from "lodash";
+import workspace from './Workspace';
+import { CodeBlockDef, CodeFileDef } from 'bark-core';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import { BigButton } from './BigButton'
 
@@ -43,7 +44,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
 
   //private onSelectFile(eventKey: string | null, e: React.SyntheticEvent<unknown>) {
   private onSelectFile(id: string) {
-    let codeFile = project.findCodeFileById(id);
+    let codeFile = workspace.project.findCodeFileById(id);
     if (codeFile === undefined) {
       return;
     }
@@ -57,7 +58,7 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
   }
 
   private onSelectFunction(id: string) {
-    let codeFile = project.findCodeFileById(id);
+    let codeFile = workspace.project.findCodeFileById(id);
     let codeBlock = codeFile?.firstBlock;
     this.setState({
       codeBlock: codeFile?.firstBlock,
@@ -94,9 +95,9 @@ export default class TextEditorToolbar extends React.Component<ITextEditorToolba
 
   private renderFileList(onClick: (id: string) => void): any[] {
     let files: any[] = [];
-    project.forEachCodeFile((file) => {
+    workspace.project.forEachCodeFile((file) => {
       files.push((
-        <Dropdown.Item key={file.path} onClick={() => onClick(file.id)}>
+        <Dropdown.Item key={file.id} onClick={() => onClick(file.id)}>
           <FileValue name={file.name} />
         </Dropdown.Item>
       ));

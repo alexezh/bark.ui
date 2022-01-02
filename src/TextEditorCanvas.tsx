@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import workspace from './Workspace';
 import TextEditorToolbar from './TextEditorToolbar';
-import { CodeBlockDef, CodeFileDef, project } from 'bark-core';
+import { CodeBlockDef, CodeFileDef } from 'bark-core';
 
 export interface ITextEditorCanvasProps {
   onClose: any;
@@ -24,7 +24,7 @@ export default class TextEditorCanvas extends React.Component<ITextEditorCanvasP
       'onToolbarChange'
     ]);
 
-    let codeBlock = props.codeBlock === undefined ? project.def.codeFile.firstBlock : props.codeBlock;
+    let codeBlock = props.codeBlock === undefined ? workspace.project.screen.codeFile.firstBlock : props.codeBlock;
 
     this.state = {
       codeBlock: codeBlock,

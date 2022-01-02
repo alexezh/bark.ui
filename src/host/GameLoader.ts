@@ -4,7 +4,7 @@ import _ from "lodash";
 
 import workspace from '../Workspace';
 import * as project from 'bark-core';
-import { levelEditor } from './LevelEditor';
+//import { levelEditor } from './LevelEditor';
 
 // globals used by rest of code
 //export var game = new bark.Game();
@@ -27,7 +27,7 @@ class GameLoader {
         screen.setEditMode(false);
         break;
       case 'selectSprite':
-        levelEditor.selectSprite(op.id);
+        //        levelEditor.selectSprite(op.id);
         break;
     }
   }

@@ -4,7 +4,8 @@ import _ from "lodash";
 import GameSpritePane from './GameSpritePane';
 import GameEditorToolbar from './GameEditorToolbar';
 import GameIFrame, { GameRuntimeClient } from './GameIFrame';
-import * as project from 'bark-core';
+import * as bark from 'bark-core';
+import workspace from './Workspace';
 
 export enum EditorMode {
   GameEditor,
@@ -42,7 +43,7 @@ export default class GameEditorCanvas extends React.Component<IGameCanvasProps, 
     }
   }
 
-  private onSpriteChange(sprite: project.SpriteDef) {
+  private onSpriteChange(sprite: bark.SpriteDef) {
     console.log('Select sprite:' + sprite.id);
     this.state.runtimeClient.selectSprite(sprite.id);
   }
@@ -75,7 +76,7 @@ export default class GameEditorCanvas extends React.Component<IGameCanvasProps, 
 
   private onDownloadProject() {
 
-    let projectJson = project.project.storage.toJson();
+    let projectJson = workspace.project.storage.toJson();
     var codeBlob = new Blob([projectJson], { type: 'text/plain' });
 
     var downloadLink = document.createElement("a");

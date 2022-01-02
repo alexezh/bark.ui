@@ -2,14 +2,15 @@ import * as React from 'react';
 import _ from "lodash";
 //import List from './paint/ui/list/list';
 //import ListItem from './paint/ui/list/list-item';
-import * as project from 'bark-core';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+import * as bark from 'bark-core';
 
-import '../App.css';
+import './App.css';
+import workspace from './Workspace';
 
 export interface IGameSpritePaneProps {
-  onChange: (sprite: project.SpriteDef) => void;
+  onChange: (sprite: bark.SpriteDef) => void;
 }
 
 export interface IGameSpritePaneState {
@@ -50,7 +51,7 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
   /**
    * called when image on any costume changes
    */
-  private onCostumeChange(costume: project.CostumeDef) {
+  private onCostumeChange(costume: bark.CostumeDef) {
     this.setState({ version: this.state.version + 1 })
   }
 
@@ -60,7 +61,7 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
   private onSpriteSelected(id: string) {
     console.log('Select sprite:' + id);
     //    let sprite = (index !== null) ? project.project.def.sprites[index] : project.project.def.sprites[0];
-    let sprite = project.project.findSpriteById(id);
+    let sprite = workspace.project.findSpriteById(id);
     if (sprite === undefined) {
       return;
     }
@@ -78,7 +79,7 @@ export default class GameSpritePane extends React.Component<IGameSpritePaneProps
     return (
       <div className='Game-spritepane'>
         <List>
-          {project.project.def.sprites.map((sprite) => {
+          {workspace.project.screen.sprites.map((sprite) => {
             if (sprite.costumes.length > 0 && sprite.costumes[0].imageData !== undefined) {
               return (
                 <ListItemButton key={sprite.id} selected={sprite.id === this.state.selectedSpriteId} onClick={() => this.onSpriteSelected(sprite.id)}>
