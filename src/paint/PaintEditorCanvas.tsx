@@ -1,14 +1,13 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
 import _ from "lodash";
 
 import PaperCanvas from './PaperCanvas'
 import PaintEditorToolbar from './PaintEditorToolbar'
 import PaintEditorSidebar from './PaintEditorSidebar'
-import workspace from '../Workspace';
-import * as project from 'bark-core';
 import { IPaperEditor, PaperEditor } from './PaperEditor';
 import PaintEditorCostumePane from './PaintEditorCostumePane';
+import workspace from '../Workspace';
+import * as bark from 'bark-core';
 
 //import { addLocaleData } from 'react-intl';
 
@@ -34,8 +33,8 @@ export interface IPaintCanvasProps {
 }
 
 export interface IPaintCanvasState {
-  sprite: project.SpriteDef;
-  costume: project.CostumeDef;
+  sprite: bark.SpriteDef;
+  costume: bark.CostumeDef;
   imageId?: string;
 }
 
@@ -52,6 +51,7 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
       'onSpriteSelected',
     ]);
 
+    console.log(typeof workspace);
     let sprite = workspace.lastEditedSprite;
 
     this.paintEditor.setState({ imageSource: sprite.firstCostume.id });
@@ -85,19 +85,19 @@ export default class PaintEditorCanvas extends React.Component<IPaintCanvasProps
     }
   }
 
-  private onSpriteSelected(sprite: project.SpriteDef) {
+  private onSpriteSelected(sprite: bark.SpriteDef) {
     console.log('select sprite:' + sprite.id);
     this.setState({ sprite: sprite, costume: sprite.firstCostume });
     workspace.lastEditedSprite = sprite;
     this.paintEditor.setImage(sprite.firstCostume.id, sprite.firstCostume.imageData);
   }
 
-  private onSidebarChange(costume: project.CostumeDef) {
+  private onSidebarChange(costume: bark.CostumeDef) {
     console.log('select costume:' + costume.id);
     // this.setState({ costume: costume });
   }
 
-  private onCostumePaneChange(costume: project.CostumeDef) {
+  private onCostumePaneChange(costume: bark.CostumeDef) {
     console.log('select costume:' + costume.id);
     this.setState({ costume: costume });
     this.paintEditor.setImage(costume.id, costume.imageData);

@@ -1,17 +1,27 @@
 
 import * as React from 'react';
 import _ from "lodash";
-
-import workspace from '../Workspace';
-import * as project from 'bark-core';
-//import { levelEditor } from './LevelEditor';
+import * as bark from 'bark-core';
 
 // globals used by rest of code
 //export var game = new bark.Game();
-export let bark: any = window['bark'];
 export let storage = new bark.ProjectLocalStorage();
-export let screen = new bark.Screen();
-export let level = null;
+
+export let levelProps = {
+  gridWidth: 48,
+  gridHeight: 8,
+  tileWidth: 32,
+  tileHeight: 32
+};
+
+export let screenDef = new bark.ScreenDef(
+  storage,
+  {
+    screenWidth: levelProps.tileWidth * 20,
+    screenHeight: levelProps.tileHeight * 8
+  });
+
+export let screen = new bark.Screen(screenDef);
 
 class GameLoader {
   public processOp(op: any) {
